@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/>
+
+</menu>
+<!-- From: file:/C:/AkshayDocs_12_23_2015/AkshayDocs/akshay_college/2017/SPRING2017/ECE4012/ActiveRepo/BT200CtrlDemo/app/src/main/res/menu/bt2_ctrl_demo.xml -->
