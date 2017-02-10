@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -25,7 +26,10 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
     TextView mainText;
+    Button serverButton;
+    Button clientButton;
     BluetoothAdapter mBluetoothAdapter;
+    Thread btThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mReceiver, filter);
 
         mainText = (TextView) findViewById(R.id.textview_main);
+        serverButton = (Button) findViewById(R.id.button_server);
+        clientButton = (Button) findViewById(R.id.button_client);
+
+        serverButton.setOnClickListener(serverButtonListener);
+        clientButton.setOnClickListener(clientButtonListener);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null ) {
@@ -89,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class AcceptThread extends Thread {
         String NAME;
-        UUID MY_UUID;
+        UUID MY_UUID = UUID.fromString("8ada5a10-efdf-11e6-9598-0800200c9a66");
         String MY_TAG = "AcceptThread";
 
 
@@ -137,5 +146,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }
 
