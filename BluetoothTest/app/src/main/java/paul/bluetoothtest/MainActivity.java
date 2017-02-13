@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Register for broadcasts when a device is discovered.
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter);
+        //IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        //registerReceiver(mReceiver, filter);
 
         mainText = (TextView) findViewById(R.id.textview_main);
         clientButton = (Button) findViewById(R.id.button_client);
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null ) {
             // Device does not support bluetooth
+            mainText.setText("Error: could not get bluetooth adapter");
         }
 
         if(!mBluetoothAdapter.isEnabled()){
@@ -80,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         serverButton.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View view){
+
+                Log.d("OnClickListener", "Attempting to Start Server Thread");
                 bluetoothThread = new AcceptThread();
                 bluetoothThread.run();
             }
@@ -105,37 +108,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Create a BroadcastReceiver for ACTION_FOUND.
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                mainText.setText(mainText.getText() + "\n" + deviceName + "\t" + deviceHardwareAddress);
-            }
-        }
-    };
+//    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+//                // Discovery has found a device. Get the BluetoothDevice
+//                // object and its info from the Intent.
+//                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+//                String deviceName = device.getName();
+//                String deviceHardwareAddress = device.getAddress(); // MAC address
+//                mainText.setText(mainText.getText() + "\n" + deviceName + "\t" + deviceHardwareAddress);
+//            }
+//        }
+//    };
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(mReceiver);
+        //unregisterReceiver(mReceiver);
     }
 
     private class AcceptThread extends Thread {
-        String NAME;
-        UUID MY_UUID;
+        String NAME = "AcceptThreadName";
+        UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
         String MY_TAG = "AcceptThread";
 
 
         private final BluetoothServerSocket mmServerSocket;
 
         public AcceptThread() {
+            Log.d(MY_TAG, "AcceptThread Started");
             // Use a temporary object that is later assigned to mmServerSocket
             // because mmServerSocket is final.
             BluetoothServerSocket tmp = null;
@@ -165,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     socketThread = new ConnectedThread(socket);
                     socketThread.run();
                     //manageMyConnectedSocket(socket);
-                    cancel();
+                    //cancel();
                 }
             }
         }
@@ -245,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
         private byte[] mmBuffer; // mmBuffer store for the stream
+        private final String MY_TAG = "ConnectedThread";
 
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
@@ -272,6 +277,8 @@ public class MainActivity extends AppCompatActivity {
             mmBuffer = new byte[1024];
             int numBytes; // bytes returned from read()
 
+            Log.d(MY_TAG, "New Connection!");
+
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
                 try {
@@ -285,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mainText.setText(new String(mmBuffer));
 
-                    String testMessage = "Hola!";
+                    String testMessage = "Hello Bluetooth World!";
                     write(testMessage.getBytes());
 
                 } catch (IOException e) {
