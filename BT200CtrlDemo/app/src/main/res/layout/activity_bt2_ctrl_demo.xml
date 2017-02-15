@@ -9,6 +9,14 @@
     <ImageView
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:id="@+id/demoView"
+        android:id="@+id/mapView"
         android:layout_alignParentTop="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate New Walls"
+        android:id="@+id/updateButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

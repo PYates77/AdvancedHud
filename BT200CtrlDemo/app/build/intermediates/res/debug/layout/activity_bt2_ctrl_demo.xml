@@ -9,7 +9,15 @@
     <ImageView
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:id="@+id/demoView"
+        android:id="@+id/mapView"
         android:layout_alignParentTop="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate New Walls"
+        android:id="@+id/updateButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
-<!-- From: file:/C:/AkshayDocs_12_23_2015/AkshayDocs/akshay_college/2017/SPRING2017/ECE4012/ActiveRepo/BT200CtrlDemo/app/src/main/res/layout/activity_bt2_ctrl_demo.xml -->
+<!-- From: file:/C:/AkshayDocs_12_23_2015/AkshayDocs/akshay_college/2017/SPRING2017/ECE4012/SeniorDesignCode/AdvancedHud/BT200CtrlDemo/app/src/main/res/layout/activity_bt2_ctrl_demo.xml -->

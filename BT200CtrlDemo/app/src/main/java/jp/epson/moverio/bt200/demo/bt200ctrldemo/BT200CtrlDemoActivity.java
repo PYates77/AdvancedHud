@@ -10,17 +10,27 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.ToggleButton;
 
+import java.util.Random;
+
 import jp.epson.moverio.bt200.demo.bt200ctrldemo.R;
 
 public class BT200CtrlDemoActivity extends Activity {
 	private String TAG = "Bt2CtrlDemoActivity";
-	private ImageView mImageView;/*
+	private LineSeqDrawable lineDrawable = new LineSeqDrawable();
+	private ImageView mapView;
+	private Button updateButton;
+	private int count = 0;
+
+
+	/*
 	private ToggleButton mToggleButton_2d3d = null;
 	private Button mButton_dmute = null;
 	private SeekBar mSeekBar_backlight = null;
@@ -40,9 +50,55 @@ public class BT200CtrlDemoActivity extends Activity {
 
 		getActionBar().hide();
 
+		Window win = getWindow();
+		WindowManager.LayoutParams winParams = win.getAttributes();
+		//winParams.flags |= WindowManager.LayoutParams.FLAG_SMARTFULLSCREEN;
+		winParams.flags |= 0x80000000;
+		win.setAttributes(winParams);
 
-		mImageView = (ImageView) findViewById(R.id.demoView);
-		mImageView.setImageResource(R.drawable.map);
+
+
+		//Wall Array
+		Wall[] walls = new Wall[5];
+		for (int i=0; i < 5; i++){
+			Random r = new Random();
+			walls[i] = new Wall();
+			walls[i].setCoordinates(r.nextInt(50), r.nextInt(50), r.nextInt(50), r.nextInt(50));
+		}
+		lineDrawable.setWallArray(walls);
+		mapView = (ImageView) findViewById(R.id.mapView);
+		updateButton = (Button) findViewById(R.id.updateButton);
+		mapView.setImageDrawable(lineDrawable);
+
+
+		updateButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mapView.invalidate();
+				if(count%2 == 0){
+					Wall[] newWalls = new Wall[3];
+					for (int i=0; i < 3; i++){
+						Random r = new Random();
+						newWalls[i] = new Wall();
+						newWalls[i].setCoordinates(r.nextInt(50),r.nextInt(50),r.nextInt(50),r.nextInt(50));
+					}
+					lineDrawable.setWallArray(newWalls);
+				}
+				else {
+					Wall[] oddWalls = new Wall[4];
+					for (int i=0; i < 4; i++){
+						Random r = new Random();
+						oddWalls[i] = new Wall();
+						oddWalls[i].setCoordinates(r.nextInt(50),r.nextInt(50),r.nextInt(50),r.nextInt(50));
+					}
+					lineDrawable.setWallArray(oddWalls);
+				}
+				count++;
+			}
+		});
+
+
+
 		/*mDisplayControl = new DisplayControl(this);
 		mAudioControl = new AudioControl(this);
 		mSensorControl = new SensorControl(this);
@@ -152,7 +208,7 @@ public class BT200CtrlDemoActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.bt2_ctrl_demo, menu);
+		//getMenuInflater().inflate(R.menu.bt2_ctrl_demo, menu);
 		return true;
 	}
 
