@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     TextView mainText;
     Button clientButton;
     Button serverButton;
+    Button exitButton;
     Thread bluetoothThread;
     Thread socketThread;
     BluetoothDevice btDevice;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         mainText = (TextView) findViewById(R.id.textview_main);
         clientButton = (Button) findViewById(R.id.button_client);
         serverButton = (Button) findViewById(R.id.button_server);
+        exitButton = (Button) findViewById(R.id.button_exit);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null ) {
@@ -74,11 +76,13 @@ public class MainActivity extends AppCompatActivity {
         clientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
+                Log.d("ClientClickListener","Attempting to connect to " + btDevice.getName() + " " + btDevice.getAddress());
+                mainText.setText("Attempting to connect to " + btDevice.getName() + " " + btDevice.getAddress() + " ... ");
                 bluetoothThread = new ConnectThread(btDevice);
                 bluetoothThread.run();
             }
         });
-        serverButton.setOnClickListener((new View.OnClickListener() {
+        serverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
 
@@ -86,9 +90,14 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothThread = new AcceptThread();
                 bluetoothThread.run();
             }
-        }));
-
-
+        });
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                finish();
+                System.exit(0);
+            }
+        });
     }
 
     private void listPairedDevices(){
@@ -155,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             BluetoothSocket socket = null;
             // Keep listening until exception occurs or a socket is returned.
+            Log.d(MY_TAG, "Waiting to accept socket");
             while (true) {
                 try {
                     socket = mmServerSocket.accept();
@@ -166,10 +176,13 @@ public class MainActivity extends AppCompatActivity {
                 if (socket != null) {
                     // A connection was accepted. Perform work associated with
                     // the connection in a separate thread.
+                    Log.d(MY_TAG, "A connection was accepted, moving to ConnectThread");
                     socketThread = new ConnectedThread(socket);
                     socketThread.run();
                     //manageMyConnectedSocket(socket);
-                    //cancel();
+
+                    //as soon as we get a connection, we can stop listening (for now, in this example)
+                    cancel();
                 }
             }
         }
@@ -188,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
         private final UUID MY_UUID = UUID.fromString("ce359240-efe7-11e6-9598-0800200c9a66");
-        private final String TAG = "AcceptThread_Debug_Tag";
+        private final String TAG = "AcceptThread";
 
         public ConnectThread(BluetoothDevice device) {
             // Use a temporary object that is later assigned to mmSocket
@@ -199,11 +212,12 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Get a BluetoothSocket to connect with the given BluetoothDevice.
                 // MY_UUID is the app's UUID string, also used in the server code.
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+                tmp = mmDevice.createRfcommSocketToServiceRecord(MY_UUID);
             } catch (IOException e) {
                 Log.e(TAG, "Socket's create() method failed", e);
             }
             mmSocket = tmp;
+            Log.d(TAG, "Created RfCommSocket with info: " + mmSocket.toString());
         }
 
         public void run() {
@@ -216,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                 mmSocket.connect();
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and return.
+                Log.d(TAG, "Unable to connect, closing socket");
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
@@ -226,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
 
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
+            Log.d(TAG, "Socket created, moving to ConnectedThread");
             socketThread = new ConnectedThread(mmSocket);
             socketThread.run();
 
@@ -258,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Get the input and output streams; using temp objects because
             // member streams are final.
+            Log.d(TAG, "Attempting to create input and output streams");
             try {
                 tmpIn = socket.getInputStream();
             } catch (IOException e) {
