@@ -7,8 +7,8 @@
     tools:context=".BT200CtrlDemoActivity">
 
     <ImageView
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="300sp"
+        android:layout_height="300sp"
         android:id="@+id/mapView"
         android:layout_alignParentTop="true"/>
 
@@ -18,5 +18,14 @@
         android:text="Generate New Walls"
         android:id="@+id/updateButton"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:text="Rotate Walls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/updateButton"
+        android:layout_alignParentRight="true"
+        android:id="@+id/rotateButton" />
+
 </RelativeLayout>

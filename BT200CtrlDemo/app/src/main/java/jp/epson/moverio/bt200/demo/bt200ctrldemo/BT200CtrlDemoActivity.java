@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.util.Random;
@@ -27,7 +28,9 @@ public class BT200CtrlDemoActivity extends Activity {
 	private LineSeqDrawable lineDrawable = new LineSeqDrawable();
 	private ImageView mapView;
 	private Button updateButton;
+	private Button rotButton;
 	private int count = 0;
+	private int rotationDegree = 0;
 
 
 	/*
@@ -63,12 +66,24 @@ public class BT200CtrlDemoActivity extends Activity {
 		for (int i=0; i < 5; i++){
 			Random r = new Random();
 			walls[i] = new Wall();
-			walls[i].setCoordinates(r.nextInt(50), r.nextInt(50), r.nextInt(50), r.nextInt(50));
+			walls[i].setCoordinates(r.nextInt(300), r.nextInt(300), r.nextInt(300), r.nextInt(300));
 		}
 		lineDrawable.setWallArray(walls);
 		mapView = (ImageView) findViewById(R.id.mapView);
 		updateButton = (Button) findViewById(R.id.updateButton);
+		rotButton = (Button)findViewById(R.id.rotateButton);
 		mapView.setImageDrawable(lineDrawable);
+
+		rotButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				rotationDegree = (rotationDegree+45)%360;
+				Wall w[] = lineDrawable.getWallArray();
+				mapView.invalidate();
+				lineDrawable.setDegreeRotation(rotationDegree);
+				lineDrawable.setWallArray(w);
+			}
+		});
 
 
 		updateButton.setOnClickListener(new View.OnClickListener() {
@@ -80,8 +95,10 @@ public class BT200CtrlDemoActivity extends Activity {
 					for (int i=0; i < 3; i++){
 						Random r = new Random();
 						newWalls[i] = new Wall();
-						newWalls[i].setCoordinates(r.nextInt(50),r.nextInt(50),r.nextInt(50),r.nextInt(50));
+						newWalls[i].setCoordinates(r.nextInt(300),r.nextInt(300),r.nextInt(300),r.nextInt(300));
 					}
+					rotationDegree = 0;
+					lineDrawable.setDegreeRotation(rotationDegree);
 					lineDrawable.setWallArray(newWalls);
 				}
 				else {
@@ -89,8 +106,10 @@ public class BT200CtrlDemoActivity extends Activity {
 					for (int i=0; i < 4; i++){
 						Random r = new Random();
 						oddWalls[i] = new Wall();
-						oddWalls[i].setCoordinates(r.nextInt(50),r.nextInt(50),r.nextInt(50),r.nextInt(50));
+						oddWalls[i].setCoordinates(r.nextInt(300),r.nextInt(300),r.nextInt(300),r.nextInt(300));
 					}
+					rotationDegree = 0;
+					lineDrawable.setDegreeRotation(rotationDegree);
 					lineDrawable.setWallArray(oddWalls);
 				}
 				count++;
