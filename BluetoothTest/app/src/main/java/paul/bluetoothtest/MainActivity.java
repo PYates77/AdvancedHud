@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,11 +35,14 @@ public class MainActivity extends AppCompatActivity {
     Button clientButton;
     Button serverButton;
     Button exitButton;
-    Thread bluetoothThread;
-    Thread socketThread;
+    ConnectThread clientThread;
+    AcceptThread serverThread;
+    ConnectedThread socketThread;
     BluetoothDevice btDevice;
 
     Handler mHandler;
+    private final BlockingQueue<Runnable> mDecodeWorkQueue;
+    private final ThreadPoolExecutor mDecodeThreadPool;
 
     BluetoothAdapter mBluetoothAdapter;
 
@@ -46,6 +54,16 @@ public class MainActivity extends AppCompatActivity {
         // ... (Add other message types here as needed.)
     }
 
+    public MainActivity(){
+        mDecodeWorkQueue = new LinkedBlockingQueue<Runnable>();
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage){
+                mainText.setText(inputMessage.obj.toString());
+            }
+        };
+        mDecodeThreadPool = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),Runtime.getRuntime().availableProcessors(), 30,TimeUnit.SECONDS, mDecodeWorkQueue);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         clientButton = (Button) findViewById(R.id.button_client);
         serverButton = (Button) findViewById(R.id.button_server);
         exitButton = (Button) findViewById(R.id.button_exit);
+
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null ) {
@@ -78,8 +97,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
                 Log.d("ClientClickListener","Attempting to connect to " + btDevice.getName() + " " + btDevice.getAddress());
                 mainText.setText("Attempting to connect to " + btDevice.getName() + " " + btDevice.getAddress() + " ... ");
-                bluetoothThread = new ConnectThread(btDevice);
-                bluetoothThread.run();
+                clientThread = new ConnectThread(btDevice);
+                mDecodeThreadPool.execute(clientThread);
+                //bluetoothThread = new ConnectThread(btDevice);
+                //bluetoothThread.run();
             }
         });
         serverButton.setOnClickListener(new View.OnClickListener() {
@@ -87,8 +108,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
 
                 Log.d("OnClickListener", "Attempting to Start Server Thread");
-                bluetoothThread = new AcceptThread();
-                bluetoothThread.run();
+                serverThread = new AcceptThread();
+                mDecodeThreadPool.execute(serverThread);
+                //bluetoothThread = new AcceptThread();
+                //bluetoothThread.run();
             }
         });
         exitButton.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         //unregisterReceiver(mReceiver);
     }
 
-    private class AcceptThread extends Thread {
+    private class AcceptThread implements Runnable {
         String NAME = "AcceptThreadName";
         UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
         String MY_TAG = "AcceptThread";
@@ -148,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
         private final BluetoothServerSocket mmServerSocket;
 
         public AcceptThread() {
+
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+
             Log.d(MY_TAG, "AcceptThread Started");
             // Use a temporary object that is later assigned to mmServerSocket
             // because mmServerSocket is final.
@@ -178,7 +204,9 @@ public class MainActivity extends AppCompatActivity {
                     // the connection in a separate thread.
                     Log.d(MY_TAG, "A connection was accepted, moving to ConnectThread");
                     socketThread = new ConnectedThread(socket);
-                    socketThread.run();
+                    mDecodeThreadPool.execute(socketThread);
+                    //socketThread = new ConnectedThread(socket);
+                    //socketThread.run();
                     //manageMyConnectedSocket(socket);
 
                     //as soon as we get a connection, we can stop listening (for now, in this example)
@@ -197,10 +225,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class ConnectThread extends Thread {
+    private class ConnectThread implements Runnable {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-        private final UUID MY_UUID = UUID.fromString("ce359240-efe7-11e6-9598-0800200c9a66");
+        private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
         private final String TAG = "AcceptThread";
 
         public ConnectThread(BluetoothDevice device) {
@@ -231,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and return.
                 Log.d(TAG, "Unable to connect, closing socket");
+                mainText.setText("Unable to connect to " + mmSocket.getRemoteDevice().getName());
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
@@ -259,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class ConnectedThread extends Thread {
+    private class ConnectedThread implements Runnable {
         private final String TAG = "ConnectThread_Debug_Tag";
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
@@ -271,6 +300,8 @@ public class MainActivity extends AppCompatActivity {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
+
+
 
             // Get the input and output streams; using temp objects because
             // member streams are final.
@@ -299,6 +330,11 @@ public class MainActivity extends AppCompatActivity {
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
                 try {
+                    mainText.setText("Attempting to send/recieve");
+                    Log.d(TAG, "Attempting to send message...");
+                    String testMessage = "Hello Bluetooth World!";
+                    write(testMessage.getBytes());
+
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
@@ -307,10 +343,8 @@ public class MainActivity extends AppCompatActivity {
                             mmBuffer);
                     readMsg.sendToTarget();
 
-                    mainText.setText(new String(mmBuffer));
-
-                    String testMessage = "Hello Bluetooth World!";
-                    write(testMessage.getBytes());
+                    Log.d(TAG, "Attempting to write buffer: " + mmBuffer.toString() + " to screen.");
+                    mainText.setText(mmBuffer.toString());
 
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
