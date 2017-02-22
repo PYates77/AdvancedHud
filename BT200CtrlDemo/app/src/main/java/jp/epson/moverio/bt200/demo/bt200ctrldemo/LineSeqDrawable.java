@@ -33,6 +33,27 @@ public class LineSeqDrawable extends Drawable {
         mDegreeRotation = 0;
     }
 
+    private Path constructUser(){
+        double degreeRadians = Math.toRadians(mDegreeRotation);
+        double x1 = (Math.cos(-degreeRadians)*-10)-(Math.sin(-degreeRadians)*10);
+        double y1 = (Math.sin(-degreeRadians)*-10)+(Math.cos(-degreeRadians)*10);
+        double x2 = (Math.cos(-degreeRadians)*0)-(Math.sin(-degreeRadians)*-10);
+        double y2 = (Math.sin(-degreeRadians)*0)+(Math.cos(-degreeRadians)*-10);
+        double x3 = (Math.cos(-degreeRadians)*10)-(Math.sin(-degreeRadians)*10);
+        double y3 = (Math.sin(-degreeRadians)*10)+(Math.cos(-degreeRadians)*10);
+        Coordinate A = new Coordinate(x1+150,y1+150);
+        Coordinate B = new Coordinate(x2+150,y2+150);
+        Coordinate C = new Coordinate(x3+150,y3+150);
+        Path newPath = new Path();
+        newPath.moveTo((float)A.coordx,(float)A.coordy);
+        newPath.lineTo((float)B.coordx,(float)B.coordy);
+        newPath.lineTo((float)C.coordx,(float)C.coordy);
+        newPath.moveTo((float)B.coordx,(float)B.coordy);
+        newPath.lineTo((float)C.coordx,(float)C.coordy);
+        newPath.close();
+        return newPath;
+    }
+
     @Override
     public void draw(Canvas canvas) {
         Paint mPaint = new Paint();
@@ -44,13 +65,7 @@ public class LineSeqDrawable extends Drawable {
             canvas.drawLine(mWalls[i].startX,mWalls[i].startY,mWalls[i].endX,mWalls[i].endY,mPaint);
         }
         mPaint.setColor(Color.RED);
-        Path newPath = new Path();
-        newPath.moveTo(140,150);
-        newPath.lineTo(150,140);
-        newPath.lineTo(160,150);
-        newPath.moveTo(150,140);
-        newPath.lineTo(160,150);
-        newPath.close();
+        Path newPath = constructUser();
         canvas.drawPath(newPath,mPaint);
     }
 

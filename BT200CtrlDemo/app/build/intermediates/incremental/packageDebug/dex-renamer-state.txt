@@ -1,0 +1,4 @@
+#Wed Feb 22 14:57:19 EST 2017
+base.0=C\:\\AkshayDocs_12_23_2015\\AkshayDocs\\akshay_college\\2017\\SPRING2017\\ECE4012\\SeniorDesignCode\\AdvancedHud\\BT200CtrlDemo\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
+renamed.0=classes.dex
+file.0=C\:\\AkshayDocs_12_23_2015\\AkshayDocs\\akshay_college\\2017\\SPRING2017\\ECE4012\\SeniorDesignCode\\AdvancedHud\\BT200CtrlDemo\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
