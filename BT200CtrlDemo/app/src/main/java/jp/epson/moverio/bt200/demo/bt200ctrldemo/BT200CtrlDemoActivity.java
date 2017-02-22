@@ -27,7 +27,7 @@ public class BT200CtrlDemoActivity extends Activity {
 	private String TAG = "Bt2CtrlDemoActivity";
 	private LineSeqDrawable lineDrawable = new LineSeqDrawable();
 	private ImageView mapView;
-	private Button updateButton;
+	//private Button updateButton;
 	private Button rotButton;
 	private int count = 0;
 	private int rotationDegree = 0;
@@ -59,18 +59,31 @@ public class BT200CtrlDemoActivity extends Activity {
 		winParams.flags |= 0x80000000;
 		win.setAttributes(winParams);
 
+		//Pregenerated Wall
+		Wall walls[] = new Wall[8];
+		Coordinate A = new Coordinate(90,300);
+		Coordinate B = new Coordinate(175,300);
+		Coordinate C = new Coordinate(90,140);
+		Coordinate D = new Coordinate(175,190);
+		Coordinate E = new Coordinate(10,140);
+		Coordinate F = new Coordinate(270,190);
+		Coordinate G = new Coordinate(10,90);
+		Coordinate H = new Coordinate(90,90);
+		Coordinate I = new Coordinate(90,40);
+		Coordinate J = new Coordinate(270,40);
+		walls[0] = new Wall(A,C);
+		walls[1] = new Wall(C,E);
+		walls[2] = new Wall(G,H);
+		walls[3] = new Wall(H,I);
+		walls[4] = new Wall(I,J);
+		walls[5] = new Wall(J,F);
+		walls[6] = new Wall(F,D);
+		walls[7] = new Wall(D,B);
 
 
-		//Wall Array
-		Wall[] walls = new Wall[5];
-		for (int i=0; i < 5; i++){
-			Random r = new Random();
-			walls[i] = new Wall();
-			walls[i].setCoordinates(r.nextInt(300), r.nextInt(300), r.nextInt(300), r.nextInt(300));
-		}
 		lineDrawable.setWallArray(walls);
 		mapView = (ImageView) findViewById(R.id.mapView);
-		updateButton = (Button) findViewById(R.id.updateButton);
+		//updateButton = (Button) findViewById(R.id.updateButton);
 		rotButton = (Button)findViewById(R.id.rotateButton);
 		mapView.setImageDrawable(lineDrawable);
 
@@ -86,7 +99,7 @@ public class BT200CtrlDemoActivity extends Activity {
 		});
 
 
-		updateButton.setOnClickListener(new View.OnClickListener() {
+		/*updateButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				mapView.invalidate();
@@ -114,7 +127,7 @@ public class BT200CtrlDemoActivity extends Activity {
 				}
 				count++;
 			}
-		});
+		});*/
 
 
 
