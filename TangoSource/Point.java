@@ -25,5 +25,15 @@ public class Point {
   
  public String toString(){
   return "(" + x + "," + y + "," + z + ")";
- } 
+ }
+
+ @Override
+ public boolean equals(Object other) {
+  boolean result = false;
+  if (other instanceof Point) {
+   Point that = (Point) other;
+   result = x == that.x && y == that.y && z == that.z;
+  }
+  return result;
+ }
 }
