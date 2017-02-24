@@ -32,13 +32,14 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Surface;
 import android.view.WindowManager;
 
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.projecttango.tangosupport.TangoSupport;
@@ -51,6 +52,7 @@ import com.projecttango.tangosupport.TangoSupport;
 public class MotionTrackingActivity extends Activity {
 
     private static final String TAG = MotionTrackingActivity.class.getSimpleName();
+    private static final int NUM_CLUSTERS = 100;
 
     private RajawaliSurfaceView mSurfaceView;
     private MotionTrackingRajawaliRenderer mRenderer;
@@ -60,6 +62,9 @@ public class MotionTrackingActivity extends Activity {
     private AtomicBoolean mIsTangoPoseReady = new AtomicBoolean(false);
 
     private int mCurrentDisplayOrientation = 0;
+    private KMeans kmeans;
+    private HUD_User hud_user;
+    private HashMap<Integer, Plane> hm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +172,7 @@ public class MotionTrackingActivity extends Activity {
                     // located itself.
                     mIsTangoPoseReady.compareAndSet(false, true);
                 }
+                hud_user.update_pose(pose);
             }
 
             @Override
@@ -174,9 +180,24 @@ public class MotionTrackingActivity extends Activity {
                 // We are not using onXyzIjAvailable for this app.
             }
 
+            ArrayList<Point> to_point_list(float[] arr) {
+                ArrayList<Point> out = new ArrayList<Point>(arr.length/4);
+
+                for (int i = 0; i < arr.length; i += 4)
+                    out.add(new Point(arr[i], arr[i+1], arr[i+2]));
+
+                return out;
+            }
+
             @Override
             public void onPointCloudAvailable(final TangoPointCloudData pointCloudData) {
                 // We are not using onPointCloudAvailable for this app.
+                float[] arr = pointCloudData.points.array();
+                ArrayList<Point> points = to_point_list(arr);
+
+                kmeans = new KMeans(points, NUM_CLUSTERS); // generating planes for all clusters
+
+                List<Cluster> planes = kmeans.getPointsClusters();
             }
 
             @Override
