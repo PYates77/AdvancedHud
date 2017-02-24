@@ -19,6 +19,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,7 +61,11 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message inputMessage){
-                mainText.setText(inputMessage.obj.toString());
+                String msg = new String((byte []) inputMessage.obj);
+                Log.d("MessageHandler","Received Message: " + msg);
+                mainText.setText("");
+                mainText.setText(msg);
+
             }
         };
         mDecodeThreadPool = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),Runtime.getRuntime().availableProcessors(), 30,TimeUnit.SECONDS, mDecodeWorkQueue);
@@ -217,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Closes the connect socket and causes the thread to finish.
         public void cancel() {
+            mDecodeThreadPool.remove(socketThread);
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
@@ -259,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and return.
                 Log.d(TAG, "Unable to connect, closing socket");
-                mainText.setText("Unable to connect to " + mmSocket.getRemoteDevice().getName());
+                //mainText.setText("Unable to connect to " + mmSocket.getRemoteDevice().getName());
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
@@ -291,15 +298,15 @@ public class MainActivity extends AppCompatActivity {
     private class ConnectedThread implements Runnable {
         private final String TAG = "ConnectThread_Debug_Tag";
         private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
+        private final DataInputStream mmInStream;
+        private final DataOutputStream mmOutStream;
         private byte[] mmBuffer; // mmBuffer store for the stream
         private final String MY_TAG = "ConnectedThread";
 
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
+            DataInputStream tmpIn = null;
+            DataOutputStream tmpOut = null;
 
 
 
@@ -307,12 +314,12 @@ public class MainActivity extends AppCompatActivity {
             // member streams are final.
             Log.d(TAG, "Attempting to create input and output streams");
             try {
-                tmpIn = socket.getInputStream();
+                tmpIn = new DataInputStream(socket.getInputStream());
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when creating input stream", e);
             }
             try {
-                tmpOut = socket.getOutputStream();
+                tmpOut = new DataOutputStream(socket.getOutputStream());
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when creating output stream", e);
             }
@@ -324,56 +331,70 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             mmBuffer = new byte[1024];
             int numBytes; // bytes returned from read()
+            String testMessage = "Hello Bluetooth World! Message id: ";
+            int i = 0;
 
             Log.d(MY_TAG, "New Connection!");
 
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
                 try {
-                    mainText.setText("Attempting to send/recieve");
+                    //mainText.setText("Attempting to send/recieve");
                     Log.d(TAG, "Attempting to send message...");
-                    String testMessage = "Hello Bluetooth World!";
-                    write(testMessage.getBytes());
+                    i++;
+                    String msg = testMessage + Integer.toString(i);
+                    write(msg);
 
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
+
+
+
                     // Send the obtained bytes to the UI activity.
+
+                    //Message readMsg = mHandler.obtainMessage();
+                    //readMsg.obj = mmBuffer;
+                    //readMsg.sendToTarget();
+
                     Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
                             mmBuffer);
                     readMsg.sendToTarget();
 
-                    Log.d(TAG, "Attempting to write buffer: " + mmBuffer.toString() + " to screen.");
-                    mainText.setText(mmBuffer.toString());
+
+                    //Log.d(TAG, "Attempting to write buffer: " + mmBuffer. + " to screen.");
+                    //mainText.setText(mmBuffer.toString());
 
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
-                    mainText.setText("Input stream disconnected");
+                    //mainText.setText("Input stream disconnected");
                     break;
                 }
             }
         }
 
         // Call this from the main activity to send data to the remote device.
-        public void write(byte[] bytes) {
+        public void write(String bytes) {
             try {
-                mmOutStream.write(bytes);
+                mmOutStream.writeBytes(bytes);
 
+                // We do NOT want to send the OUTPUT message with the UI activity
                 // Share the sent message with the UI activity.
-                Message writtenMsg = mHandler.obtainMessage(
-                        MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
-                writtenMsg.sendToTarget();
+                //Message writtenMsg = mHandler.obtainMessage(
+                //        MessageConstants.MESSAGE_WRITE, -1, -1, bytes);
+                //writtenMsg.sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
 
                 // Send a failure message back to the activity.
-                Message writeErrorMsg =
-                        mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
-                Bundle bundle = new Bundle();
-                bundle.putString("toast",
-                        "Couldn't send data to the other device");
-                writeErrorMsg.setData(bundle);
-                mHandler.sendMessage(writeErrorMsg);
+                //For right now I don't care
+                //Message writeErrorMsg =
+                //        mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+                //Bundle bundle = new Bundle();
+                //bundle.putString("toast",
+                //        "Couldn't send data to the other device");
+                //writeErrorMsg.setData(bundle);
+                //mHandler.sendMessage(writeErrorMsg);
             }
         }
 
