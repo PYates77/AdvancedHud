@@ -1,7 +1,6 @@
-package com.projecttango.examples.java.motiontracking;
+package com.projecttango.examples.java.AdvancedHUD;
 
 
-import java.io.*;
 import java.util.*;
  
 public class KMeans {

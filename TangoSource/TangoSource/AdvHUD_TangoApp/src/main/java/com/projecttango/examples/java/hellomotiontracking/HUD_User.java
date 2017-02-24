@@ -1,4 +1,4 @@
-package com.projecttango.examples.java.motiontracking;
+package com.projecttango.examples.java.AdvancedHUD;
 
 import com.google.atap.tangoservice.TangoPoseData;
 
