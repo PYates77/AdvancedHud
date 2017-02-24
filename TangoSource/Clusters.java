@@ -1,12 +1,14 @@
+package com.projecttango.examples.java.motiontracking;
+
 import java.util.*;
  
-public class Clusters extends ArrayList<cluster> {
+public class Clusters extends ArrayList<Cluster> {
  
  private static final long serialVersionUID = 1L;
- private final List<point> allPoints;
+ private final List<Point> allPoints;
  private boolean isChanged;
   
- public Clusters(List<point> allPoints){
+ public Clusters(List<Point> allPoints){
   this.allPoints = allPoints;
  }
   

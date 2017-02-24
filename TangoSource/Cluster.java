@@ -1,15 +1,54 @@
+package com.projecttango.examples.java.motiontracking;
+
 import java.util.*;
  
 public class Cluster {
  
- private final List<point> points;
+ private final List<Point> points;
+ private Plane plane;
  private Point centroid;
   
  public Cluster(Point firstPoint) {
-  points = new ArrayList<point>();
+  points = new ArrayList<Point>();
   centroid = firstPoint;
+  calcPlane();
  }
-  
+
+ public void calcPlane() {
+
+  if (points.size() > 2) {
+   Point p1 = new Point(0, 0, 0);
+   Point p2 = new Point(0, 0, 0);
+   Point p3 = new Point(0, 0, 0);
+   double c1 = 0, c2 = 0, c3 = 0;
+
+   for (int i = 0; i < points.size(); i += 3) {
+    p1.add(points.get(i));
+    c1++;
+
+    if (i+1 < points.size()) {
+     p2.add(points.get(i+1));
+     c2++;
+    }
+
+    if (i+2 < points.size()) {
+     p3.add(points.get(i+2));
+     c3++;
+    }
+   }
+
+   p1 = new Point(p1.x/c1, p1.y/c1, p1.z/c1);
+   p2 = new Point(p2.x/c2, p2.y/c2, p2.z/c2);
+   p3 = new Point(p3.x/c3, p3.y/c3, p3.z/c3);
+
+   plane = new Plane(p1, p2, p3);
+  }
+ }
+
+ public Plane getePlane() {
+  return plane;
+ }
+
  public Point getCentroid(){
   return centroid;
  }
@@ -22,7 +61,7 @@ public class Cluster {
   centroid = new Point(newx / points.size(), newy / points.size(), newz / points.size());
  }
   
- public List<point> getPoints() {
+ public List<Point> getPoints() {
   return points;
  }
   

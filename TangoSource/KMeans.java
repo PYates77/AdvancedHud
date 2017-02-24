@@ -1,34 +1,38 @@
+package com.projecttango.examples.java.motiontracking;
+
+
 import java.io.*;
 import java.util.*;
  
 public class KMeans {
  
  private static final Random random = new Random();
- public final List<point> allPoints;
+ public final List<Point> allPoints;
  public final int k;
- private Clusters pointClusters; //the k Clusters
+ private Clusters PointClusters; //the k Clusters
  
- /**@param pointsFile : the csv file for input points
+ /*@param PointsFile : the csv file for input Points
   * @param k : number of clusters
   */
- public KMeans(String pointsFile, int k) {
-  if (k < 2)
+ public KMeans(ArrayList<Point> points, int k) {
+/*   if (k < 2)
    new Exception("The value of k should be 2 or more.").printStackTrace();
   this.k = k;
-  List<point> points = new ArrayList<point>();
+  List<Point> Points = new ArrayList<Point>();
   try {
    InputStreamReader read = new InputStreamReader(
-     new FileInputStream(pointsFile), "UTF-8");
+     new FileInputStream(PointsFile), "UTF-8");
    BufferedReader reader = new BufferedReader(read);
    String line;
    while ((line = reader.readLine()) != null) 
-    points.add(getPointByLine(line));
+    Points.add(getPointByLine(line));
    reader.close();
     
   } catch (IOException e) {
    e.printStackTrace();
-  }
-  this.allPoints = Collections.unmodifiableList(points);
+  } */
+  this.k = k;
+  this.allPoints = new ArrayList<Point>(points);
  }
  
  private Point getPointByLine(String line) {
@@ -40,16 +44,16 @@ public class KMeans {
  /**step 1: get random seeds as initial centroids of the k clusters
   */
  private void getInitialKRandomSeeds(){
-  pointClusters = new Clusters(allPoints);
-  List<point> kRandomPoints = getKRandomPoints();
+  PointClusters = new Clusters(allPoints);
+  List<Point> kRandomPoints = getKRandomPoints();
   for (int i = 0; i < k; i++){
    kRandomPoints.get(i).setIndex(i);
-   pointClusters.add(new Cluster(kRandomPoints.get(i)));
+   PointClusters.add(new Cluster(kRandomPoints.get(i)));
   } 
  }
   
- private List<point> getKRandomPoints() {
-  List<point> kRandomPoints = new ArrayList<point>();
+ private List<Point> getKRandomPoints() {
+  List<Point> kRandomPoints = new ArrayList<Point>();
   boolean[] alreadyChosen = new boolean[allPoints.size()];
   int size = allPoints.size();
   for (int i = 0; i < k; i++) {
@@ -65,36 +69,36 @@ public class KMeans {
   return kRandomPoints;
  }
   
- /**step 2: assign points to initial Clusters
+ /**step 2: assign Points to initial Clusters
   */
  private void getInitialClusters(){
-  pointClusters.assignPointsToClusters();
+  PointClusters.assignPointsToClusters();
  }
   
  /** step 3: update the k Clusters until no changes in their members occur
   */
  private void updateClustersUntilNoChange(){
-  boolean isChanged = pointClusters.updateClusters();
+  boolean isChanged = PointClusters.updateClusters();
   while (isChanged)
-   isChanged = pointClusters.updateClusters();
+   isChanged = PointClusters.updateClusters();
  }
   
  /**do K-means clustering with this method
   */
- public List<cluster> getPointsClusters() {
-  if (pointClusters == null) {
+ public List<Cluster> getPointsClusters() {
+  if (PointClusters == null) {
    getInitialKRandomSeeds();
    getInitialClusters();
    updateClustersUntilNoChange();
   }
-  return pointClusters;
+  return PointClusters;
  }
   
  public static void main(String[] args) {
-  String pointsFilePath = "files/randomPoints.csv";
-  KMeans kMeans = new KMeans(pointsFilePath, 6);
-  List<cluster> pointsClusters = kMeans.getPointsClusters();
+  /*String PointsFilePath = "files/randomPoints.csv";
+  KMeans kMeans = new KMeans(PointsFilePath, 6);
+  List<Cluster> PointsClusters = kMeans.getPointsClusters();
   for (int i = 0 ; i < kMeans.k; i++)
-   System.out.println("Cluster " + i + ": " + pointsClusters.get(i));
+   System.out.println("Cluster " + i + ": " + PointsClusters.get(i));*/
  }
 }

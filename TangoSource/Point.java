@@ -1,3 +1,5 @@
+package com.projecttango.examples.java.motiontracking;
+
 public class Point {
   
  private int index = -1; //denotes which Cluster it belongs to
@@ -8,7 +10,13 @@ public class Point {
   this.y = y;
   this.z = z;
  }
-  
+
+ public void add(Point p) {
+  x += p.x;
+  y += p.y;
+  z += p.z;
+ }
+
  public Double getSquareOfDistance(Point anotherPoint){
   return  (x - anotherPoint.x) * (x - anotherPoint.x)
     + (y - anotherPoint.y) *  (y - anotherPoint.y) 
