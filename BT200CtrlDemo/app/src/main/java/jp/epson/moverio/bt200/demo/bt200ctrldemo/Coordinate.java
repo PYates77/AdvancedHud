@@ -4,8 +4,8 @@ package jp.epson.moverio.bt200.demo.bt200ctrldemo;
  * Created by Akshay on 2/15/2017.
  */
 public class Coordinate {
-    private double coordx;
-    private double coordy;
+    public double coordx;
+    public double coordy;
     public Coordinate(){
         coordx = 0;
         coordy = 0;

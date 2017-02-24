@@ -18,8 +18,8 @@ public class Wall {
     public Wall(Coordinate start, Coordinate end){
         startX = (int) start.getCoordinates()[0];
         startY = (int) start.getCoordinates()[1];
-        endX = (int) start.getCoordinates()[0];
-        endY = (int) start.getCoordinates()[1];
+        endX = (int) end.getCoordinates()[0];
+        endY = (int) end.getCoordinates()[1];
     }
     public Wall(int sx, int sy, int ex, int ey){
         startX = sx;
