@@ -1,36 +1,30 @@
 package jp.epson.moverio.bt200.demo.bt200ctrldemo;
 
-import jp.epson.moverio.bt200.AudioControl;
-import jp.epson.moverio.bt200.DisplayControl;
-import jp.epson.moverio.bt200.SensorControl;
-
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import java.util.Random;
-
-import jp.epson.moverio.bt200.demo.bt200ctrldemo.R;
 
 public class BT200CtrlDemoActivity extends Activity {
 	private String TAG = "Bt2CtrlDemoActivity";
-	private LineSeqDrawable lineDrawable = new LineSeqDrawable();
+	private MapDrawable lineDrawable = new MapDrawable();
 	private ImageView mapView;
 	//private Button updateButton;
 	private Button rotButton;
+	private Button moveLeft;
+	private Button moveRight;
+	private Button moveUp;
+	private Button moveDown;
+	private CheckBox mapMode;
 	private int count = 0;
 	private int rotationDegree = 0;
+
 
 
 	/*
@@ -83,9 +77,27 @@ public class BT200CtrlDemoActivity extends Activity {
 
 		lineDrawable.setWallArray(walls);
 		mapView = (ImageView) findViewById(R.id.mapView);
-		//updateButton = (Button) findViewById(R.id.updateButton);
+		moveLeft = (Button)findViewById(R.id.leftButton);
+		moveRight = (Button)findViewById(R.id.rightButton);
+		moveUp = (Button)findViewById(R.id.upButton);
+		moveDown = (Button)findViewById(R.id.downButton);
+		mapMode = (CheckBox) findViewById(R.id.modeBox);
 		rotButton = (Button)findViewById(R.id.rotateButton);
 		mapView.setImageDrawable(lineDrawable);
+
+		mapMode.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.invalidate();
+				if(((CheckBox)view).isChecked()){
+					lineDrawable.setMapMode(true);
+				}
+				else {
+					lineDrawable.setMapMode(false);
+				}
+				mapView.setImageDrawable(lineDrawable);
+			}
+		});
 
 		rotButton.setOnClickListener(new View.OnClickListener() {
 			@Override

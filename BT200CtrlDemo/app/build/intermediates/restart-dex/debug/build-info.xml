@@ -1,37 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <instant-run
-    abi="armeabi-v7a,armeabi"
-    api-level="19"
-    density="xhdpi"
+    abi="x86"
+    api-level="22"
+    density="560dpi"
     format="8"
     plugin-version="2.2.3"
-    timestamp="6200781871552"
+    timestamp="339432214442296"
     token="-5854997469873760866"
-    verifier="FULL_BUILD_REQUESTED" >
+    verifier="COMPATIBLE" >
 
     <task
         name="javac"
-        duration="187" />
+        duration="140" />
     <task
         name="instant-run-dex"
-        duration="0" />
+        duration="369" />
     <task
         name="instant-run-transform"
-        duration="149" />
+        duration="38" />
     <task
         name="verifier"
-        duration="29" />
+        duration="4" />
 
     <artifact
-        location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\outputs\apk\app-debug.apk"
-        type="MAIN" />
+        location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\reload-dex\debug\classes.dex"
+        type="RELOAD_DEX" />
 
     <build
-        timestamp="6200781871552"
+        timestamp="338035497280977"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\outputs\apk\app-debug.apk"
             type="MAIN" />
+    </build>
+    <build
+        timestamp="338090336731185"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\instant-run-resources\resources-debug.ir.ap_"
+            type="RESOURCES" />
+    </build>
+    <build
+        timestamp="339060549382895"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\builds\debug\339060549382895\classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        timestamp="339107360692200"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\builds\debug\339107360692200\classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        timestamp="339163681624571"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\builds\debug\339163681624571\classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        timestamp="339208251613110"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\builds\debug\339208251613110\classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        timestamp="339319949060444"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\builds\debug\339319949060444\classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        timestamp="339353921738070"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\builds\debug\339353921738070\classes.dex"
+            type="RELOAD_DEX" />
+    </build>
+    <build
+        timestamp="339432214442296"
+        verifier="COMPATIBLE" >
+        <artifact
+            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\reload-dex\debug\classes.dex"
+            type="RELOAD_DEX" />
     </build>
 
 </instant-run>
