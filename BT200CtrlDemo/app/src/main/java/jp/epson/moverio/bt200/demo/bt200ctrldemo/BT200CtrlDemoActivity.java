@@ -55,8 +55,8 @@ public class BT200CtrlDemoActivity extends Activity {
 
 		//Pregenerated Wall
 		Wall walls[] = new Wall[8];
-		Coordinate A = new Coordinate(90,300);
-		Coordinate B = new Coordinate(175,300);
+		Coordinate A = new Coordinate(90,400);
+		Coordinate B = new Coordinate(175,400);
 		Coordinate C = new Coordinate(90,140);
 		Coordinate D = new Coordinate(175,190);
 		Coordinate E = new Coordinate(10,140);
@@ -84,6 +84,38 @@ public class BT200CtrlDemoActivity extends Activity {
 		mapMode = (CheckBox) findViewById(R.id.modeBox);
 		rotButton = (Button)findViewById(R.id.rotateButton);
 		mapView.setImageDrawable(lineDrawable);
+
+		moveUp.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.invalidate();
+				lineDrawable.moveY+= 20;
+			}
+		});
+
+		moveDown.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.invalidate();
+				lineDrawable.moveY-= 20;
+			}
+		});
+
+		moveLeft.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.invalidate();
+				lineDrawable.moveX+=20;
+			}
+		});
+
+		moveRight.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mapView.invalidate();
+				lineDrawable.moveX-=20;
+			}
+		});
 
 		mapMode.setOnClickListener(new View.OnClickListener() {
 			@Override
