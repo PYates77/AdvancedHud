@@ -45,6 +45,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
+    private static final int NUM_CLUSTERS = 10;
 
     private Tango mTango;
     private TangoConfig mConfig;
@@ -52,7 +53,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     // Yotam's Classes
     private HUD_User hud_user = new HUD_User();
     private KMeans kmeans;
-    private static final int NUM_CLUSTERS = 10;
+    private ArrayList<Wall> wallList = new ArrayList<Wall>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +168,22 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return out;
             }
 
+            private void modifyWallList(ArrayList<Cluster> a) {
+                for (int i = 0; i < a.size(); i++) {
+                    boolean found = false;
+                    for (int j = 0; j < wallList.size() && !found; j++) {
+                        if (wallList.get(j).getPlane().calcInterPlaneAngle(a.get(i).getPlane()) < angleMargin) {
+                            wallList.get(j).update(a.get(i));
+                            found = true;
+                        }
+                    }
+                    
+                    if (!found) {
+                        wallList.add(new Wall(a.get(i)));
+                    }
+                }
+            }
+            
             @Override
             public void onPointCloudAvailable(final TangoPointCloudData pointCloudData) {
 
@@ -183,8 +200,11 @@ public class HelloDepthPerceptionActivity extends Activity {
                     } else {
 //                        Log.i(TAG, kmeans.allPoints.toString());
                         List<Cluster> planes = kmeans.getPointsClusters();
-                        planes.get(0).calcPlane();
-                        Log.i(TAG, planes.get(0).getPlane().toString());
+                        modifyWallList(planes);
+                        /*if (planes.size > 0) {
+                          planes.get(0).calcPlane();
+                          Log.i(TAG, planes.get(0).getPlane().toString());
+                        }*/
                     }
 
                 }
