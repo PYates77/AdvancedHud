@@ -13,23 +13,6 @@
         android:layout_alignParentTop="true"/>
 
     <Button
-        android:text="Rotate Walls"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rotateButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
-
-    <Button
-        android:text="RIGHT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/leftButton"
-        android:layout_marginLeft="24dp"
-        android:id="@+id/rightButton" />
-
-    <Button
         android:text="UP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,29 +22,28 @@
         android:id="@+id/upButton" />
 
     <Button
-        android:text="DOWN"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/upButton"
-        android:layout_alignRight="@+id/rightButton"
-        android:id="@+id/downButton" />
-
-    <CheckBox
-        android:text="User Locked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/downButton"
-        android:layout_alignParentRight="true"
-        android:id="@+id/modeBox"
-        android:checked="true"
-        android:textColor="@android:color/white" />
-
-    <Button
         android:text="LEFT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/leftButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true" />
+
+    <Button
+        android:text="DOWN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/downButton"
+        android:layout_above="@+id/rightButton"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="23dp"/>
+
+    <Button
+        android:text="RIGHT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rightButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
