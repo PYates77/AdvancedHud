@@ -3,15 +3,6 @@
 
     <item
         is-multidex="true"
-        jar="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="22.0.1"
-        sha1="ddf831cafc008a352e6638a9c402a49a8264035a">
-        <dex dex="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_ccd9dc7b7e9be6531933ed3702e40bcd96b61df3\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\libs\BT200Ctrl.jar"
         jumboMode="true"
         optimize="true"
@@ -21,11 +12,20 @@
     </item>
     <item
         is-multidex="true"
+        jar="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="22.0.1"
+        sha1="e6c4f7de68214ff3092fbee166eb6ea0586b7f1f">
+        <dex dex="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_ccd9dc7b7e9be6531933ed3702e40bcd96b61df3\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="22.0.1"
-        sha1="e712f4e57eaee5a638035464ae5b1130e7632aaf">
+        sha1="92d18ab59f06f1789e962ec6f481c8c2c793e2f8">
         <dex dex="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200CtrlDemo\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_afc3a894a55ab12c642effd4b6969a21296b056c\classes.dex" />
     </item>
     <item
