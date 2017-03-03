@@ -17,6 +17,7 @@
 package pt.advHUD;
 
 import android.app.Activity;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -172,12 +173,30 @@ public class TangoMainActivity extends Activity {
                 orientation[0] + ", " + orientation[1] + ", " +
                 orientation[2] + ", " + orientation[3]+"\n");
         //CHECK IF NORM OF QUATERNION IS 1
-        float a = orientation[0];
-        float b = orientation[1];
-        float c = orientation[2];
-        float d = orientation[3];
-        float norm = (float)Math.sqrt((a*a)+(b*b)+(c*c)+(d*d));
+        //ASSUMING QUATERNION FORMAT: w+x+y+z
+        float w = orientation[0];
+        float x = orientation[1];
+        float y = orientation[2];
+        float z = orientation[3];
+        float norm = (float)Math.sqrt((w*w)+(x*x)+(y*y)+(z*z));
         stringBuilder.append("Norm of Quaternion: "+norm+"\n");
+        //Extract Rotation Matrix
+        float rotMatrix[] = new float[9];
+        rotMatrix[0] = 1-2*(y*y)-2*(z*z);
+        rotMatrix[1] = (2*x*y)+(2*z*w);
+        rotMatrix[2] = (2*x*z)-(2*y*w);
+        rotMatrix[3] = (2*x*y)-(2*z*w);
+        rotMatrix[4] = 1-(2*x*x)-(2*z*z);
+        rotMatrix[5] = (2*y*z)+(2*x*w);
+        rotMatrix[6] = (2*x*z)+(2*y*w);
+        rotMatrix[7] = (2*y*z)-(2*x*w);
+        rotMatrix[8] = 1-(2*x*x)-(2*y*y);
+        float euOrient[] = new float[3];
+        SensorManager.getOrientation(rotMatrix,euOrient);
+        float yaw = euOrient[0];
+        float pitch = euOrient[1];
+        float roll = euOrient[2];
+        stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
         Log.i(TAG, stringBuilder.toString());
     }
 
