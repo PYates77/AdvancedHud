@@ -1,5 +1,10 @@
 package jp.epson.moverio.bt200.demo.bt200ctrldemo;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -9,23 +14,29 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class BT200CtrlDemoActivity extends Activity {
+public class BT200CtrlDemoActivity extends Activity implements SensorEventListener {
 	private String TAG = "Bt2CtrlDemoActivity";
 	private MapDrawable lineDrawable = new MapDrawable();
 	private ImageView mapView;
 	//private Button updateButton;
-	private Button rotButton;
+	//private Button rotButton;
 	private Button moveLeft;
 	private Button moveRight;
 	private Button moveUp;
 	private Button moveDown;
-	private CheckBox mapMode;
+	//private CheckBox mapMode;
 	private int count = 0;
 	private int rotationDegree = 0;
 
-
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private Sensor mMagnetometer;
+	private float mGravity[];
+	private float mGeomagnetic[];
+	private double azimuth;
 
 	/*
 	private ToggleButton mToggleButton_2d3d = null;
@@ -44,6 +55,10 @@ public class BT200CtrlDemoActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bt2_ctrl_demo);
+
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
 		getActionBar().hide();
 
@@ -81,8 +96,8 @@ public class BT200CtrlDemoActivity extends Activity {
 		moveRight = (Button)findViewById(R.id.rightButton);
 		moveUp = (Button)findViewById(R.id.upButton);
 		moveDown = (Button)findViewById(R.id.downButton);
-		mapMode = (CheckBox) findViewById(R.id.modeBox);
-		rotButton = (Button)findViewById(R.id.rotateButton);
+		//mapMode = (CheckBox) findViewById(R.id.modeBox);
+		//rotButton = (Button)findViewById(R.id.rotateButton);
 		mapView.setImageDrawable(lineDrawable);
 
 		moveUp.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +132,7 @@ public class BT200CtrlDemoActivity extends Activity {
 			}
 		});
 
-		mapMode.setOnClickListener(new View.OnClickListener() {
+		/*mapMode.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				mapView.invalidate();
@@ -140,39 +155,7 @@ public class BT200CtrlDemoActivity extends Activity {
 				lineDrawable.setDegreeRotation(rotationDegree);
 				lineDrawable.setWallArray(w);
 			}
-		});
-
-
-		/*updateButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mapView.invalidate();
-				if(count%2 == 0){
-					Wall[] newWalls = new Wall[3];
-					for (int i=0; i < 3; i++){
-						Random r = new Random();
-						newWalls[i] = new Wall();
-						newWalls[i].setCoordinates(r.nextInt(300),r.nextInt(300),r.nextInt(300),r.nextInt(300));
-					}
-					rotationDegree = 0;
-					lineDrawable.setDegreeRotation(rotationDegree);
-					lineDrawable.setWallArray(newWalls);
-				}
-				else {
-					Wall[] oddWalls = new Wall[4];
-					for (int i=0; i < 4; i++){
-						Random r = new Random();
-						oddWalls[i] = new Wall();
-						oddWalls[i].setCoordinates(r.nextInt(300),r.nextInt(300),r.nextInt(300),r.nextInt(300));
-					}
-					rotationDegree = 0;
-					lineDrawable.setDegreeRotation(rotationDegree);
-					lineDrawable.setWallArray(oddWalls);
-				}
-				count++;
-			}
 		});*/
-
 
 
 		/*mDisplayControl = new DisplayControl(this);
@@ -288,4 +271,41 @@ public class BT200CtrlDemoActivity extends Activity {
 		return true;
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mSensorManager.unregisterListener(this);
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent sensorEvent) {
+		if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+			mGravity = sensorEvent.values;
+		if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+			mGeomagnetic = sensorEvent.values;
+		if (mGravity != null && mGeomagnetic != null) {
+			float R[] = new float[9];
+			float I[] = new float[9];
+			boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+			if (success) {
+				float orientation[] = new float[3];
+				SensorManager.getOrientation(R, orientation);
+				azimuth = Math.toDegrees(orientation[0]); // orientation contains: azimuth, pitch, and roll
+				mapView.invalidate();
+				lineDrawable.setDegreeRotation((int)(-1*azimuth));
+			}
+		}
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int i) {
+
+	}
 }
