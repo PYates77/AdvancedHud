@@ -177,13 +177,13 @@ public class HelloDepthPerceptionActivity extends Activity {
                             found = true;
                         }
                     }
-                    
+
                     if (!found) {
                         wallList.add(new Wall(a.get(i)));
                     }
                 }
             }
-            
+
             @Override
             public void onPointCloudAvailable(final TangoPointCloudData pointCloudData) {
 
@@ -196,7 +196,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 
                     kmeans = new KMeans(points, NUM_CLUSTERS); // generating planes for all clusters
                     if (kmeans.allPoints == null) {
-                        Log.i(TAG, "kmeans.allPoints is null");
+                        Log.i(TAG, "kmeans.allPoints is NULL");
                     } else {
 //                        Log.i(TAG, kmeans.allPoints.toString());
                         List<Cluster> planes = kmeans.getPointsClusters();
@@ -250,7 +250,7 @@ public class HelloDepthPerceptionActivity extends Activity {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Point count: " + pointCloudData.numPoints);
         stringBuilder.append(". Average depth (m): " +
-            calculateAveragedDepth(pointCloudData.points, pointCloudData.numPoints));
+                calculateAveragedDepth(pointCloudData.points, pointCloudData.numPoints));
         Log.i(TAG, stringBuilder.toString());
     }
 
