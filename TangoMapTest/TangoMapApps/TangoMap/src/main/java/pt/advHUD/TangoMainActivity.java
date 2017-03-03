@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.atap.tangoservice.Tango;
@@ -33,6 +34,8 @@ import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPointCloudData;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -193,9 +196,9 @@ public class TangoMainActivity extends Activity {
         rotMatrix[8] = 1-(2*x*x)-(2*y*y);
         float euOrient[] = new float[3];
         SensorManager.getOrientation(rotMatrix,euOrient);
-        float yaw = euOrient[0];
-        float pitch = euOrient[1];
-        float roll = euOrient[2];
+        float yaw = (float)Math.toDegrees(euOrient[0]);
+        float pitch = (float)Math.toDegrees(euOrient[1]);
+        float roll = (float)Math.toDegrees(euOrient[2]);
         stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
         Log.i(TAG, stringBuilder.toString());
     }
