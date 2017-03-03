@@ -15,7 +15,7 @@ public class Wall {
     }
     
     public double[] sendData() {
-        double[] out = {0, 0, 0, 0};
+        double[] out = {edge1.x, edge1.y, edge2.x, edge2.y};
         
         return out;
     }
