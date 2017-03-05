@@ -17,6 +17,12 @@ public class Point {
   z += p.z;
  }
 
+ public double dist2D(Point p) {
+   double out = 0;
+   
+   return Math.sqrt(Math.pow(x + p.x, 2) + Math.pow(y + p.y, 2));
+ }
+  
  public Double getSquareOfDistance(Point anotherPoint){
   return  (x - anotherPoint.x) * (x - anotherPoint.x)
     + (y - anotherPoint.y) *  (y - anotherPoint.y) 
