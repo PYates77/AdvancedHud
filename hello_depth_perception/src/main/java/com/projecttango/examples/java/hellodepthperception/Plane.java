@@ -16,10 +16,20 @@ public class Plane {
     shift = a.x*direction.x + a.y*direction.y + a.z*direction.z;
   }
 
+  void setDirection(Point p) {
+    direction.x = p.x;
+    direction.y = p.y;
+    direction.z = p.z;
+  }
+  
   Point getDirection() {
     return direction;
   }
 
+  void setShift(double s) {
+    shift = s;
+  }
+  
   double getShift() {
     return shift;
   }
