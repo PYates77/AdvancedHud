@@ -8,9 +8,13 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
+import java.util.Map;
+
 /**
  * Created by Akshay on 2/15/2017.
  */
+
+//USE ONLY USER USER LOCKED MODE
 public class MapDrawable extends Drawable {
     private int mBackgroundColor;
     private int mStrokeWidth;
@@ -20,7 +24,7 @@ public class MapDrawable extends Drawable {
     private int width = 300;
     public int moveX = 0;
     public int moveY = 0;
-    private boolean userLocked = true;
+    private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     public Wall[] mWalls;
 
     public MapDrawable(){
@@ -30,12 +34,46 @@ public class MapDrawable extends Drawable {
         mDegreeRotation = 0;
     }
 
+    public MapDrawable(int demoCode){
+        if (demoCode == 1234){
+            defaultSetup();
+        }
+    }
+
     public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, Wall[] walls){
         mBackgroundColor = backgroundColor;
         mStrokeColor = strokeColor;
         mStrokeWidth = strokeWidth;
         mWalls = walls;
         mDegreeRotation = 0;
+    }
+
+    public void defaultSetup(){
+        mBackgroundColor = Color.DKGRAY;
+        mStrokeColor = Color.LTGRAY;
+        mStrokeWidth = 10;
+        mDegreeRotation = 0;
+
+        //Demo Wall Map
+        mWalls = new Wall[8];
+        Coordinate A = new Coordinate(90,400);
+        Coordinate B = new Coordinate(175,400);
+        Coordinate C = new Coordinate(90,140);
+        Coordinate D = new Coordinate(175,190);
+        Coordinate E = new Coordinate(10,140);
+        Coordinate F = new Coordinate(270,190);
+        Coordinate G = new Coordinate(10,90);
+        Coordinate H = new Coordinate(90,90);
+        Coordinate I = new Coordinate(90,40);
+        Coordinate J = new Coordinate(270,40);
+        mWalls[0] = new Wall(A,C);
+        mWalls[1] = new Wall(C,E);
+        mWalls[2] = new Wall(G,H);
+        mWalls[3] = new Wall(H,I);
+        mWalls[4] = new Wall(I,J);
+        mWalls[5] = new Wall(J,F);
+        mWalls[6] = new Wall(F,D);
+        mWalls[7] = new Wall(D,B);
     }
 
     public void setMapMode(boolean modeFlag){

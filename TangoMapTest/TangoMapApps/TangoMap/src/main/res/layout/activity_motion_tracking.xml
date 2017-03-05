@@ -11,21 +11,46 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animationCache="true"
+    android:background="@android:color/black">
 
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="@string/text" />
+    <ImageView
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/mapView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:background="@android:color/black" />
 
-   <TextView
-       android:text="0"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:id="@+id/rollView"
-       android:textColor="@android:color/black" />
+    <TextView
+        android:text="Z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/zView"
+        android:textColor="@android:color/white" />
 
-</LinearLayout>
+    <TextView
+        android:text="Y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/zView"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/yView"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:text="X"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/yView"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/xView"
+        android:textColor="@android:color/white" />
+</RelativeLayout>
