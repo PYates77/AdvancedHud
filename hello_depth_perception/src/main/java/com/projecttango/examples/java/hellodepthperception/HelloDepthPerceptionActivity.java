@@ -46,6 +46,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
+    private static final double angleMargin = Math.PI / 3.0;
 
     private Tango mTango;
     private TangoConfig mConfig;
@@ -169,17 +170,38 @@ public class HelloDepthPerceptionActivity extends Activity {
             }
 
             private void modifyWallList(ArrayList<Cluster> a) {
-                for (int i = 0; i < a.size(); i++) {
-                    boolean found = false;
-                    for (int j = 0; j < wallList.size() && !found; j++) {
-                        if (wallList.get(j).getPlane().calcInterPlaneAngle(a.get(i).getPlane()) < angleMargin) {
-                            wallList.get(j).update(a.get(i));
-                            found = true;
-                        }
-                    }
+                if (a == null)
+                    return;
 
-                    if (!found) {
-                        wallList.add(new Wall(a.get(i)));
+                for (int i = 0; i < a.size(); i++) {
+                    a.get(i).calcPlane();
+                    if (a.get(i).getPlane() != null) {
+                        boolean found = false;
+                        for (int j = 0; j < wallList.size() && !found; j++) {
+                            if (wallList.get(j).getPlane() != null) {
+                                double angle = wallList.get(j).getPlane().calcInterPlaneAngle(a.get(i).getPlane());
+//                                if (angle > Math.PI/6.0) {
+//                                    Log.i(TAG, new Double(angle).toString());
+//                                    Log.i(TAG, wallList.get(j).getPlane().toString());
+//                                    Log.i(TAG, a.get(i).getPlane().toString());
+//                                }
+                                if (angle < angleMargin) {
+//                                    Log.i(TAG, " cent = " + a.get(i).getCentroid().toString());
+//                                    Log.i(TAG, " e1 = " + wallList.get(j).getEdge1().toString());
+//                                    if (wallList.get(j).isValid())
+//                                        Log.i(TAG, " e2 = " + wallList.get(j).getEdge2().toString());
+
+                                    wallList.get(j).update(a.get(i));
+//                                    Log.i(TAG, " length = " + new Double(wallList.get(j).getLength()).toString());
+//                                    Log.i(TAG, " ");
+                                    found = true;
+                                }
+                            }
+                        }
+
+                        if (!found) {
+                            wallList.add(new Wall(a.get(i)));
+                        }
                     }
                 }
             }
@@ -194,17 +216,34 @@ public class HelloDepthPerceptionActivity extends Activity {
                     ArrayList<Point> points = to_point_list(arr);
                     points = sample_array(points);
 
+//                    ArrayList<Point> points = new ArrayList<Point>();
+
+//                    for (int i = 0; i < 1000; i++) {
+//                        points.add(new Point(Math.random(), Math.random(), 0));
+//                    }
+
                     kmeans = new KMeans(points, NUM_CLUSTERS); // generating planes for all clusters
                     if (kmeans.allPoints == null) {
                         Log.i(TAG, "kmeans.allPoints is NULL");
                     } else {
-//                        Log.i(TAG, kmeans.allPoints.toString());
-                        List<Cluster> planes = kmeans.getPointsClusters();
+//                        Point p1 = new Point(0, 0, 0);
+//                        Point p2 = new Point(1, 0, 0);
+//                        Point p3 = new Point(0, 1, 0);
+//                        Point p4 = new Point(0, 0, 1);
+////                        Plane plane = new Plane(p1, p2, p3);
+////                        Plane plane2 = new Plane(p1, p4, p3);
+//                        Log.i(TAG, new Double(p1.dist2D(p3)).toString());
+//                      //Log.i(TAG, kmeans.allPoints.toString());
+                        ArrayList<Cluster> planes = (ArrayList<Cluster>) kmeans.getPointsClusters();
                         modifyWallList(planes);
-                        /*if (planes.size > 0) {
-                          planes.get(0).calcPlane();
-                          Log.i(TAG, planes.get(0).getPlane().toString());
-                        }*/
+//
+//                        //Log.i(TAG, new Boolean(planes == null).toString());
+//
+                        for (int i = 0; i < wallList.size(); i++) {
+                            if (wallList.get(i).isValid())
+                                Log.i(TAG, "wall " + i + " length = " + new Double(wallList.get(i).getLength()).toString());
+                        }
+//                        //Log.i(TAG, new Integer(wallList.size()).toString());
                     }
 
                 }
