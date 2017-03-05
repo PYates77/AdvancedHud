@@ -14,8 +14,16 @@ public class Plane {
     Point ac = new Point(a.x - c.x, a.y - c.y, a.z - c.z);
     direction = new Point(ab.y*ac.z - ab.z*ac.y, ab.z*ac.x - ab.x*ac.z, ab.x*ac.y - ab.y*ac.x);
     shift = a.x*direction.x + a.y*direction.y + a.z*direction.z;
+    normalize();
   }
 
+  void normalize() {
+    direction.x = direction.x/shift;
+    direction.y = direction.y/shift;
+    direction.z = direction.z/shift;
+    shift = 1;
+  }
+  
   void setDirection(Point p) {
     direction.x = p.x;
     direction.y = p.y;
