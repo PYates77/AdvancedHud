@@ -37,9 +37,9 @@ public class Cluster {
     }
    }
 
-   p1 = new Point(p1.x/c1, p1.y/c1, p1.z/c1);
-   p2 = new Point(p2.x/c2, p2.y/c2, p2.z/c2);
-   p3 = new Point(p3.x/c3, p3.y/c3, p3.z/c3);
+   if (c1 != 0) p1 = new Point(p1.x/c1, p1.y/c1, p1.z/c1);
+   if (c2 != 0) p2 = new Point(p2.x/c2, p2.y/c2, p2.z/c2);
+   if (c3 != 0) p3 = new Point(p3.x/c3, p3.y/c3, p3.z/c3);
 
    plane = new Plane(p1, p2, p3);
   }

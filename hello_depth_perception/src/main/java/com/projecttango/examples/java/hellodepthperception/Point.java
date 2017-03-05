@@ -20,7 +20,7 @@ public class Point {
  public double dist2D(Point p) {
    double out = 0;
    
-   return Math.sqrt(Math.pow(x + p.x, 2) + Math.pow(y + p.y, 2));
+   return Math.sqrt(Math.pow(x - p.x, 2) + Math.pow(y - p.y, 2));
  }
   
  public Double getSquareOfDistance(Point anotherPoint){

@@ -17,14 +17,16 @@ public class Plane {
     normalize();
   }
 
-  void normalize() {
-    direction.x = direction.x/shift;
-    direction.y = direction.y/shift;
-    direction.z = direction.z/shift;
-    shift = 1;
+  public void normalize() {
+    if (shift != 0) {
+      direction.x = direction.x / shift;
+      direction.y = direction.y / shift;
+      direction.z = direction.z / shift;
+      shift = 1;
+    }
   }
   
-  void setDirection(Point p) {
+  public void setDirection(Point p) {
     direction.x = p.x;
     direction.y = p.y;
     direction.z = p.z;
@@ -34,17 +36,20 @@ public class Plane {
     return direction;
   }
 
-  void setShift(double s) {
+  public void setShift(double s) {
     shift = s;
   }
   
-  double getShift() {
+  public double getShift() {
     return shift;
   }
 
   // Author: Ryan Stevens
   // returns the acute angle between the planes in radians
-  public double calcInterPlaneAngle(Plane inputPlane){
+  public double calcInterPlaneAngle(Plane inputPlane) throws NullPointerException {
+    if (inputPlane == null)
+      throw new NullPointerException("Null pointer exception in calcInterPlaneAngle()");
+
     return Math.acos(Math.abs((this.direction.x * inputPlane.direction.x) + (this.direction.y * inputPlane.direction.y) + (this.direction.z * inputPlane.direction.z) )
             / ( Math.sqrt((this.direction.x * this.direction.x) + (this.direction.y * this.direction.y) + (this.direction.z * this.direction.z))
                 * Math.sqrt((inputPlane.direction.x * inputPlane.direction.x) + (inputPlane.direction.y * inputPlane.direction.y) + (inputPlane.direction.z * inputPlane.direction.z))
