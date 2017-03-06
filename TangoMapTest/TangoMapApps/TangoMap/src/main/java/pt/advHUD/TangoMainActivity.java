@@ -51,7 +51,7 @@ public class TangoMainActivity extends Activity {
     private TangoConfig mConfig;
     private float yaw = 0;
     private float pitch = 0;
-    private float roll = -300;
+    private float roll = -300; //bogus value so NULLPTREXCEPTION doesn't occur
     private float qx;
     private float qy;
     private float qz;
@@ -75,7 +75,7 @@ public class TangoMainActivity extends Activity {
                 TangoMainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(translation[0] != 0 && translation[1] != 0 && translation[2] != 0) {
+                        if(roll != -300 && translation[0] != 0 && translation[1] != 0 && translation[2] != 0) {
                             mapView.invalidate();
                             mapDrawable.setDegreeRotation((int)(-1*roll));
                             mapDrawable.moveX = (int)(translation[0]*-50);
@@ -84,7 +84,7 @@ public class TangoMainActivity extends Activity {
                     }
                 });
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(500); //2Hz refresh rate
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -97,6 +97,7 @@ public class TangoMainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_motion_tracking);
 
+        //"bogus" values so that NULLPTREXCEPTION doesn't occur
         translation[0] = 0;
         translation[1] = 0;
         translation[2] = 0;
@@ -240,6 +241,7 @@ public class TangoMainActivity extends Activity {
         rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
         rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
         rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
+        //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
         roll = (float)Math.toDegrees(euOrient[2]);
         //stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
