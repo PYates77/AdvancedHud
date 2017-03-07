@@ -28,6 +28,8 @@ import com.google.atap.tangoservice.TangoPointCloudData;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
 
+import org.w3c.dom.Text;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
