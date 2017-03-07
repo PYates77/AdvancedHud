@@ -1,4 +1,4 @@
-package com.projecttango.examples.java.hellodepthperception;
+package pt.advHUD;
 
 public class Plane {
   private Point direction;
@@ -25,13 +25,13 @@ public class Plane {
       shift = 1;
     }
   }
-  
+
   public void setDirection(Point p) {
     direction.x = p.x;
     direction.y = p.y;
     direction.z = p.z;
   }
-  
+
   Point getDirection() {
     return direction;
   }

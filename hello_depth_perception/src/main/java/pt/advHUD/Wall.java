@@ -1,4 +1,6 @@
-package com.projecttango.examples.java.hellodepthperception;
+package pt.advHUD;
+
+import pt.advHUD.Cluster;
 
 public class Wall {
     private Point edge1;

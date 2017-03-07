@@ -1,7 +1,10 @@
-package com.projecttango.examples.java.hellodepthperception;
+package pt.advHUD;
 
-import java.util.*;
- 
+import pt.advHUD.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Clusters extends ArrayList<Cluster> {
  
  private static final long serialVersionUID = 1L;

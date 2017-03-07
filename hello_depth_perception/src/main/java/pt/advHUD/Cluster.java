@@ -1,7 +1,11 @@
-package com.projecttango.examples.java.hellodepthperception;
+package pt.advHUD;
 
-import java.util.*;
- 
+import pt.advHUD.Plane;
+import pt.advHUD.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cluster {
  
  private final List<Point> points;

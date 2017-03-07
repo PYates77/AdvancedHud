@@ -1,4 +1,4 @@
-package com.projecttango.examples.java.hellodepthperception;
+package pt.advHUD;
 
 import com.google.atap.tangoservice.TangoPoseData;
 

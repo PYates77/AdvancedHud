@@ -21,7 +21,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.projecttango.examples.java.hellodepthperception"
+        applicationId "pt.advHUD.hellodepthperception"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1

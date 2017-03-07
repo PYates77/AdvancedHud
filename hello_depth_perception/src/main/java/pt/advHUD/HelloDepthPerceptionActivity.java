@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-package com.projecttango.examples.java.hellodepthperception;
+package pt.advHUD;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
@@ -27,17 +34,14 @@ import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPointCloudData;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
-
-import org.w3c.dom.Text;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
+import pt.advHUD.Plane;
+import pt.advHUD.Point;
+import pt.advHUD.R;
+import pt.advHUD.Wall;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Main Activity class for the Depth Perception Sample. Handles the connection to the {@link Tango}
@@ -58,10 +62,38 @@ public class HelloDepthPerceptionActivity extends Activity {
     private KMeans kmeans;
     private ArrayList<Wall> wallList = new ArrayList<Wall>();
 
+    private ImageView mapView;
+    private MapDrawable mapDrawable;
+
+    //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
+    Thread updateTextViewThread = new Thread(){
+        public void run(){
+            while(true){
+                HelloDepthPerceptionActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mapView.invalidate();
+                        mapDrawable.setWallArray(wallList);
+                    }
+                });
+                try {
+                    Thread.sleep(500); //2Hz refresh rate
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_depth_perception);
+
+        mapView = (ImageView)findViewById(R.id.mapView);
+        mapDrawable = new MapDrawable();
+        mapView.setImageDrawable(mapDrawable);
+        updateTextViewThread.start();
     }
 
     @Override
@@ -243,8 +275,10 @@ public class HelloDepthPerceptionActivity extends Activity {
 //                         PRINT LENGTH OF WALLS
                         Plane plane = new Plane(new Point(0, 0, 0), new Point(0, 1, 0), new Point(1, 0, 0));
                         for (int i = 0; i < wallList.size(); i++) {
-                            if (wallList.get(i).isValid())
+                            if (wallList.get(i).isValid()) {
                                 Log.i(TAG, "wall " + i + " angle = " + String.valueOf(wallList.get(i).getPlane().calcInterPlaneAngle(plane)));
+                                Log.i(TAG,"\nWall " +i+" : "+ wallList.get(i).getEdge1().x +" "+wallList.get(i).getEdge1().y+" "+wallList.get(i).getEdge2().x+" "+wallList.get(i).getEdge2().y+"\n"); //debug wall values AKSHAY
+                            }
                         }
                         Log.i(TAG, new Integer(wallList.size()).toString());
                     }
