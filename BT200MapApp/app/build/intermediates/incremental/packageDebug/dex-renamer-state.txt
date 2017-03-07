@@ -1,7 +1,7 @@
-#Wed Mar 01 17:01:30 EST 2017
-base.0=C\:\\AkshayDocs_12_23_2015\\AkshayDocs\\akshay_college\\2017\\SPRING2017\\ECE4012\\SeniorDesignCode\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run_94346a99d82db31a139c7911d47ed3d9408eff63
+#Sun Mar 05 14:27:39 EST 2017
+base.0=C\:\\Users\\Akshay\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run_d5cd451b2762cbe0fdf1df57445e40933d684c55
 renamed.1=classes.dex
 renamed.0=classes2.dex
-file.1=C\:\\AkshayDocs_12_23_2015\\AkshayDocs\\akshay_college\\2017\\SPRING2017\\ECE4012\\SeniorDesignCode\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run-bootstrap_7292bf7c5b54baf5faf6a065b11a2a2a4ef1012a\\classes.dex
-base.1=C\:\\AkshayDocs_12_23_2015\\AkshayDocs\\akshay_college\\2017\\SPRING2017\\ECE4012\\SeniorDesignCode\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run-bootstrap_7292bf7c5b54baf5faf6a065b11a2a2a4ef1012a
-file.0=C\:\\AkshayDocs_12_23_2015\\AkshayDocs\\akshay_college\\2017\\SPRING2017\\ECE4012\\SeniorDesignCode\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run_94346a99d82db31a139c7911d47ed3d9408eff63\\classes.dex
+file.1=C\:\\Users\\Akshay\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run-bootstrap_26e46a4ac58b9f2f5fa96a2524fe82627794e307\\classes.dex
+base.1=C\:\\Users\\Akshay\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run-bootstrap_26e46a4ac58b9f2f5fa96a2524fe82627794e307
+file.0=C\:\\Users\\Akshay\\AdvancedHud\\BT200MapApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run_d5cd451b2762cbe0fdf1df57445e40933d684c55\\classes.dex

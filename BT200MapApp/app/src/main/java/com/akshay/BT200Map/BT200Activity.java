@@ -16,10 +16,13 @@ import android.widget.ImageView;
 
 import com.akshay.BT200Map.R;
 
+import java.util.ArrayList;
+
 public class BT200Activity extends Activity implements SensorEventListener {
 	private String TAG = "Bt2CtrlDemoActivity";
 	private MapDrawable lineDrawable = new MapDrawable();
 	private ImageView mapView;
+	ArrayList<Wall> dynamicWallList = new ArrayList<Wall>();
 	//private Button updateButton;
 	//private Button rotButton;
 	private Button moveLeft;
@@ -88,8 +91,19 @@ public class BT200Activity extends Activity implements SensorEventListener {
 		walls[6] = new Wall(F,D);
 		walls[7] = new Wall(D,B);
 
+		//Dynamic Wall Array assignment to show dynamic array capabilities
+		dynamicWallList.add(walls[0]);
+		dynamicWallList.add(walls[1]);
+		dynamicWallList.add(walls[2]);
+		dynamicWallList.add(walls[3]);
+		dynamicWallList.add(walls[4]);
+		dynamicWallList.add(walls[5]);
+		dynamicWallList.add(walls[6]);
+		dynamicWallList.add(walls[7]);
 
-		lineDrawable.setWallArray(walls);
+
+		//lineDrawable.setWallArray(walls);
+		lineDrawable.setDynamicWallArray(dynamicWallList);
 		mapView = (ImageView) findViewById(R.id.mapView);
 		moveLeft = (Button)findViewById(R.id.leftButton);
 		moveRight = (Button)findViewById(R.id.rightButton);

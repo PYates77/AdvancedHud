@@ -5,32 +5,32 @@
     density="xxhdpi"
     format="8"
     plugin-version="2.2.3"
-    timestamp="607860083711521"
-    token="-5015343028119587141"
+    timestamp="190368507455703"
+    token="-8984362904073437290"
     verifier="FULL_BUILD_REQUESTED" >
 
     <task
         name="javac"
-        duration="570" />
+        duration="115" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="226" />
+        duration="142" />
     <task
         name="verifier"
-        duration="29" />
+        duration="20" />
 
     <artifact
-        location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200MapApp\app\build\outputs\apk\app-debug.apk"
+        location="C:\Users\Akshay\AdvancedHud\BT200MapApp\app\build\outputs\apk\app-debug.apk"
         type="MAIN" />
 
     <build
-        timestamp="607860083711521"
+        timestamp="190368507455703"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
-            location="C:\AkshayDocs_12_23_2015\AkshayDocs\akshay_college\2017\SPRING2017\ECE4012\SeniorDesignCode\AdvancedHud\BT200MapApp\app\build\outputs\apk\app-debug.apk"
+            location="C:\Users\Akshay\AdvancedHud\BT200MapApp\app\build\outputs\apk\app-debug.apk"
             type="MAIN" />
     </build>
 
