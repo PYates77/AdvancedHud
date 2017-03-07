@@ -8,8 +8,6 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
-import java.util.Map;
-
 /**
  * Created by Akshay on 2/15/2017.
  */
@@ -87,15 +85,6 @@ public class MapDrawable extends Drawable {
 
     private Coordinate rotateCoord(Coordinate c, int degrees, int size){
         double degreeRadians = Math.toRadians(degrees);
-        double x_trans = c.coordx-(size/2)-moveX;
-        double y_trans = c.coordy-(size/2)-moveY;
-        double x1 = (Math.cos(-degreeRadians)*x_trans)-(Math.sin(-degreeRadians)*y_trans);
-        double y1 = (Math.sin(-degreeRadians)*x_trans)+(Math.cos(-degreeRadians)*y_trans);
-        return new Coordinate(x1+(size/2)+moveX,y1+(size/2)+moveY);
-    }
-
-    private Coordinate rotateCoord2(Coordinate c, int degrees, int size){
-        double degreeRadians = Math.toRadians(degrees);
         double x_trans = c.coordx-(size/2)+moveX;
         double y_trans = c.coordy-(size/2)+moveY;
         double x1 = (Math.cos(-degreeRadians)*x_trans)-(Math.sin(-degreeRadians)*y_trans);
@@ -111,9 +100,9 @@ public class MapDrawable extends Drawable {
             A = new Coordinate(140-moveX,160-moveY);
             B = new Coordinate(150-moveX,140-moveY);
             C = new Coordinate(160-moveX,160-moveY);
-            A = rotateCoord2(A, mDegreeRotation, height);
-            B = rotateCoord2(B, mDegreeRotation, height);
-            C = rotateCoord2(C, mDegreeRotation, height);
+            A = rotateCoord(A, mDegreeRotation, height);
+            B = rotateCoord(B, mDegreeRotation, height);
+            C = rotateCoord(C, mDegreeRotation, height);
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
@@ -139,16 +128,7 @@ public class MapDrawable extends Drawable {
         }
         canvas.drawColor(mBackgroundColor);
         for(int i=0; i < mWalls.length; i++){
-            if(!userLocked){
-                Coordinate start = new Coordinate(mWalls[i].startX,mWalls[i].startY);
-                Coordinate end = new Coordinate(mWalls[i].endX,mWalls[i].endY);
-                start = rotateCoord(start,-mDegreeRotation,height);
-                end = rotateCoord(end,-mDegreeRotation,height);
-                canvas.drawLine((float)start.coordx,(float)start.coordy,(float)end.coordx,(float)end.coordy,mPaint);
-            }
-            else{
-                canvas.drawLine(mWalls[i].startX,mWalls[i].startY,mWalls[i].endX,mWalls[i].endY,mPaint);
-            }
+            canvas.drawLine(mWalls[i].startX,mWalls[i].startY,mWalls[i].endX,mWalls[i].endY,mPaint);
         }
         mPaint.setColor(Color.RED);
         Path newPath = constructUser();
