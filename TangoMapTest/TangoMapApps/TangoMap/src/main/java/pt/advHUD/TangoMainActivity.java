@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,14 +47,68 @@ import java.util.ArrayList;
 public class TangoMainActivity extends Activity {
 
     private static final String TAG = TangoMainActivity.class.getSimpleName();
-
     private Tango mTango;
     private TangoConfig mConfig;
+    private float yaw = 0;
+    private float pitch = 0;
+    private float roll = -300; //bogus value so NULLPTREXCEPTION doesn't occur
+    private float qx;
+    private float qy;
+    private float qz;
+    private float qw;
+    private float x;
+    private float y;
+    private float translation[] = new float[3];
+    private float orientation[] = new float[4];
+    float rotMatrix[] = new float[9];
+    float euOrient[] = new float[3];
+    private MapDrawable mapDrawable = new MapDrawable(1234);
+    private ImageView mapView;
+    private TextView xView;
+    private TextView yView;
+    private TextView zView;
+
+    //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
+    Thread updateTextViewThread = new Thread(){
+        public void run(){
+            while(true){
+                TangoMainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(roll != -300 && translation[0] != 0 && translation[1] != 0 && translation[2] != 0) {
+                            mapView.invalidate();
+                            mapDrawable.setDegreeRotation((int)(-1*roll));
+                            mapDrawable.moveX = (int)(translation[0]*-50);
+                            mapDrawable.moveY = (int)(translation[1]*50);
+                        }
+                    }
+                });
+                try {
+                    Thread.sleep(500); //2Hz refresh rate
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_motion_tracking);
+
+        //"bogus" values so that NULLPTREXCEPTION doesn't occur
+        translation[0] = 0;
+        translation[1] = 0;
+        translation[2] = 0;
+
+        mapView = (ImageView)findViewById(R.id.mapView);
+        xView = (TextView)findViewById(R.id.xView);
+        yView = (TextView)findViewById(R.id.yView);
+        zView = (TextView)findViewById(R.id.zView);
+        mapView.setImageDrawable(mapDrawable);
+        //updateTextViewThread.setPriority(Thread.MAX_PRIORITY); //CHANGE THIS WHEN ADDING NEW CODE
+        updateTextViewThread.start();
     }
 
     @Override
@@ -134,7 +189,7 @@ public class TangoMainActivity extends Activity {
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                logPose(pose);
+                updateLocation(pose);
             }
 
             @Override
@@ -164,43 +219,33 @@ public class TangoMainActivity extends Activity {
      *
      * @param pose the pose to log.
      */
-    private void logPose(TangoPoseData pose) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        float translation[] = pose.getTranslationAsFloats();
-        stringBuilder.append("Position: " +
-                translation[0] + ", " + translation[1] + ", " + translation[2]);
-
-        float orientation[] = pose.getRotationAsFloats();
-        stringBuilder.append(". Orientation: " +
+    private void updateLocation(TangoPoseData pose) {
+        //StringBuilder stringBuilder = new StringBuilder();
+        translation = pose.getTranslationAsFloats();
+        //stringBuilder.append("Position: " +translation[0]*100 + ", " + translation[1]*100 + ", " + translation[2]*100+"\n");
+        orientation = pose.getRotationAsFloats();
+        /*stringBuilder.append(". Orientation: " +
                 orientation[0] + ", " + orientation[1] + ", " +
-                orientation[2] + ", " + orientation[3]+"\n");
-        //CHECK IF NORM OF QUATERNION IS 1
-        //ASSUMING QUATERNION FORMAT: w+x+y+z
-        float w = orientation[0];
-        float x = orientation[1];
-        float y = orientation[2];
-        float z = orientation[3];
-        float norm = (float)Math.sqrt((w*w)+(x*x)+(y*y)+(z*z));
-        stringBuilder.append("Norm of Quaternion: "+norm+"\n");
+                orientation[2] + ", " + orientation[3]+"\n");*/
+        qw = orientation[0];
+        qx = orientation[1];
+        qy = orientation[2];
+        qz = orientation[3];
         //Extract Rotation Matrix
-        float rotMatrix[] = new float[9];
-        rotMatrix[0] = 1-2*(y*y)-2*(z*z);
-        rotMatrix[1] = (2*x*y)+(2*z*w);
-        rotMatrix[2] = (2*x*z)-(2*y*w);
-        rotMatrix[3] = (2*x*y)-(2*z*w);
-        rotMatrix[4] = 1-(2*x*x)-(2*z*z);
-        rotMatrix[5] = (2*y*z)+(2*x*w);
-        rotMatrix[6] = (2*x*z)+(2*y*w);
-        rotMatrix[7] = (2*y*z)-(2*x*w);
-        rotMatrix[8] = 1-(2*x*x)-(2*y*y);
-        float euOrient[] = new float[3];
+        rotMatrix[0] = 1-2*(qy*qy)-2*(qz*qz);
+        rotMatrix[1] = (2*qx*qy)+(2*qz*qw);
+        rotMatrix[2] = (2*qx*qz)-(2*qy*qw);
+        rotMatrix[3] = (2*qx*qy)-(2*qz*qw);
+        rotMatrix[4] = 1-(2*qx*qx)-(2*qz*qz);
+        rotMatrix[5] = (2*qy*qz)+(2*qx*qw);
+        rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
+        rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
+        rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
+        //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
-        float yaw = (float)Math.toDegrees(euOrient[0]);
-        float pitch = (float)Math.toDegrees(euOrient[1]);
-        float roll = (float)Math.toDegrees(euOrient[2]);
-        stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
-        Log.i(TAG, stringBuilder.toString());
+        roll = (float)Math.toDegrees(euOrient[2]);
+        //stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
+        //Log.i(TAG, stringBuilder.toString());
     }
 
     /**
@@ -216,6 +261,8 @@ public class TangoMainActivity extends Activity {
                         getString(resId), Toast.LENGTH_LONG).show();
                 finish();
             }
-          });
+        });
     }
 }
+
+
