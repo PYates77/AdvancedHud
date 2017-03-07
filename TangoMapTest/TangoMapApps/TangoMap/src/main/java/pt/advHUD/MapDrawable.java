@@ -58,9 +58,9 @@ public class MapDrawable extends Drawable {
         Coordinate B = new Coordinate(175,400);
         Coordinate C = new Coordinate(90,140);
         Coordinate D = new Coordinate(175,190);
-        Coordinate E = new Coordinate(10,140);
+        Coordinate E = new Coordinate(-100,140);
         Coordinate F = new Coordinate(270,190);
-        Coordinate G = new Coordinate(10,90);
+        Coordinate G = new Coordinate(-100,90);
         Coordinate H = new Coordinate(90,90);
         Coordinate I = new Coordinate(90,40);
         Coordinate J = new Coordinate(270,40);

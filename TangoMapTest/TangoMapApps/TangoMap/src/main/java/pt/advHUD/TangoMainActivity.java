@@ -224,9 +224,9 @@ public class TangoMainActivity extends Activity {
         translation = pose.getTranslationAsFloats();
         //stringBuilder.append("Position: " +translation[0]*100 + ", " + translation[1]*100 + ", " + translation[2]*100+"\n");
         orientation = pose.getRotationAsFloats();
-        /*stringBuilder.append(". Orientation: " +
-                orientation[0] + ", " + orientation[1] + ", " +
-                orientation[2] + ", " + orientation[3]+"\n");*/
+        //stringBuilder.append(". Orientation: " +
+                //orientation[0] + ", " + orientation[1] + ", " +
+                //orientation[2] + ", " + orientation[3]+"\n");
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
