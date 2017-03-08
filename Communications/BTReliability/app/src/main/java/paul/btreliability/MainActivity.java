@@ -44,6 +44,15 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter;
     BluetoothDevice btDevice;
 
+    Double oldDouble;
+    Double receivedDouble;
+    int missedDoubles;
+    Double avgDoubleRate;
+    long timeStamp;
+    int totalDoubles;
+
+    int sleepTime = 500; //milliseconds for the sender
+
     private final int BT_ENABLE_REQUEST_RESULT_CODE = 0;
     enum Mode {
         SERVER, CLIENT;
@@ -52,11 +61,16 @@ public class MainActivity extends AppCompatActivity {
 
     private interface MessageConstants {
         int MESSAGE_READ = 0;
+        int MESSAGE_SEND = 1;
         // ... (Add other message types here as needed.)
     }
 
     public MainActivity(){
 
+        missedDoubles = 0;
+        totalDoubles = 0;
+        avgDoubleRate = 0.0;
+        oldDouble = 0.0;
         threadQueue = new LinkedBlockingQueue<Runnable>();
         int processor = Runtime.getRuntime().availableProcessors();
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
@@ -64,8 +78,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message inputMessage){
                 if (inputMessage.what ==  MessageConstants.MESSAGE_READ){
-                    double receivedDouble = (double) inputMessage.obj;
-                    mainText.setText("Got Double: " + receivedDouble);
+                    receivedDouble = (Double) inputMessage.obj;
+                    Double discrepancy = Math.ceil(100*(receivedDouble - oldDouble - 0.01))/100;
+                    if(discrepancy != 0.0){
+                        missedDoubles++;
+                    }
+                    oldDouble = receivedDouble;
+                    totalDoubles++;
+                    avgDoubleRate = (0.8)*avgDoubleRate + (0.2)*(System.currentTimeMillis() - timeStamp);
+                    timeStamp = System.currentTimeMillis();
+                    mainText.setText("Got Double: " + receivedDouble + "\nMissed Packets: " + missedDoubles + "\nTotal Packets: " + totalDoubles + "\nDiscrepancy: " + discrepancy  + "\nAvg Rate: " + avgDoubleRate);
+                }
+                else if (inputMessage.what == MessageConstants.MESSAGE_SEND){
+                    receivedDouble = (Double) inputMessage.obj;
+                    mainText.setText("Sending Double: " + receivedDouble);
                 }
                 else {
                     Log.e("Message Handler", "Didn't get an expected messageConstant");
@@ -178,18 +204,18 @@ public class MainActivity extends AppCompatActivity {
                 if (socket != null) {
                     Log.d(DEBUG_TAG, "A connection was accepted.");
                     threadPool.execute( new ReceiverThread(socket) );
-                    //cancel();
+                    cancel();
                 }
             }
         }
         private void cancel(){
             Log.d(DEBUG_TAG, "Cancel method called. Closing socket and exiting thread.");
             threadPool.remove(this);
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                Log.e(DEBUG_TAG, "Could not close the connect socket", e);
-            }
+            //try {
+            //    serverSocket.close();
+            //} catch (IOException e) {
+            //    Log.e(DEBUG_TAG, "Could not close the connect socket", e);
+            //}
         }
     }
     private class ClientThread implements Runnable{
@@ -212,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(DEBUG_TAG, "Created RfCommSocket with info: " + socket.toString());
             threadPool.execute(new SenderThread(socket));
 
-            //cancel();
+            cancel();
         }
 
         @Override
@@ -236,11 +262,11 @@ public class MainActivity extends AppCompatActivity {
         private void cancel(){
             Log.d(DEBUG_TAG, "Cancel method called. Closing socket and exiting thread.");
             threadPool.remove(this);
-            try {
-                socket.close();
-            } catch (IOException e) {
-                Log.e(DEBUG_TAG, "Could not close the connect socket", e);
-            }
+            //try {
+            //    socket.close();
+            //} catch (IOException e) {
+            //    Log.e(DEBUG_TAG, "Could not close the connect socket", e);
+            //}
         }
     }
 
@@ -274,21 +300,34 @@ public class MainActivity extends AppCompatActivity {
 
         public void run(){
             //streamBuffer = new byte[1024];
-            double testDouble = 0.0;
+            Double testDouble = 0.0;
+            Message sent;
 
             Log.d(DEBUG_TAG, "Connection initiated. Sending data.");
 
             while(true) {
 
                 send(testDouble);
-                testDouble = testDouble + 0.01;
+                sent = mHandler.obtainMessage(
+                        MessageConstants.MESSAGE_SEND, testDouble
+                );
+                sent.sendToTarget();
+                testDouble = Math.ceil(100*(testDouble + 0.01))/100;
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        private void send(double d){
-            try {
-                outStream.writeDouble(d);
-            } catch (IOException e){
-                Log.e(DEBUG_TAG, "unable to write double to outStream", e);
+        private void send(Double d){
+            if(outStream != null && d != null) {
+                try {
+                    outStream.writeDouble(d);
+                } catch (IOException e) {
+                    Log.e(DEBUG_TAG, "unable to write double to outStream", e);
+                }
+
             }
         }
     }
@@ -304,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
             btSocket = socket;
             DataInputStream tmpIn = null;
             DataOutputStream tmpOut = null;
+            timeStamp = System.currentTimeMillis();
 
             Log.d(DEBUG_TAG, "Attempting to create input and output streams");
             try {
@@ -325,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
             //streamBuffer = new byte[1024];
 
             Log.d(DEBUG_TAG, "Connection initiated. Waiting for data.");
-            double receivedDouble = -1;
+            Double receivedDouble = -1.0;
 
             while (true) {
                 try {
