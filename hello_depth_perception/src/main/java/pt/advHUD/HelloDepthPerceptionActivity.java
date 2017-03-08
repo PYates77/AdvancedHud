@@ -208,24 +208,31 @@ public class HelloDepthPerceptionActivity extends Activity {
                     return;
 
                 for (int i = 0; i < a.size(); i++) {
-                    a.get(i).calcPlane();
+                    Point p1 = new Point(0, 0, 0);
+                    Point p2 = new Point(1, 0, 0);
+                    Point p3 = new Point(0, 1, 0);
+                    Plane xyPlane(p1, p2, p3);
+                    
+                    a.get(i).calcPlane(xyPlane);
                     if (a.get(i).getPlane() != null) {
-                        boolean condition = false;
-                        for (int j = 0; j < wallList.size() && !condition; j++) {
-                            if (wallList.get(j).getPlane() != null) {
-                                double angle = wallList.get(j).getPlane().calcInterPlaneAngle(a.get(i).getPlane());
+                        if (a.get(i).gePlane().calcInterPlaneAngle(xyPlane) < angleMargin) {
+                            boolean condition = false;
+                            for (int j = 0; j < wallList.size() && !condition; j++) {
+                                if (wallList.get(j).getPlane() != null) {
+                                    double angle = wallList.get(j).getPlane().calcInterPlaneAngle(a.get(i).getPlane());
 
-                                if (angle < angleMargin) {
-                                    wallList.get(j).update(a.get(i));
-                                    condition = true; // wall found
-                                } else if (angle < Math.PI/2.0 - angleMargin) {
-                                    condition = true; // cluster plane in dead zone
+                                    if (angle < angleMargin) {
+                                        wallList.get(j).update(a.get(i));
+                                        condition = true; // wall found
+                                    } else if (angle < Math.PI/2.0 - angleMargin) {
+                                        condition = true; // cluster plane in dead zone
+                                    }
                                 }
                             }
-                        }
 
-                        if (!condition) {
-                            wallList.add(new Wall(a.get(i)));
+                            if (!condition) {
+                                wallList.add(new Wall(a.get(i)));
+                            }
                         }
                     }
                 }
