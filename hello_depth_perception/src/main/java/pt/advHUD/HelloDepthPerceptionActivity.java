@@ -52,8 +52,8 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = Math.PI / 12;
-    private static final double distanceMargin = 1; // needs to be determined
+    private static final double angleMargin = Math.PI / 6;
+    private static final double distanceMargin = 3; // needs to be determined
 
     private Tango mTango;
     private TangoConfig mConfig;
@@ -214,9 +214,9 @@ public class HelloDepthPerceptionActivity extends Activity {
                     Point p3 = new Point(0, 1, 0);
                     Plane xyPlane = new Plane(p1, p2, p3);
                     
-                    // a.get(i).calcPlane();
+                    a.get(i).calcPlane();
                     if (a.get(i).getPlane() != null) {
-                        if (a.get(i).gePlane().calcInterPlaneAngle(xyPlane) > angleMargin) {
+                        if (a.get(i).getPlane().calcInterPlaneAngle(xyPlane) > angleMargin) {
                             boolean condition = false;
                             for (int j = 0; j < wallList.size() && !condition; j++) {
                                 if (wallList.get(j).getPlane() != null) {

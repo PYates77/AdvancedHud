@@ -99,10 +99,10 @@ public class MapDrawable extends Drawable {
         if(mWalls != null){
             for(int i=0; i < mWalls.size(); i++){
                 if(mWalls.get(i).isValid()){
-                    canvas.drawLine((float)((mWalls.get(i).getEdge1().x)*100+150),
-                            (float)((mWalls.get(i).getEdge1().y)*100+150),
-                            (float)((mWalls.get(i).getEdge2().x)*100+150),
-                            (float)((mWalls.get(i).getEdge2().y)*100+150),
+                    canvas.drawLine((float)((mWalls.get(i).getEdge1().x + 1.5)*100),
+                            (float)((mWalls.get(i).getEdge1().y + 1.5)*100),
+                            (float)((mWalls.get(i).getEdge2().x + 1.5)*100),
+                            (float)((mWalls.get(i).getEdge2().y + 1.5)*100),
                             mPaint);
                 }
             }

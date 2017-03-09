@@ -26,6 +26,14 @@ public class Plane {
     }
   }
 
+  double calcPlaneToVectorAngle(Point vector) {
+    double topVal = Math.abs(direction.x*vector.x + direction.y*vector.y + direction.z*vector.z);
+    double botVal1 = Math.sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+    double botVal2 = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
+
+    return Math.asin((topVal)/(botVal1 * botVal2));
+  }
+
   public void setDirection(Point p) {
     direction.x = p.x;
     direction.y = p.y;
