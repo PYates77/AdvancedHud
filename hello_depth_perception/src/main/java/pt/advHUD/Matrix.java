@@ -18,20 +18,17 @@ public class Matrix {
     }
 
     Matrix multiply(Matrix rhs) {
-        int m1ColLength = rhs[0].length; //rhs columns length
-        int m2Rowlength = Matrix.length; //Matrix row length 
-        if (m1ColLength != m2RowLength) return null; //Matrix multiplication not possible
-        int mRRowLength = rhs.length; //matrix result rows
-        int mRColLength = Matrix[0].length; //matrix result col rows 
-        double [][] FinalMatrix = new double[mRRowLength][mRColLength];
-            for(int i =0; i< mRRowLength; i++){ //rows from the first matrix 
-                for( int j=0; j<mRColLength; j++){  //columns from the second matrix 
-                    for( int k=0; k < m1ColLength; k++){  //columns from the first matrix 
-                        FinalMatrix[i][j] += rhs[i][k]*Matrix[k][j] //Final matrix 
+        Matrix A = this;
+        if (A.numCols != B.numRows) throw new RuntimeException("Illegal matrix dimensions.");
+        Matrix C = new Matrix(A.numRows, rhs.numCols)
+            for(int i =0; i< C.numRows; i++){ 
+                for( int j=0; j<C.numCols; j++){  
+                    for( int k=0; k < A.numRows; k++){   
+                         C.elements[i][j] += (A.elements[i][k] * B.elements[k][j]);
                     }
                 }
             }
-        return FinalMatrix; //returns matrix 
+        return C; //returns matrix 
                       
 
     }
