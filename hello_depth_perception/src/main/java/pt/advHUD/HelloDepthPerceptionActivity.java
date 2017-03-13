@@ -55,6 +55,8 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final double angleMargin = Math.PI / 6;
     private static final double distanceMargin = 3; // needs to be determined
 
+    private ArrayList<Point> global_points;
+
     private Tango mTango;
     private TangoConfig mConfig;
 
@@ -74,7 +76,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                     @Override
                     public void run() {
                         mapView.invalidate();
-                        mapDrawable.setWallArray(wallList);
+                        mapDrawable.setWallArray(global_points);
                     }
                 });
                 try {
@@ -249,6 +251,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 } else {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
+                    global_points = points;
                     points = sample_array(points);
 
                     // GENERATE TEST POINT CLOUD ---------------------------------
@@ -326,34 +329,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                 orientation[2] + ", " + orientation[3]);
 
         Log.i(TAG, stringBuilder.toString());
-    }
-
-    /**
-     * Log the point count and the average depth of the given PointCloud data
-     * in the Logcat as information.
-     */
-    private void logPointCloud(TangoPointCloudData pointCloudData) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Point count: " + pointCloudData.numPoints);
-        stringBuilder.append(". Average depth (m): " +
-                calculateAveragedDepth(pointCloudData.points, pointCloudData.numPoints));
-        Log.i(TAG, stringBuilder.toString());
-    }
-
-    /**
-     * Calculates the average depth from a point cloud buffer.
-     */
-    private float calculateAveragedDepth(FloatBuffer pointCloudBuffer, int numPoints) {
-        float totalZ = 0;
-        float averageZ = 0;
-        if (numPoints != 0) {
-            int numFloats = 4 * numPoints;
-            for (int i = 2; i < numFloats; i = i + 4) {
-                totalZ = totalZ + pointCloudBuffer.get(i);
-            }
-            averageZ = totalZ / numPoints;
-        }
-        return averageZ;
     }
 
     /**

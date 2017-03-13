@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -26,7 +25,7 @@ public class MapDrawable extends Drawable {
     public int moveX = 0;
     public int moveY = 0;
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
-    public ArrayList<Wall> mWalls;
+    public ArrayList<Point> mPoints;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
@@ -35,11 +34,11 @@ public class MapDrawable extends Drawable {
         mDegreeRotation = 0;
     }
 
-    public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, ArrayList<Wall> walls){
+    public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, ArrayList<Point> inPoints){
         mBackgroundColor = backgroundColor;
         mStrokeColor = strokeColor;
         mStrokeWidth = strokeWidth;
-        mWalls = walls;
+        mPoints = inPoints;
         mDegreeRotation = 0;
     }
 
@@ -96,15 +95,10 @@ public class MapDrawable extends Drawable {
             canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
         canvas.drawColor(mBackgroundColor);
-        if(mWalls != null){
-            for(int i=0; i < mWalls.size(); i++){
-                if(mWalls.get(i).isValid()){
-                    canvas.drawLine((float)((mWalls.get(i).getEdge1().x + 1.5)*100),
-                            (float)((mWalls.get(i).getEdge1().y + 1.5)*100),
-                            (float)((mWalls.get(i).getEdge2().x + 1.5)*100),
-                            (float)((mWalls.get(i).getEdge2().y + 1.5)*100),
-                            mPaint);
-                }
+        if(mPoints != null){
+            for(int i = 0; i < mPoints.size(); i++){
+                Point pt = mPoints.get(i);
+                canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint);
             }
         }
         mPaint.setColor(Color.RED);
@@ -112,11 +106,11 @@ public class MapDrawable extends Drawable {
         canvas.drawPath(newPath,mPaint);
     }
 
-    public void setWallArray(ArrayList<Wall> walls){
-        mWalls = walls;
+    public void setWallArray(ArrayList<Point> points){
+        mPoints = points;
     }
 
-    public ArrayList<Wall> getWallArray(){return mWalls;}
+    public ArrayList<Point> getWallArray(){return mPoints;}
 
     public void setBackgroundColor(int color) {
         mBackgroundColor = color;
