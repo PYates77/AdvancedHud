@@ -18,7 +18,6 @@ package pt.advHUD;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -34,14 +33,9 @@ import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPointCloudData;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
-import pt.advHUD.Plane;
-import pt.advHUD.Point;
-import pt.advHUD.R;
-import pt.advHUD.Wall;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Main Activity class for the Depth Perception Sample. Handles the connection to the {@link Tango}
@@ -76,7 +70,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                     @Override
                     public void run() {
                         mapView.invalidate();
-                        mapDrawable.setWallArray(global_points);
+                        mapDrawable.setPointArray(global_points);
                     }
                 });
                 try {
@@ -187,6 +181,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 // We are not using onXyzIjAvailable for this app.
             }
 
+            //WHY ARE THERE RETURN STATEMENTS IN THE FOLLOWING CODE? WHAT ARE THESE METHODS?
             ArrayList<Point> to_point_list(FloatBuffer arr) {
                 ArrayList<Point> out = new ArrayList<Point>();
 

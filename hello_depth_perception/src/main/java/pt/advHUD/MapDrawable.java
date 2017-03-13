@@ -30,7 +30,7 @@ public class MapDrawable extends Drawable {
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
         mStrokeColor = Color.BLUE;
-        mStrokeWidth = 10;
+        mStrokeWidth = 5;
         mDegreeRotation = 0;
     }
 
@@ -98,7 +98,7 @@ public class MapDrawable extends Drawable {
         if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i++){
                 Point pt = mPoints.get(i);
-                canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint);
+                canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint); //x and z being used; why not y?
             }
         }
         mPaint.setColor(Color.RED);
@@ -106,11 +106,11 @@ public class MapDrawable extends Drawable {
         canvas.drawPath(newPath,mPaint);
     }
 
-    public void setWallArray(ArrayList<Point> points){
+    public void setPointArray(ArrayList<Point> points){
         mPoints = points;
     }
 
-    public ArrayList<Point> getWallArray(){return mPoints;}
+    public ArrayList<Point> getPointArray(){return mPoints;}
 
     public void setBackgroundColor(int color) {
         mBackgroundColor = color;

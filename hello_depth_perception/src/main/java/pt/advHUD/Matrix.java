@@ -17,11 +17,31 @@ public class Matrix {
             elements[i] = el[i];
     }
 
+<<<<<<< HEAD
     double get(int r, int c) {
         return elements[c + r*numCols];
     }
 
     Matrix multiply(Matrix rhs) {
         return null;
+=======
+    Matrix multiply(Matrix rhs) {
+        int m1ColLength = rhs[0].length; //rhs columns length
+        int m2Rowlength = Matrix.length; //Matrix row length 
+        if (m1ColLength != m2RowLength) return null; //Matrix multiplication not possible
+        int mRRowLength = rhs.length; //matrix result rows
+        int mRColLength = Matrix[0].length; //matrix result col rows 
+        double [][] FinalMatrix = new double[mRRowLength][mRColLength];
+            for(int i =0; i< mRRowLength; i++){ //rows from the first matrix 
+                for( int j=0; j<mRColLength; j++){  //columns from the second matrix 
+                    for( int k=0; k < m1ColLength; k++){  //columns from the first matrix 
+                        FinalMatrix[i][j] += rhs[i][k]*Matrix[k][j] //Final matrix 
+                    }
+                }
+            }
+        return FinalMatrix; //returns matrix 
+                      
+
+>>>>>>> eb4a81e038448b10bf74f238bb76a65ed0a01a92
     }
 }
