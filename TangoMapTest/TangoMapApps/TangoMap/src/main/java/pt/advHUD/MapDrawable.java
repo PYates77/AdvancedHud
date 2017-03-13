@@ -126,12 +126,7 @@ public class MapDrawable extends Drawable {
         pathPaint.setColor(Color.BLUE);
         pathPaint.setStrokeWidth(2);
         canvas.translate(moveX,moveY);
-        if(userLocked){
-            canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
-        }
-        else{
-            canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
-        }
+        canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         canvas.drawColor(mBackgroundColor);
         for(int i=0; i < mWalls.length; i++){
             canvas.drawLine(mWalls[i].startX,mWalls[i].startY,mWalls[i].endX,mWalls[i].endY,mPaint);
