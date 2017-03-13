@@ -8,6 +8,8 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
+import java.util.ArrayList;
+
 /**
  * Created by Akshay on 2/15/2017.
  */
@@ -24,6 +26,7 @@ public class MapDrawable extends Drawable {
     public int moveY = 0;
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     public Wall[] mWalls;
+    ArrayList<Coordinate> mPathHistory;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
@@ -117,8 +120,11 @@ public class MapDrawable extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         Paint mPaint = new Paint();
+        Paint pathPaint = new Paint();
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
+        pathPaint.setColor(Color.BLUE);
+        pathPaint.setStrokeWidth(2);
         canvas.translate(moveX,moveY);
         if(userLocked){
             canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
@@ -130,6 +136,11 @@ public class MapDrawable extends Drawable {
         for(int i=0; i < mWalls.length; i++){
             canvas.drawLine(mWalls[i].startX,mWalls[i].startY,mWalls[i].endX,mWalls[i].endY,mPaint);
         }
+        if(mPathHistory != null){
+            for(int i=0; i < mPathHistory.size(); i++){
+                canvas.drawPoint((float)mPathHistory.get(i).coordx,(float)mPathHistory.get(i).coordy,pathPaint);
+            }
+        }
         mPaint.setColor(Color.RED);
         Path newPath = constructUser();
         canvas.drawPath(newPath,mPaint);
@@ -137,6 +148,10 @@ public class MapDrawable extends Drawable {
 
     public void setWallArray(Wall[] walls){
         mWalls = walls;
+    }
+
+    public void appendPathPoint(Coordinate c){
+        mPathHistory.add(c);
     }
 
     public Wall[] getWallArray(){return mWalls;}
