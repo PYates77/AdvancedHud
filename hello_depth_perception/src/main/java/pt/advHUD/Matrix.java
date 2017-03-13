@@ -18,6 +18,21 @@ public class Matrix {
     }
 
     Matrix multiply(Matrix rhs) {
+        int m1ColLength = rhs[0].length; //rhs columns length
+        int m2Rowlength = Matrix.length; //Matrix row length 
+        if (m1ColLength != m2RowLength) return null; //Matrix multiplication not possible
+        int mRRowLength = rhs.length; //matrix result rows
+        int mRColLength = Matrix[0].length; //matrix result col rows 
+        double [][] FinalMatrix = new double[mRRowLength][mRColLength];
+            for(int i =0; i< mRRowLength; i++){
+                for( int j=0; j<mRColLength; j++){
+                    for( int k=0; k < m1ColLength; k++){
+                        FinalMatrix[i][j] += rhs[i][k]*Matrix[k][j]
+                    }
+                }
+            }
+        return FinalMatrix;
+                      
 
     }
 }
