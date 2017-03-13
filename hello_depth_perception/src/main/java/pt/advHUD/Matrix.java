@@ -24,14 +24,14 @@ public class Matrix {
         int mRRowLength = rhs.length; //matrix result rows
         int mRColLength = Matrix[0].length; //matrix result col rows 
         double [][] FinalMatrix = new double[mRRowLength][mRColLength];
-            for(int i =0; i< mRRowLength; i++){
-                for( int j=0; j<mRColLength; j++){
-                    for( int k=0; k < m1ColLength; k++){
-                        FinalMatrix[i][j] += rhs[i][k]*Matrix[k][j]
+            for(int i =0; i< mRRowLength; i++){ //rows from the first matrix 
+                for( int j=0; j<mRColLength; j++){  //columns from the second matrix 
+                    for( int k=0; k < m1ColLength; k++){  //columns from the first matrix 
+                        FinalMatrix[i][j] += rhs[i][k]*Matrix[k][j] //Final matrix 
                     }
                 }
             }
-        return FinalMatrix;
+        return FinalMatrix; //returns matrix 
                       
 
     }
