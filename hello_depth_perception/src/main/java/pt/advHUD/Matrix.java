@@ -19,12 +19,12 @@ public class Matrix {
 
     Matrix multiply(Matrix rhs) {
         Matrix A = this;
-        if (A.numCols != B.numRows) throw new RuntimeException("Illegal matrix dimensions.");
+        if (A.numCols != rhs.numRows) throw new RuntimeException("Illegal matrix dimensions.");
         Matrix C = new Matrix(A.numRows, rhs.numCols)
             for(int i =0; i< C.numRows; i++){ 
                 for( int j=0; j<C.numCols; j++){  
                     for( int k=0; k < A.numRows; k++){   
-                         C.elements[i][j] += (A.elements[i][k] * B.elements[k][j]);
+                         C.elements[i][j] += (A.elements[i][k] * rhs.elements[k][j]);
                     }
                 }
             }
