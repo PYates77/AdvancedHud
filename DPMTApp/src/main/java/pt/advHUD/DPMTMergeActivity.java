@@ -216,8 +216,8 @@ public class DPMTMergeActivity extends Activity {
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //translates and rotates new point in x
-                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //translates and rotates new point in z/y
+                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)+translation[0]); //translates and rotates new point in x
+                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)+translation[1]); //translates and rotates new point in z/y
                     out.add(new Point(newx,y1,newz));
 
                 }
