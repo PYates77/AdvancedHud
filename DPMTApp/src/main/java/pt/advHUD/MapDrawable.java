@@ -26,6 +26,7 @@ public class MapDrawable extends Drawable {
     public int moveY = 0;
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     public ArrayList<Point> mPoints;
+    public ArrayList<Wall> mWalls;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
@@ -95,10 +96,21 @@ public class MapDrawable extends Drawable {
             canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
         canvas.drawColor(mBackgroundColor);
-        if(mPoints != null){
+        /*if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i++){
                 Point pt = mPoints.get(i);
                 canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint); //x and z being used; why not y?
+            }
+        }*/
+        if(mWalls != null){
+            for(int i=0; i < mWalls.size(); i++){
+                if(mWalls.get(i).isValid()){
+                    canvas.drawLine((float)((mWalls.get(i).getEdge1().x+2.5)*60),
+                                    (float)(300-((mWalls.get(i).getEdge1().z+1.5)*60)),
+                                    (float)((mWalls.get(i).getEdge1().x+2.5)*60),
+                                    (float)(300-((mWalls.get(i).getEdge2().z+2.5)*60)),
+                                    mPaint);
+                }
             }
         }
         mPaint.setColor(Color.RED);
@@ -109,6 +121,8 @@ public class MapDrawable extends Drawable {
     public void setPointArray(ArrayList<Point> points){
         mPoints = points;
     }
+
+    public void setWallArray(ArrayList<Wall> walls){mWalls = walls;}
 
     public ArrayList<Point> getPointArray(){return mPoints;}
 

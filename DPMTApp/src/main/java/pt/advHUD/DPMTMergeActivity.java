@@ -86,7 +86,9 @@ public class DPMTMergeActivity extends Activity {
                     @Override
                     public void run() {
                         mapView.invalidate();
-                        mapDrawable.setPointArray(global_points);
+                        //mapDrawable.setDegreeRotation((int)(-1*roll));
+                        //mapDrawable.setPointArray(global_points);
+                        mapDrawable.setWallArray(wallList);
                     }
                 });
                 try {
@@ -208,11 +210,14 @@ public class DPMTMergeActivity extends Activity {
                 float newx;
                 float newz;
                 for (int i = 0; i < arr.limit(); i += 4) {
+                    if(arr.get(i+3) != 1){ //taking into account the confidence value of the point
+                        continue;
+                    }
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(rollr)-z1*Math.sin(rollr)+translation[0]); //translates and rotates new point in x
-                    newz = (float)(x1*Math.sin(rollr)+z1*Math.cos(rollr)+translation[1]); //translates and rotates new point in z/y
+                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //translates and rotates new point in x
+                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //translates and rotates new point in z/y
                     out.add(new Point(newx,y1,newz));
 
                 }
@@ -236,12 +241,14 @@ public class DPMTMergeActivity extends Activity {
                 for (int i = 0; i < a.size(); i++) {
                     Point p1 = new Point(0, 0, 0);
                     Point p2 = new Point(1, 0, 0);
-                    Point p3 = new Point(0, 1, 0);
-                    Plane xyPlane = new Plane(p1, p2, p3);
+                    //Point p3 = new Point(0, 1, 0);
+                    Point p3 = new Point(0,0,1);
+                    //Plane xyPlane = new Plane(p1, p2, p3);
+                    Plane xzPlane = new Plane(p1,p2,p3);
                     
                     a.get(i).calcPlane();
                     if (a.get(i).getPlane() != null) {
-                        if (a.get(i).getPlane().calcInterPlaneAngle(xyPlane) > angleMargin) {
+                        if (a.get(i).getPlane().calcInterPlaneAngle(xzPlane) > angleMargin) { //used to be xyPlane
                             boolean condition = false;
                             for (int j = 0; j < wallList.size() && !condition; j++) {
                                 if (wallList.get(j).getPlane() != null) {
