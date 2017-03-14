@@ -33,6 +33,7 @@ public class MapDrawable extends Drawable {
         mStrokeColor = Color.BLUE;
         mStrokeWidth = 10;
         mDegreeRotation = 0;
+        mPathHistory = new ArrayList<Coordinate>();
     }
 
     public MapDrawable(int demoCode){
@@ -47,6 +48,7 @@ public class MapDrawable extends Drawable {
         mStrokeWidth = strokeWidth;
         mWalls = walls;
         mDegreeRotation = 0;
+        mPathHistory = new ArrayList<Coordinate>();
     }
 
     public void defaultSetup(){
@@ -54,6 +56,7 @@ public class MapDrawable extends Drawable {
         mStrokeColor = Color.LTGRAY;
         mStrokeWidth = 10;
         mDegreeRotation = 0;
+        mPathHistory = new ArrayList<Coordinate>();
 
         //Demo Wall Map
         mWalls = new Wall[8];
@@ -123,8 +126,8 @@ public class MapDrawable extends Drawable {
         Paint pathPaint = new Paint();
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
-        pathPaint.setColor(Color.BLUE);
-        pathPaint.setStrokeWidth(2);
+        pathPaint.setColor(Color.GREEN);
+        pathPaint.setStrokeWidth(4);
         canvas.translate(moveX,moveY);
         canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         canvas.drawColor(mBackgroundColor);

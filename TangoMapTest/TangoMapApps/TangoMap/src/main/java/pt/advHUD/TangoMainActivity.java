@@ -77,10 +77,10 @@ public class TangoMainActivity extends Activity {
                     public void run() {
                         if(roll != -300 && translation[0] != 0 && translation[1] != 0 && translation[2] != 0) {
                             mapView.invalidate();
-                            mapDrawable.appendPathPoint(new Coordinate((translation[0]*-50),(translation[1]*50)));
+                            mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
                             mapDrawable.setDegreeRotation((int)(-1*roll));
-                            mapDrawable.moveX = (int)(translation[0]*-50);
-                            mapDrawable.moveY = (int)(translation[1]*50);
+                            mapDrawable.moveX = (int)(translation[0]*-25);
+                            mapDrawable.moveY = (int)(translation[1]*25);
                         }
                     }
                 });
