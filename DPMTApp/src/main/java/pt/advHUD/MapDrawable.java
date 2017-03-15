@@ -27,12 +27,14 @@ public class MapDrawable extends Drawable {
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     public ArrayList<Point> mPoints;
     public ArrayList<Wall> mWalls;
+    ArrayList<Coordinate> mPathHistory;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
         mStrokeColor = Color.BLUE;
         mStrokeWidth = 5;
         mDegreeRotation = 0;
+        mPathHistory = new ArrayList<Coordinate>();
     }
 
     public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, ArrayList<Point> inPoints){
@@ -41,6 +43,7 @@ public class MapDrawable extends Drawable {
         mStrokeWidth = strokeWidth;
         mPoints = inPoints;
         mDegreeRotation = 0;
+        mPathHistory = new ArrayList<Coordinate>();
     }
 
     public void setMapMode(boolean modeFlag){
@@ -86,8 +89,11 @@ public class MapDrawable extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         Paint mPaint = new Paint();
+        Paint pathPaint = new Paint();
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
+        pathPaint.setColor(Color.GREEN);
+        pathPaint.setStrokeWidth(4);
         canvas.translate(moveX,moveY);
         if(userLocked){
             canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
@@ -96,13 +102,18 @@ public class MapDrawable extends Drawable {
             canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
         canvas.drawColor(mBackgroundColor);
-        /*if(mPoints != null){
+        if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i++){
                 Point pt = mPoints.get(i);
                 canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint); //x and z being used; why not y?
             }
-        }*/
-        if(mWalls != null){
+        }
+        if(mPathHistory != null){
+            for(int i=0; i < mPathHistory.size(); i++){
+                canvas.drawPoint((float)mPathHistory.get(i).coordx,(float)mPathHistory.get(i).coordy,pathPaint);
+            }
+        }
+        /*if(mWalls != null){
             for(int i=0; i < mWalls.size(); i++){
                 if(mWalls.get(i).isValid()){
                     canvas.drawLine((float)((mWalls.get(i).getEdge1().x+2.5)*60),
@@ -112,7 +123,7 @@ public class MapDrawable extends Drawable {
                                     mPaint);
                 }
             }
-        }
+        }*/
         mPaint.setColor(Color.RED);
         Path newPath = constructUser();
         canvas.drawPath(newPath,mPaint);
@@ -120,6 +131,10 @@ public class MapDrawable extends Drawable {
 
     public void setPointArray(ArrayList<Point> points){
         mPoints = points;
+    }
+
+    public void appendPathPoint(Coordinate c){
+        mPathHistory.add(c);
     }
 
     public void setWallArray(ArrayList<Wall> walls){mWalls = walls;}

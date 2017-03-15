@@ -42,9 +42,9 @@ import java.util.ArrayList;
  * Main Activity class for the Depth Perception Sample. Handles the connection to the {@link Tango}
  * service and propagation of Tango PointCloud data to Layout view.
  */
-public class DPMTMergeActivity extends Activity {
+public class DPMTActivity extends Activity {
 
-    private static final String TAG = DPMTMergeActivity.class.getSimpleName();
+    private static final String TAG = DPMTActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
     private static final double angleMargin = Math.PI / 6;
@@ -78,17 +78,20 @@ public class DPMTMergeActivity extends Activity {
     float rotMatrix[] = new float[9];
     float euOrient[] = new float[3];
 
-    //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
+    //Setup new thread to control UI view updates
     Thread updateTextViewThread = new Thread(){
         public void run(){
             while(true){
-                DPMTMergeActivity.this.runOnUiThread(new Runnable() {
+                DPMTActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mapView.invalidate();
-                        //mapDrawable.setDegreeRotation((int)(-1*roll));
-                        //mapDrawable.setPointArray(global_points);
-                        mapDrawable.setWallArray(wallList);
+                        mapDrawable.setDegreeRotation((int)(-1*roll));
+                        mapDrawable.setPointArray(global_points);
+                        mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
+                        mapDrawable.moveX = (int)(translation[0]*-25);
+                        mapDrawable.moveY = (int)(translation[1]*25);
+                        //mapDrawable.setWallArray(wallList);
                     }
                 });
                 try {
@@ -118,14 +121,14 @@ public class DPMTMergeActivity extends Activity {
         // Initialize Tango Service as a normal Android Service, since we call mTango.disconnect()
         // in onPause, this will unbind Tango Service, so every time when onResume gets called, we
         // should create a new Tango object.
-        mTango = new Tango(DPMTMergeActivity.this, new Runnable() {
+        mTango = new Tango(DPMTActivity.this, new Runnable() {
             // Pass in a Runnable to be called from UI thread when Tango is ready, this Runnable
             // will be running on a new thread.
             // When Tango is ready, we can call Tango functions safely here only when there is no UI
             // thread changes involved.
             @Override
             public void run() {
-                synchronized (DPMTMergeActivity.this) {
+                synchronized (DPMTActivity.this) {
                     try {
                         mConfig = setupTangoConfig(mTango);
                         mTango.connect(mConfig);
@@ -400,7 +403,7 @@ public class DPMTMergeActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(DPMTMergeActivity.this,
+                Toast.makeText(DPMTActivity.this,
                         getString(resId), Toast.LENGTH_LONG).show();
                 finish();
             }

@@ -27,14 +27,14 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/at"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <uses-library
             android:name="com.projecttango.libtango_device2"
             android:required="true" />
         <activity
-            android:name=".DPMTMergeActivity"
+            android:name=".DPMTActivity"
             android:label="@string/app_name_long"
             android:configChanges="orientation|screenSize">
             <intent-filter android:label="@string/app_name">
