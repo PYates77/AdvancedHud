@@ -5,6 +5,10 @@ public class Line {
     private double intercept;
     private double angle;
     
+    public Line(Point p1, Point p2) {
+        
+    }
+    
     public Line(double s, double i) {
         slope = s;
         intercept = i;
