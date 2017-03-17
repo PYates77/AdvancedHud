@@ -11,7 +11,8 @@ public class Wall2D {
     
     public addPoint(Point p, double angleMargin) {
         if (isValid == false) {
-        
+            edge2 = p;
+            line = new Line(edge1, edge2);
         }
     }
 }
