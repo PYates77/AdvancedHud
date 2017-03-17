@@ -49,6 +49,9 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final double angleMargin = Math.PI / 6;
     private static final double distanceMargin = 3; // needs to be determined
 
+    // 2-D attempt
+    private static final numGroups = 160;
+    
     private ArrayList<Point> global_points;
 
     private Tango mTango;
@@ -238,6 +241,35 @@ public class HelloDepthPerceptionActivity extends Activity {
                 }
             }
 
+            private void generateWalls(ArrayList<Point> points) {
+                
+            }
+            
+            private ArrayList<Point> generateAverages(ArrayList<Point> allPoints) {
+                ArrayList<Point> averagedPoints = new ArrayList<Point>();
+                
+                if (allPoints.size() > 0) {
+                
+                    for (int i = 0; i < numGroups; i++) {
+                        double groupSize = numGroups/allPoints.size();
+                        int start = (int) i*groupSize;
+                        Point avg = new Point(allPoints.get(start));
+                      
+                        for (int j = start + 1; j < start + groupSize; j++)
+                            avg.add(allPoints.get(j));
+                      
+                        avg.x /= groupSize;
+                        avg.y /= groupSize;
+                        avg.z /= groupSize;
+                        
+                        averagedPoints.add(avg);
+                    }
+                
+                }
+                
+                return averagedPoints;
+            }
+            
             @Override
             public void onPointCloudAvailable(final TangoPointCloudData pointCloudData) {
 
@@ -246,16 +278,13 @@ public class HelloDepthPerceptionActivity extends Activity {
                 } else {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
-                    global_points = points;
+                    
+                    global_points = generateAverages(points);
+                    
+                    // global_points = 
+                    
+                    /*global_points = points;
                     points = sample_array(points);
-
-                    // GENERATE TEST POINT CLOUD ---------------------------------
-//                    ArrayList<Point> points = new ArrayList<Point>();
-//
-//                    for (int i = 0; i < 1000; i++) {
-//                        points.add(new Point(Math.random(), Math.random(), 0));
-//                    }
-                    // -----------------------------------------------------------
 
                     kmeans = new KMeans(points, NUM_CLUSTERS); // generate clusters from point cloud
                     if (kmeans.allPoints == null) {
@@ -263,33 +292,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                     } else {
                         ArrayList<Cluster> clusters = (ArrayList<Cluster>) kmeans.getPointsClusters();
 
-//                        // PRINT ANGLE BETWEEN FIRST CLUSTER AND ALL OTHERS -------------------------------------------------------
-//                        clusters.get(0).calcPlane();
-//                        Cluster testCluster = clusters.get(0);
-//                        for (int i = 1; i < clusters.size(); i++) {
-//                            clusters.get(i).calcPlane();
-////                            Log.i(TAG, new Double(clusters.get(i).getPlane().calcInterPlaneAngle(testCluster.getPlane())*(180.0 / Math.PI)).toString());
-////                            Log.i(TAG, "Cluster[" + String.valueOf(i) + "] = ");
-////                            Log.i(TAG, "x = " + String.valueOf(clusters.get(i).getPlane().getDirection().x) + " y = " + String.valueOf(clusters.get(i).getPlane().getDirection().y) + " z = " + String.valueOf(clusters.get(i).getPlane().getDirection().z));
-//
-//                        }
-//                        Log.i(TAG, "----boop----");
-                        // --------------------------------------------------------------------------------------------------------
-
                         modifyWallList(clusters);
-//
-//                        //Log.i(TAG, new Boolean(clusters == null).toString());
-//
-//                         PRINT LENGTH OF WALLS
-                        Plane plane = new Plane(new Point(0, 0, 0), new Point(0, 1, 0), new Point(1, 0, 0));
-                        for (int i = 0; i < wallList.size(); i++) {
-                            if (wallList.get(i).isValid()) {
-                                Log.i(TAG, "wall " + i + " angle = " + String.valueOf(wallList.get(i).getPlane().calcInterPlaneAngle(plane)));
-                                Log.i(TAG,"\nWall " +i+" : "+ wallList.get(i).getEdge1().x +" "+wallList.get(i).getEdge1().y+" "+wallList.get(i).getEdge2().x+" "+wallList.get(i).getEdge2().y+"\n"); //debug wall values AKSHAY
-                            }
-                        }
-                        Log.i(TAG, new Integer(wallList.size()).toString());
-                    }
+                    }*/
 
                 }
             }
