@@ -1,3 +1,5 @@
+package pt.advHUD;
+
 public class Line {
     private double slope;
     private double intercept;
