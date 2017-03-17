@@ -50,7 +50,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final double distanceMargin = 3; // needs to be determined
 
     // 2-D attempt
-    private static final numGroups = 160;
+    private static final int numGroups = 160;
     
     private ArrayList<Point> global_points;
 
@@ -252,8 +252,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                 
                     for (int i = 0; i < numGroups; i++) {
                         double groupSize = numGroups/allPoints.size();
-                        int start = (int) i*groupSize;
-                        Point avg = new Point(allPoints.get(start));
+                        int start = i*((int) groupSize);
+                        Point avg = allPoints.get(start);
                       
                         for (int j = start + 1; j < start + groupSize; j++)
                             avg.add(allPoints.get(j));

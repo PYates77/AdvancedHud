@@ -17,28 +17,21 @@ public class Matrix {
             elements[i] = el[i];
     }
 
-<<<<<<< HEAD
     double get(int r, int c) {
         return elements[c + r*numCols];
     }
 
-    Matrix multiply(Matrix rhs) {
-        return null;
-=======
-    Matrix multiply(Matrix rhs) {
-        Matrix A = this;
-        if (A.numCols != rhs.numRows) throw new RuntimeException("Illegal matrix dimensions.");
-        Matrix C = new Matrix(A.numRows, rhs.numCols)
-            for(int i =0; i< C.numRows; i++){ 
-                for( int j=0; j<C.numCols; j++){  
-                    for( int k=0; k < A.numRows; k++){   
-                         C.elements[i][j] += (A.elements[i][k] * rhs.elements[k][j]);
-                    }
-                }
-            }
-        return C; //returns matrix 
-                      
-
->>>>>>> eb4a81e038448b10bf74f238bb76a65ed0a01a92
-    }
+//    Matrix multiply(Matrix rhs) {
+//        Matrix A = this;
+//        if (A.numCols != rhs.numRows) throw new RuntimeException("Illegal matrix dimensions.");
+//        Matrix C = new Matrix(A.numRows, rhs.numCols)
+//        for(int i =0; i< C.numRows; i++){
+//            for( int j=0; j<C.numCols; j++){
+//                for( int k=0; k < A.numRows; k++){
+//                    C.elements[i][j] += (A.elements[i][k] * rhs.elements[k][j]);
+//                }
+//            }
+//        }
+//        return C; //returns matrix
+//    }
 }
