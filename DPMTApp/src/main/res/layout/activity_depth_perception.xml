@@ -15,6 +15,7 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
@@ -26,4 +27,13 @@
         android:layout_alignParentStart="true"
         android:id="@+id/mapView"
         android:background="@android:color/black" />
+
+    <TextView
+        android:text="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/rollView"
+        android:textColor="@android:color/white" />
 </RelativeLayout>
