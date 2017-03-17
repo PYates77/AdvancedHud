@@ -3,7 +3,6 @@ package pt.advHUD;
 public class Line {
     private double slope;
     private double intercept;
-    private double angle;
     
     public Line(Point p1, Point p2) {
         
@@ -41,7 +40,6 @@ public class Line {
     }
     
     public double getAngle(Line rhs) {
-        angle = atan(abs((rhs.slope - slope)/(1+rhs.slope*slope)));
-        return angle;
+        return atan(abs((rhs.slope - slope)/(1+rhs.slope*slope)));
     }
 }
