@@ -21,6 +21,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.atap.tangoservice.Tango;
@@ -34,6 +35,8 @@ import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPointCloudData;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+
+import junit.framework.Test;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -67,6 +70,7 @@ public class DPMTActivity extends Activity {
     private float pitch = 0;
     private float roll = 0; //bogus value so NULLPTREXCEPTION doesn't occur
     private float rollr = 0;
+    private float rollrMath = 0;
     private float qx;
     private float qy;
     private float qz;
@@ -77,6 +81,7 @@ public class DPMTActivity extends Activity {
     private float orientation[] = new float[4];
     float rotMatrix[] = new float[9];
     float euOrient[] = new float[3];
+    private TextView mRollView;
 
     //Setup new thread to control UI view updates
     Thread updateTextViewThread = new Thread(){
@@ -91,6 +96,7 @@ public class DPMTActivity extends Activity {
                         mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
                         mapDrawable.moveX = (int)(translation[0]*-25);
                         mapDrawable.moveY = (int)(translation[1]*25);
+                        //mRollView.setText(String.valueOf(rollrMath));
                         //mapDrawable.setWallArray(wallList);
                     }
                 });
@@ -109,6 +115,7 @@ public class DPMTActivity extends Activity {
         setContentView(R.layout.activity_depth_perception);
 
         mapView = (ImageView)findViewById(R.id.mapView);
+        mRollView = (TextView)findViewById(R.id.rollView);
         mapDrawable = new MapDrawable();
         mapView.setImageDrawable(mapDrawable);
         updateTextViewThread.start();
@@ -219,8 +226,8 @@ public class DPMTActivity extends Activity {
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)+translation[0]); //translates and rotates new point in x
-                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)+translation[1]); //translates and rotates new point in z/y
+                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //rotates new point in x
+                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //rotates new point in z/y
                     out.add(new Point(newx,y1,newz));
 
                 }
@@ -386,6 +393,7 @@ public class DPMTActivity extends Activity {
         rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
         rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
         rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
+        //rollrMath = (float)Math.atan((rotMatrix[7]/rotMatrix[8]));
         //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
         roll = (float)Math.toDegrees(euOrient[2]);
