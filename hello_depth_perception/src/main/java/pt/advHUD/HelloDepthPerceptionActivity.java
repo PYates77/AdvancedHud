@@ -251,7 +251,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 if (allPoints.size() > 0) {
                 
                     for (int i = 0; i < numGroups; i++) {
-                        double groupSize = numGroups/allPoints.size();
+                        double groupSize = ((double) numGroups)/allPoints.size();
                         int start = i*((int) groupSize);
                         Point avg = allPoints.get(start);
                       
@@ -279,9 +279,10 @@ public class HelloDepthPerceptionActivity extends Activity {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
                     
-                    global_points = generateAverages(points);
+                    //global_points = generateAverages(points);
+                    //Log.i(TAG, String.valueOf(global_points.get(0)));
                     
-                    // global_points = 
+                    global_points = points;
                     
                     /*global_points = points;
                     points = sample_array(points);
