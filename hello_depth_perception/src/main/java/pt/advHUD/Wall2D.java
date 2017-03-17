@@ -1,3 +1,5 @@
+package pt.advHUD;
+
 public class Wall2D {
     private Point edge1;
     private Point edge2;
@@ -9,10 +11,12 @@ public class Wall2D {
         isValid = false;
     }
     
-    public addPoint(Point p, double angleMargin) {
+    public void addPoint(Point p, double angleMargin) {
         if (isValid == false) {
             edge2 = p;
             line = new Line(edge1, edge2);
+        } else {
+                
         }
     }
 }
