@@ -3,6 +3,7 @@ package pt.advHUD;
 public class Line {
     private double slope;
     private double intercept;
+    private double angle;
     
     public Line(double s, double i) {
         slope = s;
@@ -36,6 +37,7 @@ public class Line {
     }
     
     public double getAngle(Line rhs) {
-        // add code here
+        angle = atan(abs((rhs.slope - slope)/(1+rhs.slope*slope)));
+        return angle;
     }
 }
