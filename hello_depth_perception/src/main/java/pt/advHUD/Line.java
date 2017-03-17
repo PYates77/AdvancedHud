@@ -5,7 +5,8 @@ public class Line {
     private double intercept;
     
     public Line(Point p1, Point p2) {
-        
+       slope = (p2.y - p1.y)/(p2.x - p1.x);
+       intercept = p2.y - (slope*p2.x); 
     }
     
     public Line(double s, double i) {
