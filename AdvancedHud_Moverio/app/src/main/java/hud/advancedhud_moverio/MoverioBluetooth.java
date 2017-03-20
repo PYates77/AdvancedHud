@@ -13,6 +13,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -46,7 +47,6 @@ public class MoverioBluetooth extends AppCompatActivity {
     private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
 
     private BluetoothAdapter btAdapter;
-    private BluetoothDevice btDevice;
     private final BlockingQueue<Runnable> threadQueue;
     private final ThreadPoolExecutor threadPool;
     private Queue<Double> wallBuffer;
@@ -58,10 +58,11 @@ public class MoverioBluetooth extends AppCompatActivity {
         int processor = Runtime.getRuntime().availableProcessors();
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
         btAdapter = BluetoothAdapter.getDefaultAdapter();
+        wallBuffer = new LinkedList<Double>();
         if(btAdapter == null) {
             Log.e(DEBUG_TAG, "Unable to get BluetoothAdapter");
         }
-        if(!btAdapter.isEnabled()){
+        else if(!btAdapter.isEnabled()) {
             Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBTIntent, BT_ENABLE_REQUEST_INIT);
         }
