@@ -13,6 +13,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -38,39 +39,31 @@ import static android.app.Activity.RESULT_OK;
  * Created by Paul on 3/8/2017.
  */
 
-public class MoverioBluetooth extends AppCompatActivity {
+public class MoverioBluetooth {
 
-    private final int BT_ENABLE_REQUEST_INIT = 0;
+
     private final int BT_ENABLE_REQUEST_CONNECT = 1;
     private final String DEBUG_TAG = "MoverioBluetooth";
     private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
 
     private BluetoothAdapter btAdapter;
-    private BluetoothDevice btDevice;
     private final BlockingQueue<Runnable> threadQueue;
     private final ThreadPoolExecutor threadPool;
     private Queue<Double> wallBuffer;
 
     private boolean connected = false;
 
-    public MoverioBluetooth(){
+    public MoverioBluetooth( BluetoothAdapter adapter){
+        btAdapter = adapter;
         threadQueue = new LinkedBlockingQueue<Runnable>();
         int processor = Runtime.getRuntime().availableProcessors();
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(btAdapter == null) {
-            Log.e(DEBUG_TAG, "Unable to get BluetoothAdapter");
-        }
-        if(!btAdapter.isEnabled()){
-            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBTIntent, BT_ENABLE_REQUEST_INIT);
-        }
+        wallBuffer = new LinkedList<Double>();
     }
 
     public void connect(){
         if(!btAdapter.isEnabled()){
-            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBTIntent, BT_ENABLE_REQUEST_CONNECT);
+            Log.e(DEBUG_TAG, "Bluetooth adapter not enabled. Cannot proceed");
         }
         else{
             threadPool.execute(new ConnectThread());
@@ -164,27 +157,6 @@ public class MoverioBluetooth extends AppCompatActivity {
     public boolean isConnected(){
         //TODO
         return connected;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == BT_ENABLE_REQUEST_INIT){
-            if(resultCode == RESULT_OK){
-                Log.d(DEBUG_TAG,"Bluetooth Enabled by User");
-
-            }
-            else {
-                Log.e(DEBUG_TAG,"Bluetooth is Disabled.");
-            }
-        }
-        if(requestCode == BT_ENABLE_REQUEST_CONNECT){
-            if(resultCode == RESULT_OK){
-                connect(); //we call the connect thread again
-            }
-            else {
-                Log.e(DEBUG_TAG, "Attempting to connect but bluetooth STILL not enabled");
-            }
-        }
     }
 
     public boolean dataReady(){

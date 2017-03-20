@@ -17,14 +17,48 @@ public class Matrix {
             elements[i] = el[i];
     }
 
-    double get(int r, int c) {
-        return elements[c + r*numCols];
+    public Matrix(int nr, int nc) {
+        numCols = nc;
+        numRows = nr;
+
+        for (int i = 0; i < nc*nr; i++)
+            elements[i] = 0;
     }
 
-//    Matrix multiply(Matrix rhs) {
-//        Matrix A = this;
-//        if (A.numCols != rhs.numRows) throw new RuntimeException("Illegal matrix dimensions.");
-//        Matrix C = new Matrix(A.numRows, rhs.numCols)
+    public double[] getElements() {
+        return elements;
+    }
+    
+    public double getElement(int r, int c) {
+        return elements[c + r*numCols];
+    }
+    
+    public double getElement(int pos) {
+        return elements[pos];
+    }
+    
+    public void setElement(double val, int r, int c) {
+        elements[c + r*numCols] = val;
+    }
+    
+    public void setElement(double val, int pos) {
+        elements[pos] = val;
+    }
+
+   Matrix multiply(Matrix rhs) throws Exception {
+       if (numCols != rhs.numRows)
+           throw new Exception("Illegal matrix dimensions.");
+       
+       Matrix out = new Matrix(numRows, rhs.numCols);
+       
+        for (int i = 0; i < numRows; i++) { 
+            for (int j = 0; j < rhs.numCols; j++) { 
+                for (int k = 0; k < numCols; k++) { 
+                    out.setElement(out.getElement(i, j) + getElement(i, k) * rhs.getElement(k, j), i, j);
+                }
+            }
+        }
+       
 //        for(int i =0; i< C.numRows; i++){
 //            for( int j=0; j<C.numCols; j++){
 //                for( int k=0; k < A.numRows; k++){
@@ -32,6 +66,6 @@ public class Matrix {
 //                }
 //            }
 //        }
-//        return C; //returns matrix
-//    }
+       return out; // returns matrix
+   }
 }

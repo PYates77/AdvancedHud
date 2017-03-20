@@ -331,6 +331,41 @@ public class HelloDepthPerceptionActivity extends Activity {
         Log.i(TAG, stringBuilder.toString());
     }
 
+    private Matrix calcGMatrix(TangoPoseData pose) {
+        float translation[] = new float[3];
+        float orientation[] = new float[4];
+        float currMatrix[] = new float[16];
+        translation = pose.getTranslationAsFloats();
+        orientation = pose.getRotationAsFloats();
+        float qw = orientation[0];
+        float qx = orientation[1];
+        float qy = orientation[2];
+        float qz = orientation[3];
+        //Extracting Rotation Matrix from orientation quaternion
+        double[] arr = new double[16];
+        Matrix result = new Matrix(4, 4, arr);
+
+        result.setElement(1-2*(qy*qy)-2*(qz*qz), 0);
+        result.setElement((2*qx*qy)+(2*qz*qw), 1);
+        result.setElement((2*qx*qz)-(2*qy*qw), 2);
+        result.setElement((2*qx*qy)-(2*qz*qw), 4);
+        result.setElement(1-(2*qx*qx)-(2*qz*qz), 5);
+        result.setElement((2*qy*qz)+(2*qx*qw), 6);
+        result.setElement((2*qx*qz)+(2*qy*qw), 8);
+        result.setElement((2*qy*qz)-(2*qx*qw), 9);
+        result.setElement(1-(2*qx*qx)-(2*qy*qy), 10);
+        //Extracting translation matrix
+        result.setElement(translation[0], 3);
+        result.setElement(translation[1], 7);
+        result.setElement(translation[2], 11);
+        //Populating final aspect of 4X4 matrix
+        result.setElement(0, 12);
+        result.setElement(0, 13);
+        result.setElement(0, 14);
+        result.setElement(1, 15);
+        return result;
+    }
+    
     /**
      * Display toast on UI thread.
      *
