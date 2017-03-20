@@ -17,6 +17,14 @@ public class Matrix {
             elements[i] = el[i];
     }
 
+    public Matrix(int nr, int nc) {
+        numCols = nc;
+        numRows = nr;
+
+        for (int i = 0; i < nc*nr; i++)
+            elements[i] = 0;
+    }
+
     public double[] getElements() {
         return elements;
     }
@@ -41,12 +49,12 @@ public class Matrix {
        if (numCols != rhs.numRows)
            throw new Exception("Illegal matrix dimensions.");
        
-       Matrix out = new Matrix(numRows, rhs.numCols, arr);
+       Matrix out = new Matrix(numRows, rhs.numCols);
        
         for (int i = 0; i < numRows; i++) { 
             for (int j = 0; j < rhs.numCols; j++) { 
                 for (int k = 0; k < numCols; k++) { 
-                    out.setElement(i, j) += getElement(i, k) * rhs.getElement(k, j);
+                    out.setElement(out.getElement(i, j) + getElement(i, k) * rhs.getElement(k, j), i, j);
                 }
             }
         }
