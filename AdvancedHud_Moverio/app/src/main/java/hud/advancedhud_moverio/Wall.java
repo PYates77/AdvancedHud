@@ -35,6 +35,10 @@ public class Wall {
         double a[] = {endX,endY};
         return a;
     }
+    public double[] getDoubleArray(){
+        double a[] = {startX,startY,endX,endY};
+        return a;
+    }
     public void setCoordinates(int sx, int sy, int ex, int ey){
         startX= sx;
         startY= sy;
