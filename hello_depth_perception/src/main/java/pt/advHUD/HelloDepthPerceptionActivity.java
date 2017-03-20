@@ -332,35 +332,38 @@ public class HelloDepthPerceptionActivity extends Activity {
     }
 
     private Matrix calcGMatrix(TangoPoseData pose) {
-        private float translation[] = new float[3];
-        private float orientation[] = new float[4];
-        private float gMatrix[] = new float[16];
-            translation = pose.getTranslationAsFloats();
-            orientation = pose.getRotationAsFloats();
-            qw = orientation[0];
-            qx = orientation[1];
-            qy = orientation[2];
-            qz = orientation[3];
+        float translation[] = new float[3];
+        float orientation[] = new float[4];
+        float currMatrix[] = new float[16];
+        translation = pose.getTranslationAsFloats();
+        orientation = pose.getRotationAsFloats();
+        float qw = orientation[0];
+        float qx = orientation[1];
+        float qy = orientation[2];
+        float qz = orientation[3];
         //Extracting Rotation Matrix from orientation quaternion
-            gMatrix[0] = 1-2*(qy*qy)-2*(qz*qz);
-            gMatrix[1] = (2*qx*qy)+(2*qz*qw);
-            gMatrix[2] = (2*qx*qz)-(2*qy*qw);
-            gMatrix[4] = (2*qx*qy)-(2*qz*qw);
-            gMatrix[5] = 1-(2*qx*qx)-(2*qz*qz);
-            gMatrix[6] = (2*qy*qz)+(2*qx*qw);
-            gMatrix[8] = (2*qx*qz)+(2*qy*qw);
-            gMatrix[9] = (2*qy*qz)-(2*qx*qw);
-            gMatrix[10] = 1-(2*qx*qx)-(2*qy*qy);
+        double[] arr = new double[16];
+        Matrix result = new Matrix(4, 4, arr);
+
+        result.setElement(1-2*(qy*qy)-2*(qz*qz), 0);
+        result.setElement((2*qx*qy)+(2*qz*qw), 1);
+        result.setElement((2*qx*qz)-(2*qy*qw), 2);
+        result.setElement((2*qx*qy)-(2*qz*qw), 4);
+        result.setElement(1-(2*qx*qx)-(2*qz*qz), 5);
+        result.setElement((2*qy*qz)+(2*qx*qw), 6);
+        result.setElement((2*qx*qz)+(2*qy*qw), 8);
+        result.setElement((2*qy*qz)-(2*qx*qw), 9);
+        result.setElement(1-(2*qx*qx)-(2*qy*qy), 10);
         //Extracting translation matrix
-        gMatrix[3] = translation[0];
-        gMatrix[7] = translation[1];
-        gMatrix[11] = translation[2];
+        result.setElement(translation[0], 3);
+        result.setElement(translation[1], 7);
+        result.setElement(translation[2], 11);
         //Populating final aspect of 4X4 matrix
-        gMatrix[12] = 0;
-        gMatrix[13] = 0;
-        gMatrix[14] = 0;
-        gMatrix[15] = 1;
-        return new Matrix(4, 4, gMatrix);
+        result.setElement(0, 12);
+        result.setElement(0, 13);
+        result.setElement(0, 14);
+        result.setElement(1, 15);
+        return result;
     }
     
     /**
