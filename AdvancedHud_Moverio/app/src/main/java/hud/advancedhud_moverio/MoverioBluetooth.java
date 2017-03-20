@@ -27,7 +27,7 @@ import static android.app.Activity.RESULT_OK;
  * This class maintains a bluetooth connection with the google tango
  * it interprets bluetooth packets from the tango as wall coordinates
  *
- * To use: create a MoverioBluetooth object
+ * To use: create a MoverioBluetooth object with a bluetooth adapter
  * call the connect() method to connect
  * call the getData() method for an array of wall objects
  * call the disconnect() method to disconnect
@@ -41,8 +41,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class MoverioBluetooth {
 
-
-    private final int BT_ENABLE_REQUEST_CONNECT = 1;
     private final String DEBUG_TAG = "MoverioBluetooth";
     private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
 
