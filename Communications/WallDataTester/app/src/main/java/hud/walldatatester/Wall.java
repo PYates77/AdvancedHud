@@ -34,6 +34,13 @@ public class Wall {
         return edge1;
     }
 
+    public void setEdge1(Point mE1){
+        edge1 = mE1;
+    }
+    public void setEdge2(Point mE2){
+        edge1 = mE2;
+    }
+
     public void update(Cluster cluster) {
         if (cluster == null)
             return;
