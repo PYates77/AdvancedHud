@@ -11,16 +11,28 @@ public class Point {
   this.z = z;
  }
 
+ public Point(Point p) {
+  x = p.x;
+  y = p.y;
+  z = p.z;
+ }
+
  public void add(Point p) {
   x += p.x;
   y += p.y;
   z += p.z;
  }
 
+ public void subtract(Point p) {
+  x -= p.x;
+  y -= p.y;
+  z -= p.z;
+ }
+
  public double dist2D(Point p) {
    double out = 0;
    
-   return Math.sqrt(Math.pow(x - p.x, 2) + Math.pow(y - p.y, 2));
+   return Math.sqrt(Math.pow(x - p.x, 2) + Math.pow(z - p.z, 2));
  }
   
  public Double getSquareOfDistance(Point anotherPoint){
