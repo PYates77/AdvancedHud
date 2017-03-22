@@ -46,11 +46,12 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = Math.PI / 6;
-    private static final double distanceMargin = 3; // needs to be determined
+    private static final double angleMargin = Math.PI / 6.0;
+    private static final double distanceMargin = 0.5; // needs to be determined
 
     // 2-D attempt
     private static final int numGroups = 160;
+    private static final int minPointCount = 10;
     
     private ArrayList<Point> global_points;
 
@@ -61,6 +62,9 @@ public class HelloDepthPerceptionActivity extends Activity {
     private HUD_User hud_user = new HUD_User();
     private KMeans kmeans;
     private ArrayList<Wall> wallList = new ArrayList<Wall>();
+    private ArrayList<Wall2D> wall2DList = new ArrayList<Wall2D>();
+    private ArrayList<Wall2D> wallOutList = new ArrayList<Wall2D>();
+    private Matrix gMatrix;
 
     private ImageView mapView;
     private MapDrawable mapDrawable;
@@ -174,7 +178,8 @@ public class HelloDepthPerceptionActivity extends Activity {
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                hud_user.update_pose(pose);
+                //hud_user.update_pose(pose);
+                gMatrix = calcGMatrix(pose);
 //                logPose(hud_user.getPose());
 //                logPose(pose);
             }
@@ -188,8 +193,16 @@ public class HelloDepthPerceptionActivity extends Activity {
             ArrayList<Point> to_point_list(FloatBuffer arr) {
                 ArrayList<Point> out = new ArrayList<Point>();
 
-                for (int i = 0; i < arr.limit(); i += 4)
-                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
+                for (int i = 0; i < arr.limit(); i += 4) {
+                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
+                    Matrix pointMat = new Matrix(4, 1, currPoint);
+                    try {
+                        pointMat = gMatrix.multiply(pointMat);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));
+                }
 
                 return out;
             }
@@ -213,7 +226,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                     Point p2 = new Point(1, 0, 0);
                     Point p3 = new Point(0, 1, 0);
                     Plane xyPlane = new Plane(p1, p2, p3);
-                    
+
                     a.get(i).calcPlane();
                     if (a.get(i).getPlane() != null) {
                         if (a.get(i).getPlane().calcInterPlaneAngle(xyPlane) > angleMargin) {
@@ -226,7 +239,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                                         wallList.get(j).update(a.get(i));
                                         condition = true; // wall found
                                     }
-                                    
+
                                     if (angle < Math.PI/2.0 - angleMargin && angle > angleMargin) {
                                         condition = true; // cluster plane in dead zone
                                     }
@@ -241,18 +254,87 @@ public class HelloDepthPerceptionActivity extends Activity {
                 }
             }
 
-            private void generateWalls(ArrayList<Point> points) {
-                
+            private void modifyOutList() {
+                for (int i = 0; i < wall2DList.size(); i++) {
+                    Wall2D curWall = wall2DList.get(i);
+
+                    if (curWall.getPointCount() > minPointCount) {
+                        boolean found = false;
+
+                        int j = 0;
+                        while (!false && j < wallOutList.size()) {
+                            if (curWall.getAngle(wallOutList.get(j)) < angleMargin) {
+                                found = true;
+                            }
+
+                            j++;
+                        }
+
+                        if (!found)
+                            wallOutList.add(curWall);
+                    } else
+                        Log.i(TAG, String.valueOf(curWall.getPointCount()));
+                }
             }
-            
+
+            private void modify2DWallList(ArrayList<Point> points) {
+                if (points == null)
+                    return;
+
+                boolean wallFound = false;
+
+                for (int i = 0; i < points.size(); i++) {
+
+                    Point curPoint = points.get(i);
+                    for (int j = 0; j < wall2DList.size(); j++) {
+                        if (wall2DList.get(j).getDistance(curPoint) < distanceMargin) {
+                            wall2DList.get(j).addPoint(curPoint);
+                            wallFound = true;
+                        }
+                    }
+
+                    if (!wallFound) {
+                        wall2DList.add(new Wall2D(curPoint));
+                    }
+                }
+            }
+
+            // attempt to calc point cloud trend line
+            private Line linearRegression(ArrayList<Point> points) {
+                double sumx = 0.0, sumz = 0.0, sumx2 = 0.0;
+
+                for (int i = 0; i < points.size(); i++) {
+                    Point curPoint = points.get(i);
+                    sumx += curPoint.x;
+                    sumz += curPoint.z;
+                    sumx2 += curPoint.x*curPoint.x;
+                }
+
+                double xbar = sumx/((double) points.size());
+                double zbar = sumz/((double) points.size());
+
+                double xxbar = 0.0, xzbar = 0.0;
+
+                for (int i = 0; i < points.size(); i++) {
+                    Point curPoint = points.get(i);
+                    xxbar += (curPoint.x - xbar) * (curPoint.x - xbar);
+                    xzbar += (curPoint.x - xbar) * (curPoint.z - zbar);
+                }
+
+                double slope = xzbar / xxbar;
+                double intercept = zbar - slope * xbar;
+
+                return new Line(slope, intercept);
+            }
+
             private ArrayList<Point> generateAverages(ArrayList<Point> allPoints) {
                 ArrayList<Point> averagedPoints = new ArrayList<Point>();
                 
                 if (allPoints.size() > 0) {
                 
                     for (int i = 0; i < numGroups; i++) {
-                        double groupSize = ((double) numGroups)/allPoints.size();
-                        int start = i*((int) groupSize);
+                        int groupSize = allPoints.size()/numGroups;
+                        int start = i*groupSize;
                         Point avg = allPoints.get(start);
                       
                         for (int j = start + 1; j < start + groupSize; j++)
@@ -269,7 +351,33 @@ public class HelloDepthPerceptionActivity extends Activity {
                 
                 return averagedPoints;
             }
-            
+
+            private ArrayList<Point> getDisplayPoints() {
+                double numPointPerLine = 100.0;
+                ArrayList<Point> outPoints = new ArrayList<>();
+
+                for (int i = 0; i < wallOutList.size(); i++) {
+
+                    Point start = wallOutList.get(i).getEdge1();
+                    Point direction = wallOutList.get(i).getEdge2();
+                    direction.subtract(start);
+
+                    for (int j = 1; j <= numPointPerLine; j++) {
+                        outPoints.add(addPoints(start, new Point(direction.x*0.01*j, direction.y*0.01*j, direction.z*0.01*j)));
+                    }
+                }
+
+                return outPoints;
+            }
+
+            public Point addPoints(Point p1, Point p2) {
+                double rx = p1.x + p2.x;
+                double ry  = p1.y + p2.y;
+                double rz = p1.z + p2.z;
+
+                return new Point(rx, ry, rz);
+            }
+
             @Override
             public void onPointCloudAvailable(final TangoPointCloudData pointCloudData) {
 
@@ -278,9 +386,17 @@ public class HelloDepthPerceptionActivity extends Activity {
                 } else {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
-                    
-                    //global_points = generateAverages(points);
+
+                    points = generateAverages(points);
                     //Log.i(TAG, String.valueOf(global_points.get(0)));
+                    modify2DWallList(points);
+
+                    modifyOutList();
+
+                    Log.i(TAG, String.valueOf(wallOutList.get(0).getLine().getSlope()));
+                    Log.i(TAG, String.valueOf(wallOutList.get(0).getLine().getIntercept()));
+
+                    // global_points = getDisplayPoints();
                     
                     global_points = points;
                     
