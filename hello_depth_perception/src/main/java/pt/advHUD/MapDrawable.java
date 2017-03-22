@@ -96,9 +96,10 @@ public class MapDrawable extends Drawable {
         }
         canvas.drawColor(mBackgroundColor);
         if(mPoints != null){
-            for(int i = 0; i < mPoints.size(); i++){
+            for(int i = 0; i < mPoints.size(); i += 2){
                 Point pt = mPoints.get(i);
-                canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint); //x and z being used; why not y?
+                //canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint); //x and z being used; why not y?
+                canvas.drawLine((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), (float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint);
             }
         }
         mPaint.setColor(Color.RED);
