@@ -13,6 +13,8 @@ public class Matrix {
         numCols = nc;
         numRows = nr;
 
+        elements = new double[nc*nr];
+
         for (int i = 0; i < nc*nr; i++)
             elements[i] = el[i];
     }
@@ -21,6 +23,8 @@ public class Matrix {
         numCols = nc;
         numRows = nr;
 
+
+        elements = new double[nc*nr];
         for (int i = 0; i < nc*nr; i++)
             elements[i] = 0;
     }
