@@ -1,12 +1,14 @@
 package pt.advHUD;
 
+// 2D Line, based on the z and x axes
+
 public class Line {
     private double slope;
     private double intercept;
     
     public Line(Point p1, Point p2) {
-       slope = (p2.y - p1.y)/(p2.x - p1.x);
-       intercept = p2.y - (slope*p2.x); 
+       slope = (p2.z - p1.z)/(p2.x - p1.x);
+       intercept = p2.z - (slope*p2.x);
     }
     
     public Line(double s, double i) {
@@ -41,6 +43,6 @@ public class Line {
     }
     
     public double getAngle(Line rhs) {
-        return atan(abs((rhs.slope - slope)/(1+rhs.slope*slope)));
+        return Math.atan(Math.abs((rhs.slope - slope)/(1+rhs.slope*slope)));
     }
 }
