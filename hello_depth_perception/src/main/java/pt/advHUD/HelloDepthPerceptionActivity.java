@@ -277,24 +277,27 @@ public class HelloDepthPerceptionActivity extends Activity {
                 }
             }
 
-            private void modify2DWallList(ArrayList<Point> points) {
+            private void modify2DWallList(ArrayList<Point> points, ArrayList<Line> lines) {
                 if (points == null)
                     return;
 
-                boolean wallFound = false;
-
                 for (int i = 0; i < points.size(); i++) {
 
+                    boolean wallFound = false;
+                    
                     Point curPoint = points.get(i);
+                    Line curLine = lines.get(i);
                     for (int j = 0; j < wall2DList.size(); j++) {
-                        if (wall2DList.get(j).getDistance(curPoint) < distanceMargin) {
-                            wall2DList.get(j).addPoint(curPoint);
+                        Wall2D curWall = wall2DList.get(j);
+                        
+                        if (curWall.getDistance(curPoint) < distanceMargin && curWall.getLine().getAngle(curLine) < angleMargin) {
+                            curWall.addPoint(curPoint);
                             wallFound = true;
                         }
                     }
 
                     if (!wallFound) {
-                        wall2DList.add(new Wall2D(curPoint));
+                        wall2DList.add(new Wall2D(curPoint, curLine));
                     }
                 }
             }
@@ -370,6 +373,12 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return outPoints;
             }
 
+            private ArrayList<Line> generateLines(ArrayList <Point> points) {
+                
+                
+                return null;
+            }
+            
             public Point addPoints(Point p1, Point p2) {
                 double rx = p1.x + p2.x;
                 double ry  = p1.y + p2.y;
@@ -387,9 +396,15 @@ public class HelloDepthPerceptionActivity extends Activity {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
 
+                    ArrayList<Line> lines = generateLines(points);
+                    
                     points = generateAverages(points);
                     //Log.i(TAG, String.valueOf(global_points.get(0)));
-                    modify2DWallList(points);
+                    
+                    for (int i = 0; i < points.size(); i++)
+                        
+                    
+                    modify2DWallList(points, lines);
 
                     modifyOutList();
 
