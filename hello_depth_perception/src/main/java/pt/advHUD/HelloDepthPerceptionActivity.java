@@ -255,26 +255,34 @@ public class HelloDepthPerceptionActivity extends Activity {
             }
 
             private void modifyOutList() {
+                wallOutList = new ArrayList<Wall2D>();
                 for (int i = 0; i < wall2DList.size(); i++) {
                     Wall2D curWall = wall2DList.get(i);
 
                     if (curWall.getPointCount() > minPointCount) {
-                        boolean found = false;
-
-                        int j = 0;
-                        while (!false && j < wallOutList.size()) {
-                            if (curWall.getAngle(wallOutList.get(j)) < angleMargin) {
-                                found = true;
-                            }
-
-                            j++;
-                        }
-
-                        if (!found)
-                            wallOutList.add(curWall);
-                    } else
-                        Log.i(TAG, String.valueOf(curWall.getPointCount()));
+                        wall2DList.add(curWall);
+                    }
                 }
+//                for (int i = 0; i < wall2DList.size(); i++) {
+//                    Wall2D curWall = wall2DList.get(i);
+//
+//                    if (curWall.getPointCount() > minPointCount) {
+//                        boolean found = false;
+//
+//                        int j = 0;
+//                        while (!false && j < wallOutList.size()) {
+//                            if (curWall.getAngle(wallOutList.get(j)) < angleMargin) {
+//                                found = true;
+//                            }
+//
+//                            j++;
+//                        }
+//
+//                        if (!found)
+//                            wallOutList.add(curWall);
+//                    } else
+//                        Log.i(TAG, String.valueOf(curWall.getPointCount()));
+//                }
             }
 
             private void modify2DWallList(ArrayList<Point> points, ArrayList<Line> lines) {
