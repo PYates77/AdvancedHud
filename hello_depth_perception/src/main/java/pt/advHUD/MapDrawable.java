@@ -26,12 +26,14 @@ public class MapDrawable extends Drawable {
     public int moveY = 0;
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     public ArrayList<Point> mPoints;
+    public ArrayList<Wall2D> mWallList;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
         mStrokeColor = Color.BLUE;
         mStrokeWidth = 5;
         mDegreeRotation = 0;
+        mWallList = new ArrayList<Wall2D>();
     }
 
     public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, ArrayList<Point> inPoints){
