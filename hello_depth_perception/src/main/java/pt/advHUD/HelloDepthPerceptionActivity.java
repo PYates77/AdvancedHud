@@ -77,7 +77,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                     @Override
                     public void run() {
                         mapView.invalidate();
-                        mapDrawable.setPointArray(global_points);
+                        //mapDrawable.setPointArray(global_points);
+                        mapDrawable.setWallArray(wallOutList);
                     }
                 });
                 try {
