@@ -27,30 +27,12 @@
         android:layout_height="300dp"
         android:background="@android:color/black" />
 
-    <TextView
-        android:text="Z"
+    <Button
+        android:text="RECORD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/zView"
-        android:textColor="@android:color/white" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/recordButton" />
 
-    <TextView
-        android:text="Y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/zView"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/yView"
-        android:textColor="@android:color/white" />
-
-    <TextView
-        android:text="X"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/yView"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/xView"
-        android:textColor="@android:color/white" />
 </RelativeLayout>

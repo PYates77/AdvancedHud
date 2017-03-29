@@ -17,9 +17,12 @@
 package pt.advHUD;
 
 import android.app.Activity;
+import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +41,9 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -64,9 +70,11 @@ public class TangoMainActivity extends Activity {
     float euOrient[] = new float[3];
     private MapDrawable mapDrawable = new MapDrawable(1234);
     private ImageView mapView;
-    private TextView xView;
-    private TextView yView;
-    private TextView zView;
+    private Button mRecordButton;
+    private boolean recording = false;
+    private File poseData;
+    private FileOutputStream fileStream;
+    private String poseFileName = "TangoRun";
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -104,12 +112,27 @@ public class TangoMainActivity extends Activity {
         translation[2] = 0;
 
         mapView = (ImageView)findViewById(R.id.mapView);
-        xView = (TextView)findViewById(R.id.xView);
-        yView = (TextView)findViewById(R.id.yView);
-        zView = (TextView)findViewById(R.id.zView);
+        mRecordButton = (Button)findViewById(R.id.recordButton);
         mapView.setImageDrawable(mapDrawable);
         //updateTextViewThread.setPriority(Thread.MAX_PRIORITY); //CHANGE THIS WHEN ADDING NEW CODE
         updateTextViewThread.start();
+
+        poseData = new File(TangoMainActivity.this.getFilesDir(),poseFileName);
+        poseData.mkdir();
+
+        //Recording Pose Data via RecordButton
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!recording) {
+                    Toast.makeText(TangoMainActivity.this,"Recording Pose Data Enabled",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(TangoMainActivity.this,"Recording Pose Data Disabled",Toast.LENGTH_LONG).show();
+                }
+                recording = !recording;
+            }
+        });
     }
 
     @Override
@@ -221,13 +244,13 @@ public class TangoMainActivity extends Activity {
      * @param pose the pose to log.
      */
     private void updateLocation(TangoPoseData pose) {
-        //StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         translation = pose.getTranslationAsFloats();
-        //stringBuilder.append("Position: " +translation[0]*100 + ", " + translation[1]*100 + ", " + translation[2]*100+"\n");
+        stringBuilder.append("Position: " +translation[0] + ", " + translation[1] + ", " + translation[2]);
         orientation = pose.getRotationAsFloats();
-        //stringBuilder.append(". Orientation: " +
-                //orientation[0] + ", " + orientation[1] + ", " +
-                //orientation[2] + ", " + orientation[3]+"\n");
+        stringBuilder.append(". Orientation: " +
+                orientation[0] + ", " + orientation[1] + ", " +
+                orientation[2] + ", " + orientation[3]+"\n");
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -247,6 +270,17 @@ public class TangoMainActivity extends Activity {
         roll = (float)Math.toDegrees(euOrient[2]);
         //stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
         //Log.i(TAG, stringBuilder.toString());
+
+        if(recording){
+            try {
+                fileStream = new FileOutputStream(poseData);
+                fileStream.write(stringBuilder.toString().getBytes());
+                fileStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /**
