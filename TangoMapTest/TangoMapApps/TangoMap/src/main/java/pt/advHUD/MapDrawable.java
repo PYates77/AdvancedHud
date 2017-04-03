@@ -7,8 +7,17 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Akshay on 2/15/2017.
@@ -163,6 +172,39 @@ public class MapDrawable extends Drawable {
     }
 
     public void setDegreeRotation(int degreeRotation){mDegreeRotation = degreeRotation;}
+
+    public ArrayList<Float> extractFriendlyInfo(File fData, BufferedReader reader){
+        if(fData != null){
+            try {
+                String line;
+                Pattern pt = Pattern.compile("^Position\\:\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)\\,\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)\\,\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)\\.{1}");
+                Pattern po = Pattern.compile("Orientation\\:\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)\\,\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)\\,\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)\\,\\s*(\\-?\\d{1}\\.{1}\\d*\\w?\\-?\\d?)$");
+                line = reader.readLine();
+                if(line == null){
+                    reader.close();
+                }
+                if(line != null){
+                    Matcher m1 = pt.matcher(line);
+                    Matcher m2 = po.matcher(line);
+                    while (m1.find()){
+                        StringBuilder stringBuilder1 = new StringBuilder();
+                        stringBuilder1.append("XAM: " + m1.group(1)+", YAM: "+ m1.group(2)+" , ZAM: "+ m1.group(3)+ "\n");
+                        Log.i(TangoMainActivity.class.getSimpleName(),stringBuilder1.toString());
+                    }
+                    while (m2.find()){
+                        StringBuilder stringBuilder2 = new StringBuilder();
+                        stringBuilder2.append("OR0: " + m2.group(1)+", OR1: "+ m2.group(2)+" , OR2: "+ m2.group(3)+ " , OR3: "+ m2.group(4)+"\n");
+                        Log.i(TangoMainActivity.class.getSimpleName(),stringBuilder2.toString());
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     @Override
     public int getIntrinsicHeight() {

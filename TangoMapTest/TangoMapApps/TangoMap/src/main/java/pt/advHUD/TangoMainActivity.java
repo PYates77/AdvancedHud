@@ -42,10 +42,12 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,6 +79,7 @@ public class TangoMainActivity extends Activity {
     private Button mRecordButton;
     private boolean recording = false;
     private File poseData;
+    private BufferedReader friendlyReader;
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -91,11 +94,18 @@ public class TangoMainActivity extends Activity {
                             mapDrawable.setDegreeRotation((int)(-1*roll));
                             mapDrawable.moveX = (int)(translation[0]*-25);
                             mapDrawable.moveY = (int)(translation[1]*25);
+                            try {
+                                if(friendlyReader.ready()){
+                                    mapDrawable.extractFriendlyInfo(poseData,friendlyReader);
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 });
                 try {
-                    Thread.sleep(500); //2Hz refresh rate
+                    Thread.sleep(1000); //2Hz refresh rate
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -143,7 +153,11 @@ public class TangoMainActivity extends Activity {
                 e.printStackTrace();
             }
         }
-        Log.i(TAG,poseData.getAbsolutePath());
+        try {
+            friendlyReader = new BufferedReader(new FileReader(poseData));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
