@@ -3,6 +3,7 @@ package hud.advancedhud_moverio;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Intent;
+import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
         btManager = new MoverioBluetooth(btAdapter);
 
         btManager.connect();
-
-        threadPool.execute(new DataFetcher());
+        if(btAdapter.isEnabled()) {
+            threadPool.execute(new DataFetcher());
+        }
 
 
         
@@ -49,15 +51,22 @@ public class MainActivity extends AppCompatActivity {
 
     public class DataFetcher implements Runnable{
         public void run(){
+            android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             //todo actually render the walls using akshay's code
-            while(true){
-                Wall[] walls = btManager.getData();
-                if(walls != null) {
-                    for (int i = 0; i < walls.length; i++) {
-                        //Log.d("Receiving", "Got wall data: " + walls[i]);
-                        Double[] w = walls[i].getDoubleArray();
-                        Log.d("Receiving","Wall " + i + " has Start = (" + w[0] + "," + w[1] + ")  End = (" + w[2] + "," + w[3] + ")");
+            while(btAdapter.isEnabled()){
+                if(btManager.isConnected() && !btManager.isConnecting()) {
+                    Wall[] walls = btManager.getData();
+                    if (walls != null) {
+                        for (int i = 0; i < walls.length; i++) {
+                            //Log.d("Receiving", "Got wall data: " + walls[i]);
+                            Double[] w = walls[i].getDoubleArray();
+                            Log.d("Receiving", "Wall " + i + " has Start = (" + w[0] + "," + w[1] + ")  End = (" + w[2] + "," + w[3] + ")");
+                        }
                     }
+                }
+                //attempt to reconnect if the manager is neither connected nor currently attempting to connect
+                else if(!btManager.isConnected() && !btManager.isConnecting()){
+                    btManager.connect();
                 }
             }
         }
@@ -76,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if(requestCode == BT_ENABLE_REQUEST_CONNECT){
             if(resultCode == RESULT_OK){
-                btManager.connect(); //attempt to connect again
+                btManager.connect(); //now that bt is enabled we attempt to connect again
+                threadPool.execute(new DataFetcher());
             }
             else {
                 Log.e("ActivityResult", "Attempting to connect but bluetooth STILL not enabled");
