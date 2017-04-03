@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -41,9 +42,12 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -73,8 +77,6 @@ public class TangoMainActivity extends Activity {
     private Button mRecordButton;
     private boolean recording = false;
     private File poseData;
-    private FileOutputStream fileStream;
-    private String poseFileName = "TangoRun";
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -117,9 +119,6 @@ public class TangoMainActivity extends Activity {
         //updateTextViewThread.setPriority(Thread.MAX_PRIORITY); //CHANGE THIS WHEN ADDING NEW CODE
         updateTextViewThread.start();
 
-        poseData = new File(TangoMainActivity.this.getFilesDir(),poseFileName);
-        poseData.mkdir();
-
         //Recording Pose Data via RecordButton
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +132,19 @@ public class TangoMainActivity extends Activity {
                 recording = !recording;
             }
         });
+
+        poseData = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "RecordData.txt");
+        if(!poseData.exists()){
+            try {
+                poseData.createNewFile();
+                Toast.makeText(TangoMainActivity.this, "RecordData.txt Created", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.i(TAG,poseData.getAbsolutePath());
+
     }
 
     @Override
@@ -271,13 +283,34 @@ public class TangoMainActivity extends Activity {
         //stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
         //Log.i(TAG, stringBuilder.toString());
 
+
+        //File IO Test
+        FileWriter fw = null;
+        BufferedWriter bw = null;
+
         if(recording){
             try {
-                fileStream = new FileOutputStream(poseData);
-                fileStream.write(stringBuilder.toString().getBytes());
-                fileStream.close();
-            } catch (Exception e) {
+                fw = new FileWriter(poseData,true);
+                bw = new BufferedWriter(fw);
+                bw.write(stringBuilder.toString());
+
+            } catch (IOException e) {
                 e.printStackTrace();
+                Log.i(TAG,"FILE ERROR!");
+            } finally {
+                try {
+                    if (bw != null) {
+                        bw.close();
+                    }
+
+                    if (fw != null) {
+                        fw.close();
+                    }
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                    Log.i(TAG,"FILE CLOSE ERROR!");
+                }
             }
         }
 
@@ -298,6 +331,7 @@ public class TangoMainActivity extends Activity {
             }
         });
     }
+
 }
 
 
