@@ -111,6 +111,8 @@ public class MoverioBluetooth {
                     break;
                 }
             }
+            connected = true;
+            communicate();
         }
 
         private void IOSetup(BluetoothSocket s){
@@ -129,24 +131,25 @@ public class MoverioBluetooth {
             }
             inStream = tmpIn;
             outStream = tmpOut;
-            communicate();
         }
         private void communicate(){
             Log.d(DEBUG_TAG, "Connection initiated. Waiting for data.");
-            connected = true;
 
             while (true){
                 try {
-                    if(inStream.available() >= 32){
+                    //if(inStream.available() >= 32){
                         for(int i=0; i < 4; i++){
 
                             //TODO: add mutex
-                            wallBuffer.add(inStream.readDouble());
+                            Double d = inStream.readDouble();
+                            wallBuffer.add(d);
+                            //Log.d("Communication","Read double " + d);
                         }
-                    }
+                    //}
                 } catch (IOException e){
                     Log.e(DEBUG_TAG, "error while reading data",e );
                     connected = false;
+                    return;
                 }
             }
         }
@@ -159,21 +162,27 @@ public class MoverioBluetooth {
 
     public boolean dataReady(){
         //TODO
-        return true;
+        return wallBuffer.size()/8 > 4;
     }
     public Wall[] getData(){
         //TODO: mutex lock
-        Wall[] mWalls = new Wall[wallBuffer.size()/8];
-        for( int i = 0; i< wallBuffer.size()/8; i++){
-            Double a = wallBuffer.remove();
-            Double b = wallBuffer.remove();
-            Double c = wallBuffer.remove();
-            Double d = wallBuffer.remove();
-            Coordinate e = new Coordinate(a, b);
-            Coordinate f = new Coordinate(c, d);
-            mWalls[i] = new Wall(e,f);
+        int bufferSize = wallBuffer.size()/8;
+        if(bufferSize >= 1) {
+            Wall[] mWalls = new Wall[bufferSize];
+            for (int i = 0; i < bufferSize; i++) {
+                Double a = wallBuffer.remove();
+                Double b = wallBuffer.remove();
+                Double c = wallBuffer.remove();
+                Double d = wallBuffer.remove();
+                //Log.d(DEBUG_TAG,"Creating wall from data: (" + a + "," + b + ")" + " (" + c + "," + d + ")");
+                Coordinate e = new Coordinate(a, b);
+                Coordinate f = new Coordinate(c, d);
+                mWalls[i] = new Wall(e, f);
+                //Log.d(DEBUG_TAG,"Successfully created wall with properties: " + mWalls[i].toString());
+            }
+            return mWalls;
         }
-        return mWalls;
+        return null;
     }
 
     public Wall[] getTestData(){
