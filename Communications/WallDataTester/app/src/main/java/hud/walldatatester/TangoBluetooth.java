@@ -21,6 +21,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class maintains a bluetooth connection with the moverio BT-200
@@ -38,14 +40,15 @@ public class TangoBluetooth {
     private final String DEBUG_TAG = "TangoBluetooth";
     private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
 
-    private BluetoothAdapter btAdapter;
-    private BluetoothDevice btDevice;
+    private final BluetoothAdapter btAdapter;
+    private final BluetoothDevice btDevice;
     private final BlockingQueue<Runnable> threadQueue;
     private final ThreadPoolExecutor threadPool;
-    private Queue<Double> wallBuffer;
     private BluetoothSocket socket;
     private DataInputStream inStream;
     private DataOutputStream outStream;
+
+    private ReentrantReadWriteLock lock; //mutex lock
 
     private boolean connected = false;
 
@@ -54,7 +57,18 @@ public class TangoBluetooth {
         threadQueue = new LinkedBlockingQueue<Runnable>();
         int processor = Runtime.getRuntime().availableProcessors();
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
-        wallBuffer = new LinkedList<Double>();
+        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+        BluetoothDevice deviceTmp = null;
+        //lock = new ReentrantReadWriteLock();
+
+        for (BluetoothDevice d : pairedDevices) {
+            deviceTmp = d; //todo make this more dynamic
+            break;
+        }
+        if(deviceTmp == null ){
+            Log.e(DEBUG_TAG, "No paired devices found.");
+        }
+        btDevice = deviceTmp;
         connected = false;
     }
 
@@ -63,11 +77,6 @@ public class TangoBluetooth {
             Log.e(DEBUG_TAG, "Bluetooth adapter not enabled. Cannot proceed");
         } else {
             String DEBUG_TAG = "ConnectThread";
-
-            Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-            for (BluetoothDevice d : pairedDevices) {
-                btDevice = d; //todo make this more dynamic
-            }
 
             BluetoothSocket tmp = null;
 
@@ -83,9 +92,10 @@ public class TangoBluetooth {
             try {
                 socket.connect();
             } catch (IOException e) {
-                Log.e(DEBUG_TAG, "Unable to connect, closing socket", e);
+                Log.e(DEBUG_TAG, "Unable to connect, closing socket");
                 try {
                     socket.close();
+                    return;
                 } catch (IOException c) {
                     Log.e(DEBUG_TAG, "Could not close the client socket", c);
                 }
@@ -113,6 +123,23 @@ public class TangoBluetooth {
         }
 
     }
+    public void disconnect(){
+        if(connected) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                Log.e(DEBUG_TAG, "Unable to close socket");
+            }
+
+
+
+            connected = false;
+        }
+        else{
+            Log.e(DEBUG_TAG, "Attempted to disconnect bluetooth which was already disconnected.");
+        }
+
+    }
 
     //TODO make this run in background
     public void send(Double[] walls){ //array should be in format {x1, y1, x2, y2, ... }
@@ -124,25 +151,54 @@ public class TangoBluetooth {
         }
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
     public class Sender implements Runnable {
-        private Queue<Double> wallBuffer;
+
+        Double[] myWalls;
 
         public Sender(Double[] walls){
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-            wallBuffer = new LinkedList<Double>();
-            for(int i=0; i<walls.length; i++){
-                wallBuffer.add(walls[i]);
-            }
+
+            myWalls = walls;
         }
         @Override
         public void run(){
-            while(wallBuffer.size() > 0){
+            for(int i=0; i<myWalls.length; i++){
                 try {
-                    outStream.writeDouble(wallBuffer.remove());
+                    outStream.writeDouble(myWalls[i]);
+                    Log.d("Sender", "Sending Double: " + myWalls[i]);
                 } catch (IOException e){
                     Log.e(DEBUG_TAG, "Unable to write Double to outStream");
                 }
             }
+            try {
+                outStream.flush();
+            } catch (IOException e) {
+                Log.e(DEBUG_TAG, "Problem flushing outStream.");
+            }
+            /*
+            if(wallBuffer.size() > 0) {
+                lock.readLock().lock();
+                try {
+                    while (wallBuffer.size() > 0) {
+                        try {
+                            Double d = wallBuffer.remove();
+                            Log.d("Sender", "Sending Double: " + d);
+                            outStream.writeDouble(d);
+                            outStream.flush();
+                        } catch (IOException e) {
+                            Log.e(DEBUG_TAG, "Unable to write Double to outStream");
+                        }
+                    }
+                }
+                finally {
+                     lock.readLock().unlock();
+                }
+            }
+            */
         }
     }
 }

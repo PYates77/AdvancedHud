@@ -76,8 +76,8 @@ public class Wall {
 ////        plane.normalize();
     }
     
-    public double[] sendData() {
-        double[] out = {edge1.x, edge1.y, edge2.x, edge2.y};
+    public Double[] sendData() {
+        Double[] out = {edge1.x, edge1.y, edge2.x, edge2.y};
         
         return out;
     }
