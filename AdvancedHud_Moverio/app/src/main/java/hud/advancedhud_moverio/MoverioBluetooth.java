@@ -49,7 +49,8 @@ public class MoverioBluetooth {
     private final ThreadPoolExecutor threadPool;
     private Queue<Double> wallBuffer;
 
-    private boolean connected = false;
+    private boolean connected;
+    private boolean connecting;
 
     public MoverioBluetooth( BluetoothAdapter adapter){
         btAdapter = adapter;
@@ -57,6 +58,8 @@ public class MoverioBluetooth {
         int processor = Runtime.getRuntime().availableProcessors();
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
         wallBuffer = new LinkedList<Double>();
+        connected = false;
+        connecting = false;
     }
 
     public void connect(){
@@ -64,6 +67,7 @@ public class MoverioBluetooth {
             Log.e(DEBUG_TAG, "Bluetooth adapter not enabled. Cannot proceed");
         }
         else{
+            connecting = true;
             threadPool.execute(new ConnectThread());
         }
 
@@ -112,6 +116,7 @@ public class MoverioBluetooth {
                 }
             }
             connected = true;
+            connecting = false;
             communicate();
         }
 
@@ -147,7 +152,8 @@ public class MoverioBluetooth {
                         }
                     //}
                 } catch (IOException e){
-                    Log.e(DEBUG_TAG, "error while reading data",e );
+                    Log.e(DEBUG_TAG, "Connection Lost");
+                    connecting = false;
                     connected = false;
                     return;
                 }
@@ -156,8 +162,10 @@ public class MoverioBluetooth {
     }
 
     public boolean isConnected(){
-        //TODO
         return connected;
+    }
+    public boolean isConnecting(){
+        return connecting;
     }
 
     public boolean dataReady(){
@@ -166,7 +174,8 @@ public class MoverioBluetooth {
     }
     public Wall[] getData(){
         //TODO: mutex lock
-        int bufferSize = wallBuffer.size()/8;
+        int mySize = wallBuffer.size();
+        int bufferSize = mySize/4;
         if(bufferSize >= 1) {
             Wall[] mWalls = new Wall[bufferSize];
             for (int i = 0; i < bufferSize; i++) {

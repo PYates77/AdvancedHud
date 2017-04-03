@@ -59,7 +59,7 @@ public class TangoBluetooth {
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
         BluetoothDevice deviceTmp = null;
-        //lock = new ReentrantReadWriteLock();
+        lock = new ReentrantReadWriteLock();
 
         for (BluetoothDevice d : pairedDevices) {
             deviceTmp = d; //todo make this more dynamic
@@ -166,18 +166,23 @@ public class TangoBluetooth {
         }
         @Override
         public void run(){
-            for(int i=0; i<myWalls.length; i++){
-                try {
-                    outStream.writeDouble(myWalls[i]);
-                    Log.d("Sender", "Sending Double: " + myWalls[i]);
-                } catch (IOException e){
-                    Log.e(DEBUG_TAG, "Unable to write Double to outStream");
-                }
-            }
+            lock.readLock().lock();
             try {
-                outStream.flush();
-            } catch (IOException e) {
-                Log.e(DEBUG_TAG, "Problem flushing outStream.");
+                for (int i = 0; i < myWalls.length; i++) {
+                    try {
+                        outStream.writeDouble(myWalls[i]);
+                        Log.d("Sender", "Sending Double: " + myWalls[i]);
+                    } catch (IOException e) {
+                        Log.e(DEBUG_TAG, "Unable to write Double to outStream");
+                    }
+                }
+                try {
+                    outStream.flush();
+                } catch (IOException e) {
+                    Log.e(DEBUG_TAG, "Problem flushing outStream.");
+                }
+            } finally {
+                lock.readLock().unlock();
             }
             /*
             if(wallBuffer.size() > 0) {
