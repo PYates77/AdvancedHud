@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Generated Canned Data for transmission test
         ArrayList<Wall2D> testList = new ArrayList<Wall2D>();
-        for (int i=0; i <= 5; i++){
+        for (int i=0; i <= 10; i++){
             Wall2D w = new Wall2D(new Point(i+0.1,i+0.2,i+0.3));
             w.addPoint(new Point(i+0.4,i+0.5,i+0.6));
             testList.add(w);
