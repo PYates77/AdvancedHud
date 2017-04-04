@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorManager;
 import android.os.Environment;
 import android.util.Log;
 
@@ -33,7 +34,13 @@ public class MapDrawable extends Drawable {
     private int width = 300;
     public int moveX = 0;
     public int moveY = 0;
+    //Friendly User Information
+    public int fx = 0;
+    public int fy = 0;
+    public int fdegree = 0;
+
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
+    private boolean multipleMode = false;
     public Wall[] mWalls;
     ArrayList<Coordinate> mPathHistory;
 
@@ -107,6 +114,15 @@ public class MapDrawable extends Drawable {
         return new Coordinate(x1+(size/2)-moveX,y1+(size/2)-moveY);
     }
 
+    private Coordinate rotateCoord_friendly(Coordinate c, int degrees, int size){
+        double degreeRadians = Math.toRadians(degrees);
+        double x_trans = c.coordx-(size/2)+fx;
+        double y_trans = c.coordy-(size/2)+fy;
+        double x1 = (Math.cos(-degreeRadians)*x_trans)-(Math.sin(-degreeRadians)*y_trans);
+        double y1 = (Math.sin(-degreeRadians)*x_trans)+(Math.cos(-degreeRadians)*y_trans);
+        return new Coordinate(x1+(size/2)-fx,y1+(size/2)-fy);
+    }
+
     private Path constructUser(){
         Coordinate A = new Coordinate(140,160);
         Coordinate B = new Coordinate(150,140);
@@ -118,6 +134,28 @@ public class MapDrawable extends Drawable {
             A = rotateCoord(A, mDegreeRotation, height);
             B = rotateCoord(B, mDegreeRotation, height);
             C = rotateCoord(C, mDegreeRotation, height);
+        }
+        Path newPath = new Path();
+        newPath.moveTo((float)A.coordx,(float)A.coordy);
+        newPath.lineTo((float)B.coordx,(float)B.coordy);
+        newPath.lineTo((float)C.coordx,(float)C.coordy);
+        newPath.moveTo((float)B.coordx,(float)B.coordy);
+        newPath.lineTo((float)C.coordx,(float)C.coordy);
+        newPath.close();
+        return newPath;
+    }
+
+    private Path constructFriendlyUser(){
+        Coordinate A = new Coordinate(140,160);
+        Coordinate B = new Coordinate(150,140);
+        Coordinate C = new Coordinate(160,160);
+        if(userLocked) {
+            A = new Coordinate(140-fx,160-fy);
+            B = new Coordinate(150-fx,140-fy);
+            C = new Coordinate(160-fx,160-fy);
+            A = rotateCoord_friendly(A, fdegree, height);
+            B = rotateCoord_friendly(B, fdegree, height);
+            C = rotateCoord_friendly(C, fdegree, height);
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
@@ -151,6 +189,15 @@ public class MapDrawable extends Drawable {
         mPaint.setColor(Color.RED);
         Path newPath = constructUser();
         canvas.drawPath(newPath,mPaint);
+        if(multipleMode){
+            mPaint.setColor(Color.BLUE);
+            Path friendPath = constructFriendlyUser();
+            canvas.drawPath(friendPath,mPaint);
+        }
+    }
+
+    public void setMultipleMode(boolean mode){
+        multipleMode = mode;
     }
 
     public void setWallArray(Wall[] walls){
@@ -173,7 +220,8 @@ public class MapDrawable extends Drawable {
 
     public void setDegreeRotation(int degreeRotation){mDegreeRotation = degreeRotation;}
 
-    public ArrayList<Float> extractFriendlyInfo(File fData, BufferedReader reader){
+    public float[] extractTransOrient(File fData, BufferedReader reader){
+        float[] result = new float[7];
         if(fData != null){
             try {
                 String line;
@@ -186,15 +234,22 @@ public class MapDrawable extends Drawable {
                 if(line != null){
                     Matcher m1 = pt.matcher(line);
                     Matcher m2 = po.matcher(line);
-                    while (m1.find()){
+                    if (m1.find()){
+                        result[0] = Float.valueOf(m1.group(1));
+                        result[1] = Float.valueOf(m1.group(2));
+                        result[2] = Float.valueOf(m1.group(3));
                         StringBuilder stringBuilder1 = new StringBuilder();
-                        stringBuilder1.append("XAM: " + m1.group(1)+", YAM: "+ m1.group(2)+" , ZAM: "+ m1.group(3)+ "\n");
+                        stringBuilder1.append("XAM: " + String.valueOf(result[0])+", YAM: "+ String.valueOf(result[1])+" , ZAM: "+ String.valueOf(result[2])+ "\n");
                         Log.i(TangoMainActivity.class.getSimpleName(),stringBuilder1.toString());
                     }
-                    while (m2.find()){
-                        StringBuilder stringBuilder2 = new StringBuilder();
-                        stringBuilder2.append("OR0: " + m2.group(1)+", OR1: "+ m2.group(2)+" , OR2: "+ m2.group(3)+ " , OR3: "+ m2.group(4)+"\n");
-                        Log.i(TangoMainActivity.class.getSimpleName(),stringBuilder2.toString());
+                    if (m2.find()){
+                        result[3] = Float.valueOf(m2.group(1));
+                        result[4] = Float.valueOf(m2.group(2));
+                        result[5] = Float.valueOf(m2.group(3));
+                        result[6] = Float.valueOf(m2.group(3));
+                        //StringBuilder stringBuilder2 = new StringBuilder();
+                        //stringBuilder2.append("OR0: " + m2.group(1)+", OR1: "+ m2.group(2)+" , OR2: "+ m2.group(3)+ " , OR3: "+ m2.group(4)+"\n");
+                        //Log.i(TangoMainActivity.class.getSimpleName(),stringBuilder2.toString());
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -203,7 +258,35 @@ public class MapDrawable extends Drawable {
                 ex.printStackTrace();
             }
         }
-        return null;
+        return result;
+    }
+
+    public void updateFriendlyInfo(File rFile, BufferedReader rReader){
+        //Updates translational and rotational information for friendly arrow
+        float[] f = extractTransOrient(rFile,rReader);
+        //translation information (x & y)
+        fx = (int)(f[0]*-25);
+        fy = (int)(f[1]*25);
+
+        float qw = f[3];
+        float qx = f[4];
+        float qy = f[5];
+        float qz = f[6];
+        float[] rotMatrix = new float[9];
+        float[] euOrient = new float[3];
+        //Extract Rotation Matrix
+        rotMatrix[0] = 1-2*(qy*qy)-2*(qz*qz);
+        rotMatrix[1] = (2*qx*qy)+(2*qz*qw);
+        rotMatrix[2] = (2*qx*qz)-(2*qy*qw);
+        rotMatrix[3] = (2*qx*qy)-(2*qz*qw);
+        rotMatrix[4] = 1-(2*qx*qx)-(2*qz*qz);
+        rotMatrix[5] = (2*qy*qz)+(2*qx*qw);
+        rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
+        rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
+        rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
+        //Get orientation information
+        SensorManager.getOrientation(rotMatrix,euOrient);
+        fdegree = (int)(Math.toDegrees(euOrient[2])*-1);
     }
 
     @Override
