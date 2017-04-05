@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +40,7 @@ public class MapDrawable extends Drawable {
 
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     private boolean multipleMode = false;
-    public Wall[] mWalls;
+    public ArrayList<Wall> mWalls;
     ArrayList<Coordinate> mPathHistory;
 
     public MapDrawable(){
@@ -48,25 +49,24 @@ public class MapDrawable extends Drawable {
         mStrokeWidth = 10;
         mDegreeRotation = 0;
         mPathHistory = new ArrayList<Coordinate>();
-        //mWalls = new Wall[8];
     }
 
-    public MapDrawable(int demoCode){
+    /*public MapDrawable(int demoCode){
         if (demoCode == 1234){
             defaultSetup();
         }
-    }
+    }*/
 
-    public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, Wall[] walls){
+    /*public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, Wall[] walls){
         mBackgroundColor = backgroundColor;
         mStrokeColor = strokeColor;
         mStrokeWidth = strokeWidth;
         mWalls = walls;
         mDegreeRotation = 0;
         mPathHistory = new ArrayList<Coordinate>();
-    }
+    }*/
 
-    public void defaultSetup(){
+    /*public void defaultSetup(){
         mBackgroundColor = Color.DKGRAY;
         mStrokeColor = Color.LTGRAY;
         mStrokeWidth = 10;
@@ -93,7 +93,7 @@ public class MapDrawable extends Drawable {
         mWalls[5] = new Wall(J,F);
         mWalls[6] = new Wall(F,D);
         mWalls[7] = new Wall(D,B);
-    }
+    }*/
 
     public void setMapMode(boolean modeFlag){
         if(modeFlag){
@@ -178,8 +178,9 @@ public class MapDrawable extends Drawable {
         canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         canvas.drawColor(mBackgroundColor);
         if(mWalls != null) {
-            for (int i = 0; i < mWalls.length; i++) {
-                canvas.drawLine((float) (double) mWalls[i].startX, (float) (double) mWalls[i].startY, (float) (double) mWalls[i].endX, (float) (double) mWalls[i].endY, mPaint);
+            for (int i = 0; i < mWalls.size(); i++) {
+                Wall mw = mWalls.get(i);
+                canvas.drawLine((float) (double) mw.startX, (float) (double) mw.startY, (float) (double) mw.endX, (float) (double) mw.endY, mPaint);
             }
         }
         if(mPathHistory != null){
@@ -201,7 +202,7 @@ public class MapDrawable extends Drawable {
         multipleMode = mode;
     }
 
-    public void setWallArray(Wall[] walls){
+    public void setDynamicWallArray(ArrayList<Wall> walls){
         mWalls = walls;
     }
 
@@ -209,7 +210,7 @@ public class MapDrawable extends Drawable {
         mPathHistory.add(c);
     }
 
-    public Wall[] getWallArray(){return mWalls;}
+    //public Wall[] getWallArray(){return mWalls;}
 
     public void setBackgroundColor(int color) {
         mBackgroundColor = color;

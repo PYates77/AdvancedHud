@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MapDrawable mapDrawable = new MapDrawable();
     private ImageView mapView;
-    public Wall[] wallList;
+    public ArrayList<Wall> mWallList;
     public boolean readyFlag = false;
 
     Thread updateTextViewThread = new Thread(){
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if(readyFlag){
                             mapView.invalidate();
-                            mapDrawable.setWallArray(wallList);
+                            mapDrawable.setDynamicWallArray(mWallList);
                         }
                     }
                 });
@@ -77,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         mapView = (ImageView) findViewById(R.id.mapView);
         mapView.setImageDrawable(mapDrawable);
-        wallList = new Wall[8];
 
         updateTextViewThread.start();
 
@@ -99,9 +99,12 @@ public class MainActivity extends AppCompatActivity {
             //todo actually render the walls using akshay's code
             while(btAdapter.isEnabled()){
                 if(btManager.isConnected() && !btManager.isConnecting()) {
-                    wallList = btManager.getData();
+                    Wall[] wallList = btManager.getData();
                     if(wallList != null) {
                         Log.d("DataFetcher", "Received wallList: Length: " + wallList.length);
+                        for(int i=0;i<wallList.length;i++){
+                            mWallList.add(wallList[i]);
+                        }
                         readyFlag = true;
                     }
 //                    if (walls != null) {
