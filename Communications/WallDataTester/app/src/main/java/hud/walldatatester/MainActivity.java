@@ -26,16 +26,16 @@ public class MainActivity extends AppCompatActivity {
 
         //Generated Canned Data for transmission test
         ArrayList<Wall2D> testList = new ArrayList<Wall2D>();
-        Point A = new Point(90,400,0);
-        Point B = new Point(175,400,0);
-        Point C = new Point(90,140,0);
-        Point D = new Point(175,190,0);
-        Point E = new Point(-100,140,0);
-        Point F = new Point(270,190,0);
-        Point G = new Point(-100,90,0);
-        Point H = new Point(90,90,0);
-        Point I = new Point(90,40,0);
-        Point J = new Point(270,40,0);
+        Point A = new Point(90,0,400);
+        Point B = new Point(175,0,400);
+        Point C = new Point(90,0,140);
+        Point D = new Point(175,0,190);
+        Point E = new Point(-100,0,140);
+        Point F = new Point(270,0,190);
+        Point G = new Point(-100,0,90);
+        Point H = new Point(90,0,90);
+        Point I = new Point(90,0,40);
+        Point J = new Point(270,0,40);
         Wall2D w0 = new Wall2D(A);
         w0.addPoint(C);
         Wall2D w1 = new Wall2D(C);
