@@ -88,8 +88,14 @@ public class MainActivity extends AppCompatActivity {
             tmp = w.sendData();
             dataFrame.add(tmp[0]);
             dataFrame.add(tmp[1]);
+            dataFrame.add(tmp[2]);
+            dataFrame.add(tmp[3]);
         }
-        btManager.send((Double[])dataFrame.toArray());
+        Double[] doubles = new Double[dataFrame.size()];
+        for(int i=0; i<dataFrame.size();i++){
+            doubles[i] = dataFrame.get(i);
+        }
+        btManager.send(doubles);
 
     }
 

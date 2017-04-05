@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MapDrawable mapDrawable = new MapDrawable();
     private ImageView mapView;
-    public ArrayList<Wall> mWallList;
+    public ArrayList<Wall> mWallList = new ArrayList<Wall>();
     public boolean readyFlag = false;
 
     Thread updateTextViewThread = new Thread(){
