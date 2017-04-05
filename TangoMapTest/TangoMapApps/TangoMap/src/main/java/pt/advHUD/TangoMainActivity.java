@@ -42,10 +42,12 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,8 +77,11 @@ public class TangoMainActivity extends Activity {
     private MapDrawable mapDrawable = new MapDrawable(1234);
     private ImageView mapView;
     private Button mRecordButton;
+    private Button mFriendButton;
     private boolean recording = false;
+    private boolean friendly = false;
     private File poseData;
+    private BufferedReader friendlyReader;
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -88,6 +93,16 @@ public class TangoMainActivity extends Activity {
                         if(roll != -300 && translation[0] != 0 && translation[1] != 0 && translation[2] != 0) {
                             mapView.invalidate();
                             mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
+                            if(friendly){
+                                try {
+                                    if(friendlyReader.ready()){
+                                        mapDrawable.updateFriendlyInfo(poseData,friendlyReader);
+                                        Log.i(TAG,String.valueOf(mapDrawable.fx));
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                             mapDrawable.setDegreeRotation((int)(-1*roll));
                             mapDrawable.moveX = (int)(translation[0]*-25);
                             mapDrawable.moveY = (int)(translation[1]*25);
@@ -95,7 +110,7 @@ public class TangoMainActivity extends Activity {
                     }
                 });
                 try {
-                    Thread.sleep(500); //2Hz refresh rate
+                    Thread.sleep(10); //INCREASED BECAUSE RECORDING GOES TOO SLOWLY!! --> MAY NEED TO BE PUT INTO A DIFFERENT THREAD IF DYNAMIC WALL LIST TAKES TOO MUCH RESOURCE POWER
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -115,6 +130,7 @@ public class TangoMainActivity extends Activity {
 
         mapView = (ImageView)findViewById(R.id.mapView);
         mRecordButton = (Button)findViewById(R.id.recordButton);
+        mFriendButton = (Button)findViewById(R.id.friendButton);
         mapView.setImageDrawable(mapDrawable);
         //updateTextViewThread.setPriority(Thread.MAX_PRIORITY); //CHANGE THIS WHEN ADDING NEW CODE
         updateTextViewThread.start();
@@ -133,6 +149,23 @@ public class TangoMainActivity extends Activity {
             }
         });
 
+        //Friendly Mode Enable/Disable
+        mFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!friendly) {
+                    Toast.makeText(TangoMainActivity.this,"Friendlies Displayed",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(TangoMainActivity.this,"Friendlies Not Displayed",Toast.LENGTH_LONG).show();
+                }
+                friendly = !friendly;
+                mapDrawable.setMultipleMode(friendly);
+            }
+        });
+
+        //Recording pose information into a text file and then read out the data
+
         poseData = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "RecordData.txt");
         if(!poseData.exists()){
@@ -143,7 +176,11 @@ public class TangoMainActivity extends Activity {
                 e.printStackTrace();
             }
         }
-        Log.i(TAG,poseData.getAbsolutePath());
+        try {
+            friendlyReader = new BufferedReader(new FileReader(poseData));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
