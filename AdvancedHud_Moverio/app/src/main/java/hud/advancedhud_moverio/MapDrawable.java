@@ -48,6 +48,7 @@ public class MapDrawable extends Drawable {
         mStrokeWidth = 10;
         mDegreeRotation = 0;
         mPathHistory = new ArrayList<Coordinate>();
+        //mWalls = new Wall[8];
     }
 
     public MapDrawable(int demoCode){
@@ -176,8 +177,10 @@ public class MapDrawable extends Drawable {
         canvas.translate(moveX,moveY);
         canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         canvas.drawColor(mBackgroundColor);
-        for(int i=0; i < mWalls.length; i++){
-            canvas.drawLine((float)(double)mWalls[i].startX,(float)(double)mWalls[i].startY,(float)(double)mWalls[i].endX,(float)(double)mWalls[i].endY,mPaint);
+        if(mWalls != null) {
+            for (int i = 0; i < mWalls.length; i++) {
+                canvas.drawLine((float) (double) mWalls[i].startX, (float) (double) mWalls[i].startY, (float) (double) mWalls[i].endX, (float) (double) mWalls[i].endY, mPaint);
+            }
         }
         if(mPathHistory != null){
             for(int i=0; i < mPathHistory.size(); i++){

@@ -148,7 +148,7 @@ public class MoverioBluetooth {
                             //TODO: add mutex
                             Double d = inStream.readDouble();
                             wallBuffer.add(d);
-                            //Log.d("Communication","Read double " + d);
+                            Log.d("Communication","Read double " + d);
                         }
                     //}
                 } catch (IOException e){

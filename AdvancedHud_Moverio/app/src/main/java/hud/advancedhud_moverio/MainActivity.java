@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getActionBar().hide();
+        //getActionBar().hide();
 
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();
@@ -76,7 +76,10 @@ public class MainActivity extends AppCompatActivity {
         win.setAttributes(winParams);
 
         mapView = (ImageView) findViewById(R.id.mapView);
+        mapView.setImageDrawable(mapDrawable);
         wallList = new Wall[8];
+
+        updateTextViewThread.start();
 
         startBluetoothAdapter();
         btManager = new MoverioBluetooth(btAdapter);
@@ -97,7 +100,10 @@ public class MainActivity extends AppCompatActivity {
             while(btAdapter.isEnabled()){
                 if(btManager.isConnected() && !btManager.isConnecting()) {
                     wallList = btManager.getData();
-                    readyFlag = true;
+                    if(wallList != null) {
+                        Log.d("DataFetcher", "Received wallList: Length: " + wallList.length);
+                        readyFlag = true;
+                    }
 //                    if (walls != null) {
 //                        for (int i = 0; i < walls.length; i++) {
 //                            //Log.d("Receiving", "Got wall data: " + walls[i]);
