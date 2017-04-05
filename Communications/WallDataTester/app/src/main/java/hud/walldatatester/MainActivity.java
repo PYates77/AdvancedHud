@@ -82,9 +82,14 @@ public class MainActivity extends AppCompatActivity {
             btManager.connect();
         } while (!btManager.isConnected());
 
+        ArrayList<Double> dataFrame = new ArrayList<>();
+        Double[] tmp;
         for(Wall2D w : testList){
-            btManager.send(w.sendData());
+            tmp = w.sendData();
+            dataFrame.add(tmp[0]);
+            dataFrame.add(tmp[1]);
         }
+        btManager.send((Double[])dataFrame.toArray());
 
     }
 
