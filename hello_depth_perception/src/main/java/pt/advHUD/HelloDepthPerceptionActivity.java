@@ -36,6 +36,7 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Main Activity class for the Depth Perception Sample. Handles the connection to the {@link Tango}
@@ -46,11 +47,12 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = Math.PI / 6.0;
+    private static final double angleMargin = Math.PI / 18.0;
     private static final double distanceMargin = 0.5; // needs to be determined
+    private static final double errorMargin = 1.0;
 
     // 2-D attempt
-    private static final int numGroups = 160;
+    private static final int numGroups = 10;
     private static final int minPointCount = 10;
     
     private ArrayList<Point> global_points;
@@ -78,7 +80,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                     public void run() {
                         mapView.invalidate();
                         //mapDrawable.setPointArray(global_points);
-                        mapDrawable.setWallArray(wallOutList);
+                        mapDrawable.setWallArray(wall2DList);
                     }
                 });
                 try {
@@ -255,15 +257,15 @@ public class HelloDepthPerceptionActivity extends Activity {
                 }
             }
 
-            private void modifyOutList() {
-                wallOutList = new ArrayList<Wall2D>();
-                for (int i = 0; i < wall2DList.size(); i++) {
-                    Wall2D curWall = wall2DList.get(i);
-
-                    if (curWall.getPointCount() > minPointCount) {
-                        wall2DList.add(curWall);
-                    }
-                }
+            private ArrayList<Wall2D> getOutList() {
+//                wallOutList = new ArrayList<>();
+//                for (int i = 0; i < wall2DList.size(); i++) {
+//                    Wall2D curWall = wall2DList.get(i);
+//
+//                    if (curWall.getPointCount() > minPointCount) {
+//                        wall2DList.add(curWall);
+//                    }
+//                }
 //                for (int i = 0; i < wall2DList.size(); i++) {
 //                    Wall2D curWall = wall2DList.get(i);
 //
@@ -284,6 +286,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 //                    } else
 //                        Log.i(TAG, String.valueOf(curWall.getPointCount()));
 //                }
+                return null;
             }
 
             private void modify2DWallList(ArrayList<Point> points, ArrayList<Line> lines) {
@@ -413,6 +416,71 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return new Point(rx, ry, rz);
             }
 
+            private boolean isSingleWall(Line line, ArrayList<Point> points) {
+                int count = 0;
+
+                for (int i = 0; i < points.size(); i++) {
+                    count++;
+                }
+
+                return false;
+            }
+
+            private void modify2DWallListSingleWall(Wall2D wall) {
+
+            }
+
+            private double sumOfSquaredError(Line line, ArrayList<Point> points){
+                double sum = 0;
+                double size = points.size();
+
+                for (int i = 0; i < points.size(); i++) {
+                    sum += (1/size)*line.getDistance(points.get(i))*line.getDistance(points.get(i));
+                }
+
+                return sum/size;
+            }
+
+            private double meanError(Line line, ArrayList<Point> points){
+                double sum = 0;
+                double size = points.size();
+
+                for (int i = 0; i < points.size(); i++) {
+                    sum += line.getDistance(points.get(i));
+                }
+
+                return sum/size;
+            }
+
+            private Wall2D buildWall(Line line, ArrayList<Point> pointCloud) {
+                Wall2D outWall = null;
+                int i = 0;
+                boolean found = false;
+                while (i < pointCloud.size() && !found) {
+                    Point currPoint = pointCloud.get(i);
+                    i++;
+
+                    if (line.getDistance(currPoint) < errorMargin) {
+                        outWall = new Wall2D(currPoint);
+                        found = true;
+                    }
+                }
+
+                i = pointCloud.size();
+                found = false;
+                while (i > 0 && !found) {
+                    Point currPoint = pointCloud.get(i);
+                    i++;
+
+                    if (line.getDistance(currPoint) < errorMargin) {
+                        outWall.addPoint(currPoint);
+                        found = true;
+                    }
+                }
+
+                return outWall;
+            }
+
             @Override
             public void onPointCloudAvailable(final TangoPointCloudData pointCloudData) {
 
@@ -422,16 +490,31 @@ public class HelloDepthPerceptionActivity extends Activity {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
 
-                    ArrayList<Line> lines = generateLines(points);
+                    Collections.sort(points);
 
-                    points = generateAverages(points);
+                    //ArrayList<Line> lines = generateLines(points);
+
+                    Line totalLine = linearRegression(points);
+
+                    double error = meanError(totalLine, points);
+
+                    if (error < errorMargin) {
+                        Wall2D currWall = buildWall(totalLine, points);
+                        modify2DWallListSingleWall(currWall);
+                    }
+
+                    //points = generateAverages(points);
                     //Log.i(TAG, String.valueOf(global_points.get(0)));
 
-                    modify2DWallList(points, lines);
+                    //if (isSingleWall(totalLine, points)) {
+                    //    modify2DWallListSingleWall();
+                    //} else {
+                    //    modify2DWallList(points, lines);
+                    //}
 
-                    modifyOutList();
+                    // getOutList();
 
-                    Log.i(TAG, String.valueOf(wall2DList.size()));
+                    Log.i(TAG, String.valueOf(error));
 
                     // global_points = getDisplayPoints();
                     
