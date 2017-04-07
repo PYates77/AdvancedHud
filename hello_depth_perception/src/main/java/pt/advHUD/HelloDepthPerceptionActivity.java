@@ -427,7 +427,8 @@ public class HelloDepthPerceptionActivity extends Activity {
             }
 
             private void modify2DWallListSingleWall(Wall2D wall) {
-
+                if (wall != null)
+                    wall2DList.set(0, wall);
             }
 
             private double sumOfSquaredError(Line line, ArrayList<Point> points){
@@ -466,11 +467,11 @@ public class HelloDepthPerceptionActivity extends Activity {
                     }
                 }
 
-                i = pointCloud.size();
+                i = pointCloud.size() - 1;
                 found = false;
                 while (i > 0 && !found) {
                     Point currPoint = pointCloud.get(i);
-                    i++;
+                    i--;
 
                     if (line.getDistance(currPoint) < errorMargin) {
                         outWall.addPoint(currPoint);
