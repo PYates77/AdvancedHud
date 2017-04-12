@@ -17,6 +17,7 @@
 package pt.advHUD;
 
 import android.app.Activity;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -68,8 +69,21 @@ public class HelloDepthPerceptionActivity extends Activity {
     private ArrayList<Wall2D> wallOutList = new ArrayList<Wall2D>();
     private Matrix gMatrix;
 
+    //AKSHAY'S VARIABLES
     private ImageView mapView;
     private MapDrawable mapDrawable;
+    private float rollr = 0;
+    private float rollrMath = 0;
+    private float qx;
+    private float qy;
+    private float qz;
+    private float qw;
+    private float x;
+    private float y;
+    private float translation[] = new float[3];
+    private float orientation[] = new float[4];
+    float rotMatrix[] = new float[9];
+    float euOrient[] = new float[3];
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -182,6 +196,7 @@ public class HelloDepthPerceptionActivity extends Activity {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
                 //hud_user.update_pose(pose);
+                updateLocation(pose); //this calls the function to determine the translation and rotation angle (AKSHAY)
                 gMatrix = calcGMatrix(pose);
 //                logPose(hud_user.getPose());
 //                logPose(pose);
@@ -208,6 +223,27 @@ public class HelloDepthPerceptionActivity extends Activity {
                     out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
                     out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
                 }
+                /*
+                //THE FOLLOWING CODE IS FOR ROTATION AND ROTATION OF THE POINT CLOUD DATA
+                //FROM AKSHAY
+                //UNCOMMENT AND REPLACE THE ABOVE CODE WITH THE FOLLOWING CODE
+                float x1;
+                float y1;
+                float z1;
+                float newx;
+                float newz;
+                for (int i = 0; i < arr.limit(); i += 4) {
+                    if(arr.get(i+3) != 1){ //taking into account the confidence value of the point
+                        continue;
+                    }
+                    x1 = arr.get(i);
+                    y1 = arr.get(i+1);
+                    z1 = arr.get(i+2);
+                    newx = (float)((x1*Math.cos(-rollr)-z1*Math.sin(-rollr))+translation[0]); //rotates new point in x
+                    newz = (float)((x1*Math.sin(-rollr)+z1*Math.cos(-rollr))+translation[1]); //rotates new point in z/y
+                    out.add(new Point(newx,y1,newz));
+
+                }*/
 
                 return out;
             }
@@ -634,5 +670,35 @@ public class HelloDepthPerceptionActivity extends Activity {
                 finish();
             }
         });
+    }
+
+    private void updateLocation(TangoPoseData pose) {
+        //StringBuilder stringBuilder = new StringBuilder();
+        translation = pose.getTranslationAsFloats();
+        //stringBuilder.append("Position: " +translation[0]*100 + ", " + translation[1]*100 + ", " + translation[2]*100+"\n");
+        orientation = pose.getRotationAsFloats();
+        //stringBuilder.append(". Orientation: " +
+        //orientation[0] + ", " + orientation[1] + ", " +
+        //orientation[2] + ", " + orientation[3]+"\n");
+        qw = orientation[0];
+        qx = orientation[1];
+        qy = orientation[2];
+        qz = orientation[3];
+        //Extract Rotation Matrix
+        rotMatrix[0] = 1-2*(qy*qy)-2*(qz*qz);
+        rotMatrix[1] = (2*qx*qy)+(2*qz*qw);
+        rotMatrix[2] = (2*qx*qz)-(2*qy*qw);
+        rotMatrix[3] = (2*qx*qy)-(2*qz*qw);
+        rotMatrix[4] = 1-(2*qx*qx)-(2*qz*qz);
+        rotMatrix[5] = (2*qy*qz)+(2*qx*qw);
+        rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
+        rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
+        rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
+        //rollrMath = (float)Math.atan((rotMatrix[7]/rotMatrix[8]));
+        //Get orientation information
+        SensorManager.getOrientation(rotMatrix,euOrient);
+        rollr = (float)euOrient[2];
+        //stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
+        //Log.i(TAG, stringBuilder.toString());
     }
 }
