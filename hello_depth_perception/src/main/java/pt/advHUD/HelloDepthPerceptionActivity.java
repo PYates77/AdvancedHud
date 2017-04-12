@@ -47,9 +47,9 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = Math.PI / 18.0;
+    private static final double angleMargin = 0.05; //Math.PI / 18.0;
     private static final double distanceMargin = 0.5; // needs to be determined
-    private static final double errorMargin = 1.0;
+    private static final double errorMargin = 0.08;
 
     // 2-D attempt
     private static final int numGroups = 10;
@@ -198,13 +198,15 @@ public class HelloDepthPerceptionActivity extends Activity {
 
                 for (int i = 0; i < arr.limit(); i += 4) {
                     double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
-                    Matrix pointMat = new Matrix(4, 1, currPoint);
+                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
                     try {
-                        pointMat = gMatrix.multiply(pointMat);
+                        if (gMatrix != null)
+                            pointMat = gMatrix.multiply(pointMat);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));
+                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
+                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
                 }
 
                 return out;
@@ -427,8 +429,23 @@ public class HelloDepthPerceptionActivity extends Activity {
             }
 
             private void modify2DWallListSingleWall(Wall2D wall) {
-                if (wall != null)
-                    wall2DList.set(0, wall);
+                if (wall != null) {
+                    if (wall2DList.size() < 1)
+                        wall2DList.add(wall);
+                    else {
+                        //Log.i(TAG, String.valueOf(wall.getAngle(wall2DList.get(0))));
+                        //wall2DList.set(0, wall);
+                        boolean skip = false;
+
+                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
+                            if (wall.getAngle(wall2DList.get(i)) < angleMargin)
+                                skip = true;
+                        }
+
+                        if (skip == false)
+                            wall2DList.add(wall);
+                    }
+                }
             }
 
             private double sumOfSquaredError(Line line, ArrayList<Point> points){
@@ -515,7 +532,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 
                     // getOutList();
 
-                    Log.i(TAG, String.valueOf(error));
+                    //Log.i(TAG, String.valueOf(error));
 
                     // global_points = getDisplayPoints();
                     
