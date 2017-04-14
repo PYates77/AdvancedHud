@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 if(btManager.isConnected() && !btManager.isConnecting()) {
                     Wall[] wallList = btManager.getData();
                     if(wallList != null) {
+                        mWallList.clear();
                         Log.d("DataFetcher", "Received wallList: Length: " + wallList.length);
                         for(int i=0;i<wallList.length;i++){
                             mWallList.add(wallList[i]);
@@ -128,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == BT_ENABLE_REQUEST_INIT){
             if(resultCode == RESULT_OK){
                 Log.d("Activity Result","Bluetooth Enabled by User");
-
+                btManager.connect();
+                threadPool.execute(new DataFetcher());
             }
             else {
                 Log.e("ActivityResult","Bluetooth is Disabled.");

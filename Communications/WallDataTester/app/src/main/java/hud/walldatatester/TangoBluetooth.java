@@ -75,6 +75,7 @@ public class TangoBluetooth {
     public void connect() {
         if (!btAdapter.isEnabled()) {
             Log.e(DEBUG_TAG, "Bluetooth adapter not enabled. Cannot proceed");
+            return;
         } else {
             String DEBUG_TAG = "ConnectThread";
 
