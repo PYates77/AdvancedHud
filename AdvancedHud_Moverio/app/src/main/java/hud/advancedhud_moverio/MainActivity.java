@@ -157,4 +157,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        mapView = (ImageView) findViewById(R.id.mapView);
+        mapView.setImageDrawable(mapDrawable);
+
+        updateTextViewThread.start();
+
+        /*startBluetoothAdapter();
+        btManager = new MoverioBluetooth(btAdapter);
+
+        btManager.connect();
+        if(btAdapter.isEnabled()) {
+            threadPool.execute(new DataFetcher());
+        }*/
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+
+        updateTextViewThread.stop();
+    }
+
+
+
+
 }
