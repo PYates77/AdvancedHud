@@ -46,16 +46,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(btManager != null){
+                    if(!btManager.isConnected()){
+                        btManager.connect();
+                    }
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList1();
-                        ArrayList<Double> oriList = new ArrayList<>();
-
-                        Double posX = 0.0;
-                        Double posY = 0.0;
-                        Double heading = 0.0;
-                        oriList.add(posX);
-                        oriList.add(posY);
-                        oriList.add(heading);
+                        ArrayList<Double> oriList = testOrientation1();
                         btManager.send(makeFrame(oriList,wallList));
                     }
                 }
@@ -65,16 +61,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(btManager != null){
+                    if(!btManager.isConnected()){
+                        btManager.connect();
+                    }
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList2();
-                        ArrayList<Double> oriList = new ArrayList<>();
-
-                        Double posX = 0.0;
-                        Double posY = 0.0;
-                        Double heading = 0.0;
-                        oriList.add(posX);
-                        oriList.add(posY);
-                        oriList.add(heading);
+                        ArrayList<Double> oriList = testOrientation1();
                         btManager.send(makeFrame(oriList,wallList));
                     }
                 }
@@ -84,16 +76,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(btManager != null){
+                    if(!btManager.isConnected()){
+                        btManager.connect();
+                    }
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList3();
-                        ArrayList<Double> oriList = new ArrayList<>();
-
-                        Double posX = 0.0;
-                        Double posY = 0.0;
-                        Double heading = 0.0;
-                        oriList.add(posX);
-                        oriList.add(posY);
-                        oriList.add(heading);
+                        ArrayList<Double> oriList = testOrientation1();
                         btManager.send(makeFrame(oriList,wallList));
                     }
                 }
@@ -103,17 +91,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(btManager != null){
+                    if(!btManager.isConnected()){
+                        btManager.connect();
+                    }
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList4();
-                        ArrayList<Double> oriList = new ArrayList<>();
-
-                        Double posX = 0.0;
-                        Double posY = 0.0;
-                        Double heading = 0.0;
-                        oriList.add(posX);
-                        oriList.add(posY);
-                        oriList.add(heading);
-                        btManager.send(makeFrame(oriList,wallList));
+                        ArrayList<Double> oriList = testOrientation1();
                     }
                 }
             }
@@ -130,14 +113,8 @@ public class MainActivity extends AppCompatActivity {
 
             //Generated Canned Data for transmission test
             ArrayList<Wall2D> wallList = testList1();
-            ArrayList<Double> oriList = new ArrayList<>();
+            ArrayList<Double> oriList = testOrientation1();
 
-            Double posX = 0.0;
-            Double posY = 0.0;
-            Double heading = 0.0;
-            oriList.add(posX);
-            oriList.add(posY);
-            oriList.add(heading);
             btManager.send(makeFrame(oriList,wallList));
         }
         else {
@@ -328,20 +305,45 @@ public class MainActivity extends AppCompatActivity {
         testList.add(w7);
         return testList;
     }
+    protected ArrayList<Double> testOrientation1(){
+        ArrayList<Double> testOrientation = new ArrayList<Double>();
+        Double x = 0.0;
+        Double y = 0.0;
+        Double z = 0.0;
+
+        Double o1 = 0.0;
+        Double o2 = 0.0;
+        Double o3 = 0.0;
+        Double o4 = 0.0;
+
+        testOrientation.add(x);
+        testOrientation.add(y);
+        testOrientation.add(z);
+        testOrientation.add(o1);
+        testOrientation.add(o2);
+        testOrientation.add(o3);
+        testOrientation.add(o4);
+
+        return testOrientation;
+    }
     protected Double[] makeFrame(ArrayList<Double> orientation, ArrayList<Wall2D> walls){
         ArrayList<Double> dataFrame = new ArrayList<>();
         dataFrame.add(FRAME_START);
+        if(orientation.size()%7 != 0){
+            Log.e("MakeFrame","The position/orientation data segment does not contain 7 doubles.");
+        }
         for (Double d : orientation){
             dataFrame.add(d);
         }
         dataFrame.add(FRAME_DELIMITER);
         Double[] tmp;
+
         for (Wall2D w : walls) {
             tmp = w.sendData();
-            dataFrame.add(tmp[0]);
-            dataFrame.add(tmp[1]);
-            dataFrame.add(tmp[2]);
-            dataFrame.add(tmp[3]);
+            //add the 4 doubles in the walls vector
+            for (int i=0; i<4; i++){
+                dataFrame.add(tmp[i]);
+            }
         }
         dataFrame.add(FRAME_END);
 

@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     public class DataFetcher implements Runnable{
         public void run(){
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-            //todo actually render the walls using akshay's code
+
             while(btAdapter.isEnabled()){
                 if(btManager.isConnected() && !btManager.isConnecting()) {
                     Wall[] wallList = btManager.getData();

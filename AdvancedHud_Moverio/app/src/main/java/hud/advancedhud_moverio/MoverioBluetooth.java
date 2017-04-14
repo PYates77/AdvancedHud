@@ -79,7 +79,6 @@ public class MoverioBluetooth {
             connecting = true;
             threadPool.execute(new ConnectThread());
         }
-
     }
 
     private class ConnectThread implements Runnable {
@@ -183,12 +182,12 @@ public class MoverioBluetooth {
                             frame_state = FRAME_NONE; //abort frame
                         }
                         if (frame_state == FRAME_ORIENTATION){
-                            if(orientation_couter < 3){
-                                Log.e(DEBUG_TAG, "Got a frame delimiter flag before 3 orientation doubles were sent.");
+                            if(orientation_couter < 7){
+                                Log.e(DEBUG_TAG, "Got a frame delimiter flag before 7 orientation doubles were sent.");
                                 frame_state = FRAME_NONE; //abort frame
                             }
-                            else if (orientation_couter > 3){
-                                Log.e(DEBUG_TAG, "Got a frame delimiter flag after too many orientation doubles.");
+                            else if (orientation_couter > 7){
+                                Log.e(DEBUG_TAG, "Got a frame delimiter flag after more than 7 orientation doubles.");
                                 frame_state = FRAME_NONE; //abort frame
                             }
                             else {
@@ -236,6 +235,11 @@ public class MoverioBluetooth {
                     //}
                 } catch (IOException e){
                     Log.e(DEBUG_TAG, "Connection Lost");
+                    try {
+                        btSocket.close();
+                    } catch (IOException e1) {
+                        Log.e(DEBUG_TAG,"Failed to close server socket after dropped connection");
+                    }
                     connecting = false;
                     connected = false;
                     return;
