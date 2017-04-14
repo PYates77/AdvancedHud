@@ -163,7 +163,9 @@ public class MainActivity extends AppCompatActivity {
         mapView = (ImageView) findViewById(R.id.mapView);
         mapView.setImageDrawable(mapDrawable);
 
-        updateTextViewThread.start();
+        if(!updateTextViewThread.isAlive()){
+            updateTextViewThread.start();
+        }
 
         /*startBluetoothAdapter();
         btManager = new MoverioBluetooth(btAdapter);
