@@ -20,7 +20,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:id="@+id/orientView"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
 
     <TextView
         android:text="Translation"
@@ -30,6 +31,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:id="@+id/translationView"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
 
 </RelativeLayout>
