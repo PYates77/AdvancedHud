@@ -43,11 +43,19 @@ public class MoverioBluetooth {
 
     private final String DEBUG_TAG = "MoverioBluetooth";
     private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
+    private final Double FRAME_START = Double.NEGATIVE_INFINITY;
+    private final Double FRAME_DELIMITER = Double.MAX_VALUE;
+    private final Double FRAME_END = Double.POSITIVE_INFINITY;
+
+    private final int FRAME_NONE = 0;
+    private final int FRAME_ORIENTATION = 1;
+    private final int FRAME_WALLS = 2;
 
     private BluetoothAdapter btAdapter;
     private final BlockingQueue<Runnable> threadQueue;
     private final ThreadPoolExecutor threadPool;
-    private Queue<Double> wallBuffer;
+    private ArrayList<ArrayList> wallBuffer;
+    private ArrayList<ArrayList> orientationBuffer;
 
     private boolean connected;
     private boolean connecting;
@@ -57,7 +65,8 @@ public class MoverioBluetooth {
         threadQueue = new LinkedBlockingQueue<Runnable>();
         int processor = Runtime.getRuntime().availableProcessors();
         threadPool = new ThreadPoolExecutor(processor, processor, 30, TimeUnit.SECONDS, threadQueue);
-        wallBuffer = new LinkedList<Double>();
+        wallBuffer = new ArrayList<ArrayList>();
+        orientationBuffer = new ArrayList<ArrayList>();
         connected = false;
         connecting = false;
     }
@@ -70,13 +79,12 @@ public class MoverioBluetooth {
             connecting = true;
             threadPool.execute(new ConnectThread());
         }
-
     }
 
     private class ConnectThread implements Runnable {
         private final String NAME = "MoverioServer";
         private final String DEBUG_TAG = "ConnectThread";
-        private final BluetoothServerSocket btSocket;
+        private BluetoothServerSocket btSocket;
 
         DataInputStream inStream;
         DataOutputStream outStream;
@@ -104,6 +112,7 @@ public class MoverioBluetooth {
             while (true) {
                 try {
                     s = btSocket.accept();
+                    Log.d(DEBUG_TAG,"completed accept() function");
                 }
                 catch (IOException e){
                     Log.e(DEBUG_TAG, "socket's accept() method failed", e);
@@ -139,20 +148,98 @@ public class MoverioBluetooth {
         }
         private void communicate(){
             Log.d(DEBUG_TAG, "Connection initiated. Waiting for data.");
+            int orientation_couter = 0;
+            int frame_state = FRAME_NONE;
+            ArrayList<Double> tmpWalls = new ArrayList<>();
+            ArrayList<Double> tmpOrientation = new ArrayList<>();
 
             while (true){
                 try {
                     //if(inStream.available() >= 32){
-                        for(int i=0; i < 4; i++){
 
-                            //TODO: add mutex
-                            Double d = inStream.readDouble();
-                            wallBuffer.add(d);
-                            Log.d("Communication","Read double " + d);
+                    Double d = inStream.readDouble();
+                    Log.d(DEBUG_TAG,"Received Double: " + d);
+                    if(d.equals(FRAME_START)) {
+                        if(frame_state == FRAME_NONE) {
+                            Log.d(DEBUG_TAG,"Got Start of Frame");
+                            frame_state = FRAME_ORIENTATION;
+                            tmpWalls.clear();
+                            tmpOrientation.clear();
+                            orientation_couter = 0;
                         }
+                        else if (frame_state == FRAME_ORIENTATION){
+                            Log.e(DEBUG_TAG, "Got a frame start flag while in the orientation state.");
+                            frame_state = FRAME_NONE; //abort frame
+                        }
+                        else if (frame_state == FRAME_WALLS){
+                            Log.e(DEBUG_TAG, "Got a frame start flag while in the walls state.");
+                            frame_state = FRAME_NONE; //abort frame
+                        }
+                    }
+                    else if (d.equals(FRAME_DELIMITER)){
+                        if(frame_state == FRAME_NONE) {
+                            Log.e(DEBUG_TAG, "Got a frame delimiter flag outside of a data frame");
+                            frame_state = FRAME_NONE; //abort frame
+                        }
+                        if (frame_state == FRAME_ORIENTATION){
+                            if(orientation_couter < 7){
+                                Log.e(DEBUG_TAG, "Got a frame delimiter flag before 7 orientation doubles were sent.");
+                                frame_state = FRAME_NONE; //abort frame
+                            }
+                            else if (orientation_couter > 7){
+                                Log.e(DEBUG_TAG, "Got a frame delimiter flag after more than 7 orientation doubles.");
+                                frame_state = FRAME_NONE; //abort frame
+                            }
+                            else {
+                                Log.d(DEBUG_TAG, "Moving to walls state");
+                                frame_state = FRAME_WALLS; //move to the walls state
+                            }
+                        }
+                        else if (frame_state == FRAME_WALLS){
+                            Log.e(DEBUG_TAG, "Got a frame delimiter flag while in the walls state");
+                            frame_state = FRAME_NONE; //abort frame
+                        }
+                    }
+                    else if (d.equals(FRAME_END)){
+                        if(frame_state == FRAME_NONE) {
+                            Log.e(DEBUG_TAG, "Got a frame end flag outside of a data frame.");
+                            frame_state = FRAME_NONE; //abort frame
+                        }
+                        if (frame_state == FRAME_ORIENTATION){
+                            Log.e(DEBUG_TAG, "Got a frame end flag while in the orientation state.");
+                            frame_state = FRAME_NONE; //abort frame
+                        }
+                        if (frame_state == FRAME_WALLS){
+                            //add temp values to buffers
+                            Log.d(DEBUG_TAG, "Applying data and Exiting frame");
+                            wallBuffer.add(new ArrayList(tmpWalls)); //make copy so we do not add by reference
+                            orientationBuffer.add(new ArrayList(tmpOrientation)); //make copy so we do not add by reference
+                            frame_state = FRAME_NONE; //exit frame successfully
+                        }
+                    }
+                    else {
+                        if(frame_state == FRAME_NONE) {
+                            Log.e(DEBUG_TAG, "Received double outside of a data frame.");
+                        }
+                        if (frame_state == FRAME_ORIENTATION){
+                            orientation_couter++;
+                            Log.d(DEBUG_TAG,"Added double to orientation");
+                            tmpOrientation.add(d);
+                        }
+                        if (frame_state == FRAME_WALLS){
+                            Log.d(DEBUG_TAG,"Added double to walls.");
+                            tmpWalls.add(d);
+                        }
+                    }
+
                     //}
                 } catch (IOException e){
                     Log.e(DEBUG_TAG, "Connection Lost");
+                    try {
+                        btSocket.close();
+                    } catch (IOException e1) {
+                        Log.e(DEBUG_TAG,"Failed to close server socket after dropped connection");
+                    }
                     connecting = false;
                     connected = false;
                     return;
@@ -174,15 +261,23 @@ public class MoverioBluetooth {
     }
     public Wall[] getData(){
         //TODO: mutex lock
-        int mySize = wallBuffer.size();
-        int bufferSize = mySize/4;
+        if(wallBuffer.size() == 0){
+            return null;
+        }
+
+
+        ArrayList<Double> tmpWalls = wallBuffer.remove(0);
+
+
+        int mySize = tmpWalls.size();
+        int bufferSize = (mySize)/4;
         if(bufferSize >= 1) {
             Wall[] mWalls = new Wall[bufferSize];
             for (int i = 0; i < bufferSize; i++) {
-                Double a = wallBuffer.remove();
-                Double b = wallBuffer.remove();
-                Double c = wallBuffer.remove();
-                Double d = wallBuffer.remove();
+                Double a = tmpWalls.remove(0);
+                Double b = tmpWalls.remove(0);
+                Double c = tmpWalls.remove(0);
+                Double d = tmpWalls.remove(0);
                 //Log.d(DEBUG_TAG,"Creating wall from data: (" + a + "," + b + ")" + " (" + c + "," + d + ")");
                 Coordinate e = new Coordinate(a, b);
                 Coordinate f = new Coordinate(c, d);
@@ -192,6 +287,14 @@ public class MoverioBluetooth {
             return mWalls;
         }
         return null;
+    }
+    public Double[] getOrientation(){
+        ArrayList<Double> tmpOrientation = orientationBuffer.remove(0);
+        Double[] orientation = new Double[3];
+        orientation[0] = tmpOrientation.remove(0);
+        orientation[1] = tmpOrientation.remove(0);
+        orientation[2] = tmpOrientation.remove(0);
+        return orientation;
     }
 
     public Wall[] getTestData(){

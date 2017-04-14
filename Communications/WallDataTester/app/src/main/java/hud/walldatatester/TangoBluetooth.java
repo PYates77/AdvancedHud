@@ -75,6 +75,7 @@ public class TangoBluetooth {
     public void connect() {
         if (!btAdapter.isEnabled()) {
             Log.e(DEBUG_TAG, "Bluetooth adapter not enabled. Cannot proceed");
+            return;
         } else {
             String DEBUG_TAG = "ConnectThread";
 
@@ -173,7 +174,14 @@ public class TangoBluetooth {
                         outStream.writeDouble(myWalls[i]);
                         Log.d("Sender", "Sending Double: " + myWalls[i]);
                     } catch (IOException e) {
-                        Log.e(DEBUG_TAG, "Unable to write Double to outStream");
+                        Log.e(DEBUG_TAG, "Unable to write Double to outStream. Attempting to reconnect...");
+                        try {
+                            socket.close();
+                            connected = false;
+                        } catch (IOException e1) {
+                            Log.e(DEBUG_TAG,"Unable to close socket after dropped connection");
+                        }
+                        return;
                     }
                 }
                 try {
