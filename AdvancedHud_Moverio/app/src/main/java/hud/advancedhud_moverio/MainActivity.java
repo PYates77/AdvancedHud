@@ -160,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        mapView = (ImageView) findViewById(R.id.mapView);
-        mapView.setImageDrawable(mapDrawable);
+        //mapView = (ImageView) findViewById(R.id.mapView);
+        //mapView.setImageDrawable(mapDrawable);
 
         if(!updateTextViewThread.isAlive()){
             updateTextViewThread.start();
@@ -177,12 +177,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();  // Always call the superclass method first
-
-        updateTextViewThread.stop();
-    }
+    //@Override
+    //public void onPause() {
+    //    super.onPause();  // Always call the superclass method first
+//
+//        updateTextViewThread.stop();
+//    }
 
 
 
