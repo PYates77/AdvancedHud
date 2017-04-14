@@ -307,14 +307,14 @@ public class MainActivity extends AppCompatActivity {
     }
     protected ArrayList<Double> testOrientation1(){
         ArrayList<Double> testOrientation = new ArrayList<Double>();
-        Double x = 0.0;
-        Double y = 0.0;
+        Double x = 1.0;
+        Double y = -2.0;
         Double z = 0.0;
 
-        Double o1 = 0.0;
-        Double o2 = 0.0;
-        Double o3 = 0.0;
-        Double o4 = 0.0;
+        Double o1 = 0.85;
+        Double o2 = 0.62;
+        Double o3 = 0.42;
+        Double o4 = 0.56;
 
         testOrientation.add(x);
         testOrientation.add(y);
