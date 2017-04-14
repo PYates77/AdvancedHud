@@ -97,13 +97,13 @@ public class MapDrawable extends Drawable {
             canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
         canvas.drawColor(mBackgroundColor);
-        /*if(mPoints != null){
+        if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i += 2){
                 Point pt = mPoints.get(i);
-                //canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint); //x and z being used; why not y?
+                canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint);
             }
-        }*/
-        if(mWallList != null){
+        }
+        /*if(mWallList != null){
             for(int i=0; i <mWallList.size(); i++){
                 Wall2D wl = mWallList.get(i);
                 canvas.drawLine((float)((wl.getEdge1().x + 1.5)*100),
@@ -112,7 +112,7 @@ public class MapDrawable extends Drawable {
                         (float)(300.0 - ((wl.getEdge2().z + 1.5)*100.0)),
                         mPaint);
             }
-        }
+        }*/
         mPaint.setColor(Color.RED);
         Path newPath = constructUser();
         canvas.drawPath(newPath,mPaint);

@@ -93,8 +93,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                     @Override
                     public void run() {
                         mapView.invalidate();
-                        //mapDrawable.setPointArray(global_points);
-                        mapDrawable.setWallArray(wall2DList);
+                        mapDrawable.setPointArray(global_points);
+                        //mapDrawable.setWallArray(wall2DList);
                     }
                 });
                 try {
@@ -207,23 +207,23 @@ public class HelloDepthPerceptionActivity extends Activity {
                 // We are not using onXyzIjAvailable for this app.
             }
 
-            //WHY ARE THERE RETURN STATEMENTS IN THE FOLLOWING CODE? WHAT ARE THESE METHODS?
+
             ArrayList<Point> to_point_list(FloatBuffer arr) {
                 ArrayList<Point> out = new ArrayList<Point>();
 
-                for (int i = 0; i < arr.limit(); i += 4) {
-                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
-                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
-                    try {
-                        if (gMatrix != null)
-                            pointMat = gMatrix.multiply(pointMat);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
-                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
-                }
-                /*
+//                for (int i = 0; i < arr.limit(); i += 4) {
+//                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
+//                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
+//                    try {
+//                        if (gMatrix != null)
+//                            pointMat = gMatrix.multiply(pointMat);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
+//                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
+//                }
+
                 //THE FOLLOWING CODE IS FOR ROTATION AND ROTATION OF THE POINT CLOUD DATA
                 //FROM AKSHAY
                 //UNCOMMENT AND REPLACE THE ABOVE CODE WITH THE FOLLOWING CODE
@@ -239,11 +239,11 @@ public class HelloDepthPerceptionActivity extends Activity {
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)((x1*Math.cos(-rollr)-z1*Math.sin(-rollr))+translation[0]); //rotates new point in x
-                    newz = (float)((x1*Math.sin(-rollr)+z1*Math.cos(-rollr))+translation[1]); //rotates new point in z/y
+                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //rotates new point in x
+                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //rotates new point in z/y
                     out.add(new Point(newx,y1,newz));
 
-                }*/
+                }
 
                 return out;
             }
@@ -470,16 +470,16 @@ public class HelloDepthPerceptionActivity extends Activity {
                         wall2DList.add(wall);
                     else {
                         //Log.i(TAG, String.valueOf(wall.getAngle(wall2DList.get(0))));
-                        //wall2DList.set(0, wall);
-                        boolean skip = false;
-
-                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
-                            if (wall.getAngle(wall2DList.get(i)) < angleMargin)
-                                skip = true;
-                        }
-
-                        if (skip == false)
-                            wall2DList.add(wall);
+                        wall2DList.set(0, wall);
+//                        boolean skip = false;
+//
+//                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
+//                            if (wall.getAngle(wall2DList.get(i)) < angleMargin)
+//                                skip = true;
+//                        }
+//
+//                        if (skip == false)
+//                            wall2DList.add(wall);
                     }
                 }
             }
@@ -543,7 +543,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 } else {
                     FloatBuffer arr  = pointCloudData.points;
                     ArrayList<Point> points = to_point_list(arr);
-
+                    global_points = points;
                     Collections.sort(points);
 
                     //ArrayList<Line> lines = generateLines(points);
@@ -572,7 +572,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 
                     // global_points = getDisplayPoints();
                     
-                    global_points = points;
+
                     
                     /*global_points = points;
                     points = sample_array(points);
@@ -673,13 +673,13 @@ public class HelloDepthPerceptionActivity extends Activity {
     }
 
     private void updateLocation(TangoPoseData pose) {
-        //StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         translation = pose.getTranslationAsFloats();
-        //stringBuilder.append("Position: " +translation[0]*100 + ", " + translation[1]*100 + ", " + translation[2]*100+"\n");
+        stringBuilder.append("Position: " +translation[0] + ", " + translation[1] + ", " + translation[2]);
         orientation = pose.getRotationAsFloats();
-        //stringBuilder.append(". Orientation: " +
-        //orientation[0] + ", " + orientation[1] + ", " +
-        //orientation[2] + ", " + orientation[3]+"\n");
+        stringBuilder.append(". Orientation: " +
+        orientation[0] + ", " + orientation[1] + ", " +
+        orientation[2] + ", " + orientation[3]+"\n");
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -698,7 +698,7 @@ public class HelloDepthPerceptionActivity extends Activity {
         //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
         rollr = (float)euOrient[2];
-        //stringBuilder.append("Yaw: "+yaw+"\nPitch: "+pitch+"\nRoll: "+roll);
-        //Log.i(TAG, stringBuilder.toString());
+        stringBuilder.append("\nRoll: "+Math.toDegrees(rollr));
+        Log.i(TAG, stringBuilder.toString());
     }
 }
