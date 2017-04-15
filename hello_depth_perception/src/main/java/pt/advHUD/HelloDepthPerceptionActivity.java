@@ -82,6 +82,8 @@ public class HelloDepthPerceptionActivity extends Activity {
     private float y;
     private float translation[] = new float[3];
     private float orientation[] = new float[4];
+    private float yawr = 0;
+    private float pitchr = 0;
     float rotMatrix[] = new float[9];
     float euOrient[] = new float[3];
 
@@ -241,6 +243,12 @@ public class HelloDepthPerceptionActivity extends Activity {
                     z1 = arr.get(i+2);
                     newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //rotates new point in x
                     newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //rotates new point in z/y
+
+                    //Code to test out 3X3 Rotation Matrix Transformation if Euclidean Angles fail (FROM AKSHAY)
+                    /*
+                    newx = x1*rotMatrix[0] + y1*rotMatrix[1] +z1*rotMatrix[2];
+                    newz = x1*rotMatrix[6]+y1*rotMatrix[7]+z1*rotMatrix[8];
+                    */
                     out.add(new Point(newx,y1,newz));
 
                 }
@@ -696,9 +704,14 @@ public class HelloDepthPerceptionActivity extends Activity {
         rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
         //rollrMath = (float)Math.atan((rotMatrix[7]/rotMatrix[8]));
         //Get orientation information
-        SensorManager.getOrientation(rotMatrix,euOrient);
-        rollr = (float)euOrient[2];
-        stringBuilder.append("\nRoll: "+Math.toDegrees(rollr));
+        //SensorManager.getOrientation(rotMatrix,euOrient);
+        //rollr = (float)euOrient[2];
+
+        //Use this code to test whether or not the pose angles make sense (FROM AKSHAY)
+        yawr = (float)Math.atan2(rotMatrix[3],rotMatrix[0]);
+        pitchr = (float)Math.atan2(-1*rotMatrix[6],Math.sqrt(Math.pow(rotMatrix[7],2))+Math.pow(rotMatrix[8],2));
+        rollr = (float)Math.atan2(rotMatrix[7],rotMatrix[8]);
+        stringBuilder.append("Pitch: "+ Math.toDegrees(pitchr) + " Yaw: "+Math.toDegrees(yawr)+ " Roll: "+Math.toDegrees(rollr)+"\n");
         Log.i(TAG, stringBuilder.toString());
     }
 }
