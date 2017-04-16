@@ -26,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="HelloDepthPerceptionActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="HelloDepthPerceptionActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="244" column="62" selection-start-line="244" selection-start-column="62" selection-end-line="244" selection-end-column="62" />
+            <state relative-caret-position="396">
+              <caret line="245" column="98" selection-start-line="245" selection-start-column="98" selection-end-line="245" selection-end-column="98" />
               <folding>
                 <element signature="e#3424#3879#0" expanded="true" />
                 <element signature="e#3878#3879#0" expanded="true" />
@@ -41,7 +41,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MapDrawable.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MapDrawable.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="94">
@@ -963,8 +963,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java" />
       </list>
     </option>
   </component>
@@ -1318,24 +1318,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="92" column="10" selection-start-line="92" selection-start-column="10" selection-end-line="92" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="244" column="62" selection-start-line="244" selection-start-column="62" selection-end-line="244" selection-end-column="62" />
+        <state relative-caret-position="396">
+          <caret line="245" column="98" selection-start-line="245" selection-start-column="98" selection-end-line="245" selection-end-column="98" />
           <folding>
             <element signature="e#3424#3879#0" expanded="true" />
             <element signature="e#3878#3879#0" expanded="true" />
             <element signature="e#7589#7615#0" expanded="true" />
             <element signature="e#8586#8593#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="94">
-          <caret line="92" column="10" selection-start-line="92" selection-start-column="10" selection-end-line="92" selection-end-column="10" />
-          <folding />
         </state>
       </provider>
     </entry>
