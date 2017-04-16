@@ -90,10 +90,11 @@ public class MapDrawable extends Drawable {
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
         canvas.translate(moveX,moveY);
-        /*if(userLocked){
+
+        if(userLocked){
             canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
-        */
+
         canvas.drawColor(mBackgroundColor);
         if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i += 2){
