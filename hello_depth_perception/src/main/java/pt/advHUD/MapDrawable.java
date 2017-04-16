@@ -93,9 +93,7 @@ public class MapDrawable extends Drawable {
         /*if(userLocked){
             canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
-        else{
-            canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
-        }*/
+        */
         canvas.drawColor(mBackgroundColor);
         if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i += 2){
