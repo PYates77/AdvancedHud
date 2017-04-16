@@ -96,6 +96,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                     public void run() {
                         mapView.invalidate();
                         mapDrawable.setPointArray(global_points);
+                        mapDrawable.setDegreeRotation((int)pitchr);
                         //mapDrawable.setWallArray(wall2DList);
                     }
                 });
@@ -213,22 +214,23 @@ public class HelloDepthPerceptionActivity extends Activity {
             ArrayList<Point> to_point_list(FloatBuffer arr) {
                 ArrayList<Point> out = new ArrayList<Point>();
 
-//                for (int i = 0; i < arr.limit(); i += 4) {
-//                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
-//                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
-//                    try {
-//                        if (gMatrix != null)
-//                            pointMat = gMatrix.multiply(pointMat);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
-//                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
-//                }
+                for (int i = 0; i < arr.limit(); i += 4) {
+                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
+                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
+                    try {
+                        if (gMatrix != null)
+                            pointMat = gMatrix.multiply(pointMat);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
+                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
+                }
 
                 //THE FOLLOWING CODE IS FOR ROTATION AND ROTATION OF THE POINT CLOUD DATA
                 //FROM AKSHAY
                 //UNCOMMENT AND REPLACE THE ABOVE CODE WITH THE FOLLOWING CODE
+                /*
                 float x1;
                 float y1;
                 float z1;
@@ -245,13 +247,13 @@ public class HelloDepthPerceptionActivity extends Activity {
                     newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //rotates new point in z/y
 
                     //Code to test out 3X3 Rotation Matrix Transformation if Euclidean Angles fail (FROM AKSHAY)
-                    /*
-                    newx = x1*rotMatrix[0] + y1*rotMatrix[1] +z1*rotMatrix[2];
-                    newz = x1*rotMatrix[6]+y1*rotMatrix[7]+z1*rotMatrix[8];
-                    */
+                    //
+                    //newx = x1*rotMatrix[0] + y1*rotMatrix[1] +z1*rotMatrix[2];
+                    //newz = x1*rotMatrix[6]+y1*rotMatrix[7]+z1*rotMatrix[8];
+
                     out.add(new Point(newx,y1,newz));
 
-                }
+                }*/
 
                 return out;
             }

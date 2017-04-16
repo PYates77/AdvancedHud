@@ -70,9 +70,9 @@ public class MapDrawable extends Drawable {
             A = new Coordinate(140-moveX,160-moveY);
             B = new Coordinate(150-moveX,140-moveY);
             C = new Coordinate(160-moveX,160-moveY);
-            A = rotateCoord(A, mDegreeRotation, height);
-            B = rotateCoord(B, mDegreeRotation, height);
-            C = rotateCoord(C, mDegreeRotation, height);
+            A = rotateCoord(A, -mDegreeRotation, height);
+            B = rotateCoord(B, -mDegreeRotation, height);
+            C = rotateCoord(C, -mDegreeRotation, height);
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
@@ -90,12 +90,12 @@ public class MapDrawable extends Drawable {
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
         canvas.translate(moveX,moveY);
-        if(userLocked){
+        /*if(userLocked){
             canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         }
         else{
             canvas.rotate((float)-mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
-        }
+        }*/
         canvas.drawColor(mBackgroundColor);
         if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i += 2){
