@@ -213,23 +213,23 @@ public class HelloDepthPerceptionActivity extends Activity {
             ArrayList<Point> to_point_list(FloatBuffer arr) {
                 ArrayList<Point> out = new ArrayList<Point>();
 
-                for (int i = 0; i < arr.limit(); i += 4) {
-                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
-                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
-                    try {
-                        if (gMatrix != null)
-                            pointMat = gMatrix.multiply(pointMat);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
-                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
-                }
+//                for (int i = 0; i < arr.limit(); i += 4) {
+//                    double[] currPoint = {arr.get(i), arr.get(i+1), arr.get(i+2), arr.get(i+3)};
+//                    /*Matrix pointMat = new Matrix(4, 1, currPoint);
+//                    try {
+//                        if (gMatrix != null)
+//                            pointMat = gMatrix.multiply(pointMat);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    out.add(new Point(pointMat.getElement(0), pointMat.getElement(1), pointMat.getElement(2)));*/
+//                    out.add(new Point(arr.get(i), arr.get(i+1), arr.get(i+2)));
+//                }
 
                 //THE FOLLOWING CODE IS FOR ROTATION AND ROTATION OF THE POINT CLOUD DATA
                 //FROM AKSHAY
                 //UNCOMMENT AND REPLACE THE ABOVE CODE WITH THE FOLLOWING CODE
-                /*
+
                 float x1;
                 float y1;
                 float z1;
@@ -242,8 +242,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //rotates new point in x
-                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //rotates new point in z/y
+                    newx = (float)(x1*Math.cos(Math.toRadians(roll))-z1*Math.sin(Math.toRadians(roll))); //rotates new point in x
+                    newz = (float)(x1*Math.sin(Math.toRadians(roll))+z1*Math.cos(Math.toRadians(roll))); //rotates new point in z/y
 
                     //Code to test out 3X3 Rotation Matrix Transformation if Euclidean Angles fail (FROM AKSHAY)
                     //
@@ -252,7 +252,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 
                     out.add(new Point(newx,y1,newz));
 
-                }*/
+                }
 
                 return out;
             }
