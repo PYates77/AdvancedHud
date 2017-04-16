@@ -29,32 +29,12 @@
       <file leaf-file-name="HelloDepthPerceptionActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="13870">
-              <caret line="714" column="114" selection-start-line="714" selection-start-column="114" selection-end-line="714" selection-end-column="114" />
+            <state relative-caret-position="594">
+              <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
               <folding>
-                <element signature="e#2514#2520#0" expanded="true" />
-                <element signature="e#2580#2588#0" expanded="true" />
-                <element signature="e#2649#2657#0" expanded="true" />
-                <element signature="e#3321#4059#0" expanded="true" />
-                <element signature="e#3451#3837#0" expanded="true" />
-                <element signature="e#3836#3837#0" expanded="true" />
-                <element signature="e#4058#4059#0" expanded="true" />
-                <element signature="e#4806#6147#0" expanded="true" />
-                <element signature="e#5498#5539#0" expanded="true" />
-                <element signature="e#5599#5629#0" expanded="true" />
-                <element signature="e#5721#5762#0" expanded="true" />
-                <element signature="e#5822#5852#0" expanded="true" />
-                <element signature="e#5946#5989#0" expanded="true" />
-                <element signature="e#6049#6081#0" expanded="true" />
-                <element signature="e#6146#6147#0" expanded="true" />
-                <element signature="e#6385#6426#0" expanded="true" />
-                <element signature="e#7546#7572#0" expanded="true" />
-                <element signature="e#8543#8550#0" expanded="true" />
-                <element signature="e#10720#10727#0" expanded="true" />
-                <element signature="e#16174#16181#0" expanded="true" />
-                <element signature="e#18131#18138#0" expanded="true" />
-                <element signature="e#26215#26470#0" expanded="true" />
-                <element signature="e#26469#26470#0" expanded="true" />
+                <element signature="e#3424#3885#0" expanded="true" />
+                <element signature="e#3884#3885#0" expanded="true" />
+                <element signature="e#7595#7621#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -63,8 +43,8 @@
       <file leaf-file-name="MapDrawable.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-104">
-              <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+            <state relative-caret-position="336">
+              <caret line="70" column="43" selection-start-line="70" selection-start-column="43" selection-end-line="70" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -1026,46 +1006,18 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hello_depth_perception" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hello_depth_perception" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hello_depth_perception" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hello_depth_perception" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="advHUD" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane" />
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="android.sdk-updates" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../TangoMapTest/TangoMapApps" />
   </component>
   <component name="RunManager" selected="Android App.hello_depth_perception">
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
@@ -1278,8 +1230,8 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1291,8 +1243,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1323,29 +1275,29 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#2514#2520#0" expanded="true" />
-            <element signature="e#2580#2588#0" expanded="true" />
-            <element signature="e#2649#2657#0" expanded="true" />
-            <element signature="e#3321#4059#0" expanded="true" />
-            <element signature="e#3451#3837#0" expanded="true" />
-            <element signature="e#3836#3837#0" expanded="true" />
-            <element signature="e#4058#4059#0" expanded="true" />
-            <element signature="e#4806#6147#0" expanded="true" />
-            <element signature="e#5498#5539#0" expanded="true" />
-            <element signature="e#5599#5629#0" expanded="true" />
-            <element signature="e#5721#5762#0" expanded="true" />
-            <element signature="e#5822#5852#0" expanded="true" />
-            <element signature="e#5946#5989#0" expanded="true" />
-            <element signature="e#6049#6081#0" expanded="true" />
-            <element signature="e#6146#6147#0" expanded="true" />
-            <element signature="e#6385#6426#0" expanded="true" />
-            <element signature="e#7546#7572#0" expanded="true" />
-            <element signature="e#8543#8550#0" expanded="true" />
-            <element signature="e#10720#10727#0" expanded="true" />
-            <element signature="e#16174#16181#0" expanded="true" />
-            <element signature="e#18131#18138#0" expanded="true" />
-            <element signature="e#26215#26470#0" expanded="true" />
-            <element signature="e#26469#26470#0" expanded="true" />
+            <element signature="e#3424#3885#0" expanded="true" />
+            <element signature="e#3884#3885#0" expanded="true" />
+            <element signature="e#7595#7621#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1452">
+          <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#3424#3885#0" expanded="true" />
+            <element signature="e#3884#3885#0" expanded="true" />
+            <element signature="e#7595#7621#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1355,69 +1307,29 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#2514#2520#0" expanded="true" />
-            <element signature="e#2580#2588#0" expanded="true" />
-            <element signature="e#2649#2657#0" expanded="true" />
-            <element signature="e#3321#4059#0" expanded="true" />
-            <element signature="e#3451#3837#0" expanded="true" />
-            <element signature="e#3836#3837#0" expanded="true" />
-            <element signature="e#4058#4059#0" expanded="true" />
-            <element signature="e#4806#6147#0" expanded="true" />
-            <element signature="e#5498#5539#0" expanded="true" />
-            <element signature="e#5599#5629#0" expanded="true" />
-            <element signature="e#5721#5762#0" expanded="true" />
-            <element signature="e#5822#5852#0" expanded="true" />
-            <element signature="e#5946#5989#0" expanded="true" />
-            <element signature="e#6049#6081#0" expanded="true" />
-            <element signature="e#6146#6147#0" expanded="true" />
-            <element signature="e#6385#6426#0" expanded="true" />
-            <element signature="e#7546#7572#0" expanded="true" />
-            <element signature="e#8543#8550#0" expanded="true" />
-            <element signature="e#10720#10727#0" expanded="true" />
-            <element signature="e#16174#16181#0" expanded="true" />
-            <element signature="e#18131#18138#0" expanded="true" />
-            <element signature="e#26215#26470#0" expanded="true" />
-            <element signature="e#26469#26470#0" expanded="true" />
+            <element signature="e#3424#3885#0" expanded="true" />
+            <element signature="e#3884#3885#0" expanded="true" />
+            <element signature="e#7595#7621#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-104">
-          <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+        <state relative-caret-position="336">
+          <caret line="70" column="43" selection-start-line="70" selection-start-column="43" selection-end-line="70" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13870">
-          <caret line="714" column="114" selection-start-line="714" selection-start-column="114" selection-end-line="714" selection-end-column="114" />
+        <state relative-caret-position="594">
+          <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
           <folding>
-            <element signature="e#2514#2520#0" expanded="true" />
-            <element signature="e#2580#2588#0" expanded="true" />
-            <element signature="e#2649#2657#0" expanded="true" />
-            <element signature="e#3321#4059#0" expanded="true" />
-            <element signature="e#3451#3837#0" expanded="true" />
-            <element signature="e#3836#3837#0" expanded="true" />
-            <element signature="e#4058#4059#0" expanded="true" />
-            <element signature="e#4806#6147#0" expanded="true" />
-            <element signature="e#5498#5539#0" expanded="true" />
-            <element signature="e#5599#5629#0" expanded="true" />
-            <element signature="e#5721#5762#0" expanded="true" />
-            <element signature="e#5822#5852#0" expanded="true" />
-            <element signature="e#5946#5989#0" expanded="true" />
-            <element signature="e#6049#6081#0" expanded="true" />
-            <element signature="e#6146#6147#0" expanded="true" />
-            <element signature="e#6385#6426#0" expanded="true" />
-            <element signature="e#7546#7572#0" expanded="true" />
-            <element signature="e#8543#8550#0" expanded="true" />
-            <element signature="e#10720#10727#0" expanded="true" />
-            <element signature="e#16174#16181#0" expanded="true" />
-            <element signature="e#18131#18138#0" expanded="true" />
-            <element signature="e#26215#26470#0" expanded="true" />
-            <element signature="e#26469#26470#0" expanded="true" />
+            <element signature="e#3424#3885#0" expanded="true" />
+            <element signature="e#3884#3885#0" expanded="true" />
+            <element signature="e#7595#7621#0" expanded="true" />
           </folding>
         </state>
       </provider>

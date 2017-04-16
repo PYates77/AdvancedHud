@@ -72,20 +72,17 @@ public class HelloDepthPerceptionActivity extends Activity {
     //AKSHAY'S VARIABLES
     private ImageView mapView;
     private MapDrawable mapDrawable;
-    private float rollr = 0;
-    private float rollrMath = 0;
+    private float translation[] = new float[3];
+    private float orientation[] = new float[4];
+    float rotMatrix[] = new float[9];
+    float euOrient[] = new float[3];
+    private float yaw = 0;
+    private float pitch = 0;
+    private float roll = -300; //bogus value so NULLPTREXCEPTION doesn't occur
     private float qx;
     private float qy;
     private float qz;
     private float qw;
-    private float x;
-    private float y;
-    private float translation[] = new float[3];
-    private float orientation[] = new float[4];
-    private float yawr = 0;
-    private float pitchr = 0;
-    float rotMatrix[] = new float[9];
-    float euOrient[] = new float[3];
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -94,14 +91,16 @@ public class HelloDepthPerceptionActivity extends Activity {
                 HelloDepthPerceptionActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mapView.invalidate();
-                        mapDrawable.setPointArray(global_points);
-                        mapDrawable.setDegreeRotation((int)Math.toDegrees(pitchr));
-                        //mapDrawable.setWallArray(wall2DList);
+                        if(roll != -300) {
+                            mapView.invalidate();
+                            mapDrawable.setPointArray(global_points);
+                            mapDrawable.setDegreeRotation((int) (-1 * roll));
+                            //mapDrawable.setWallArray(wall2DList);
+                        }
                     }
                 });
                 try {
-                    Thread.sleep(500); //2Hz refresh rate
+                    Thread.sleep(100); //10Hz refresh rate
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -688,8 +687,8 @@ public class HelloDepthPerceptionActivity extends Activity {
         stringBuilder.append("Position: " +translation[0] + ", " + translation[1] + ", " + translation[2]);
         orientation = pose.getRotationAsFloats();
         stringBuilder.append(". Orientation: " +
-        orientation[0] + ", " + orientation[1] + ", " +
-        orientation[2] + ", " + orientation[3]+"\n");
+                orientation[0] + ", " + orientation[1] + ", " +
+                orientation[2] + ", " + orientation[3]+"\n");
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -704,17 +703,8 @@ public class HelloDepthPerceptionActivity extends Activity {
         rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
         rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
         rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
-        //rollrMath = (float)Math.atan((rotMatrix[7]/rotMatrix[8]));
         //Get orientation information
-        //SensorManager.getOrientation(rotMatrix,euOrient);
-        //rollr = (float)euOrient[2];
-
-        //Use this code to test whether or not the pose angles make sense (FROM AKSHAY)
-        //Angle seems to be opposite of mathematical orientation (hence why there is -1 for pitchr)
-        yawr = (float)Math.atan2(rotMatrix[3],rotMatrix[0]);
-        pitchr = (float)Math.atan2(-1*rotMatrix[6],Math.sqrt(Math.pow(rotMatrix[7],2))+Math.pow(rotMatrix[8],2)*-1);
-        rollr = (float)Math.atan2(rotMatrix[7],rotMatrix[8]);
-        stringBuilder.append("Pitch: "+ Math.toDegrees(pitchr) + " Yaw: "+Math.toDegrees(yawr)+ " Roll: "+Math.toDegrees(rollr)+"\n");
-        Log.i(TAG, stringBuilder.toString());
+        SensorManager.getOrientation(rotMatrix,euOrient);
+        roll = (float)Math.toDegrees(euOrient[2]);
     }
 }
