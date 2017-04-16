@@ -96,7 +96,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                     public void run() {
                         mapView.invalidate();
                         mapDrawable.setPointArray(global_points);
-                        mapDrawable.setDegreeRotation((int)pitchr);
+                        mapDrawable.setDegreeRotation((int)Math.toDegrees(pitchr));
                         //mapDrawable.setWallArray(wall2DList);
                     }
                 });
@@ -710,8 +710,9 @@ public class HelloDepthPerceptionActivity extends Activity {
         //rollr = (float)euOrient[2];
 
         //Use this code to test whether or not the pose angles make sense (FROM AKSHAY)
+        //Angle seems to be opposite of mathematical orientation (hence why there is -1 for pitchr)
         yawr = (float)Math.atan2(rotMatrix[3],rotMatrix[0]);
-        pitchr = (float)Math.atan2(-1*rotMatrix[6],Math.sqrt(Math.pow(rotMatrix[7],2))+Math.pow(rotMatrix[8],2));
+        pitchr = (float)Math.atan2(-1*rotMatrix[6],Math.sqrt(Math.pow(rotMatrix[7],2))+Math.pow(rotMatrix[8],2)*-1);
         rollr = (float)Math.atan2(rotMatrix[7],rotMatrix[8]);
         stringBuilder.append("Pitch: "+ Math.toDegrees(pitchr) + " Yaw: "+Math.toDegrees(yawr)+ " Roll: "+Math.toDegrees(rollr)+"\n");
         Log.i(TAG, stringBuilder.toString());
