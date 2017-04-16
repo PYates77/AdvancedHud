@@ -29,13 +29,13 @@
       <file leaf-file-name="HelloDepthPerceptionActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2046">
-              <caret line="96" column="67" selection-start-line="96" selection-start-column="67" selection-end-line="96" selection-end-column="67" />
+            <state relative-caret-position="418">
+              <caret line="96" column="64" selection-start-line="96" selection-start-column="64" selection-end-line="96" selection-end-column="64" />
               <folding>
-                <element signature="e#3424#3882#0" expanded="true" />
-                <element signature="e#3881#3882#0" expanded="true" />
-                <element signature="e#7592#7618#0" expanded="true" />
-                <element signature="e#8589#8596#0" expanded="true" />
+                <element signature="e#3424#3879#0" expanded="true" />
+                <element signature="e#3878#3879#0" expanded="true" />
+                <element signature="e#7589#7615#0" expanded="true" />
+                <element signature="e#8586#8593#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -963,8 +963,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/pt/advHUD/MapDrawable.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java" />
       </list>
     </option>
   </component>
@@ -1337,10 +1337,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#3424#3882#0" expanded="true" />
-            <element signature="e#3881#3882#0" expanded="true" />
-            <element signature="e#7592#7618#0" expanded="true" />
-            <element signature="e#8589#8596#0" expanded="true" />
+            <element signature="e#3424#3879#0" expanded="true" />
+            <element signature="e#3878#3879#0" expanded="true" />
+            <element signature="e#7589#7615#0" expanded="true" />
+            <element signature="e#8586#8593#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1358,10 +1358,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#3424#3882#0" expanded="true" />
-            <element signature="e#3881#3882#0" expanded="true" />
-            <element signature="e#7592#7618#0" expanded="true" />
-            <element signature="e#8589#8596#0" expanded="true" />
+            <element signature="e#3424#3879#0" expanded="true" />
+            <element signature="e#3878#3879#0" expanded="true" />
+            <element signature="e#7589#7615#0" expanded="true" />
+            <element signature="e#8586#8593#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1371,10 +1371,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#3424#3882#0" expanded="true" />
-            <element signature="e#3881#3882#0" expanded="true" />
-            <element signature="e#7592#7618#0" expanded="true" />
-            <element signature="e#8589#8596#0" expanded="true" />
+            <element signature="e#3424#3879#0" expanded="true" />
+            <element signature="e#3878#3879#0" expanded="true" />
+            <element signature="e#7589#7615#0" expanded="true" />
+            <element signature="e#8586#8593#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1389,13 +1389,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pt/advHUD/HelloDepthPerceptionActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2046">
-          <caret line="96" column="67" selection-start-line="96" selection-start-column="67" selection-end-line="96" selection-end-column="67" />
+        <state relative-caret-position="418">
+          <caret line="96" column="64" selection-start-line="96" selection-start-column="64" selection-end-line="96" selection-end-column="64" />
           <folding>
-            <element signature="e#3424#3882#0" expanded="true" />
-            <element signature="e#3881#3882#0" expanded="true" />
-            <element signature="e#7592#7618#0" expanded="true" />
-            <element signature="e#8589#8596#0" expanded="true" />
+            <element signature="e#3424#3879#0" expanded="true" />
+            <element signature="e#3878#3879#0" expanded="true" />
+            <element signature="e#7589#7615#0" expanded="true" />
+            <element signature="e#8586#8593#0" expanded="true" />
           </folding>
         </state>
       </provider>
