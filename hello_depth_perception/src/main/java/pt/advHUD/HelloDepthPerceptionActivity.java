@@ -94,7 +94,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                         if(roll != -300) {
                             mapView.invalidate();
                             mapDrawable.setPointArray(global_points);
-                            mapDrawable.setDegreeRotation((int)(roll));
+                            mapDrawable.setDegreeRotation((int)(-roll));
                             //mapDrawable.setWallArray(wall2DList);
                         }
                     }

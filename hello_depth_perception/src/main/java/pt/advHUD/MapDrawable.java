@@ -70,9 +70,9 @@ public class MapDrawable extends Drawable {
             A = new Coordinate(140-moveX,160-moveY);
             B = new Coordinate(150-moveX,130-moveY);
             C = new Coordinate(160-moveX,160-moveY);
-            A = rotateCoord(A, mDegreeRotation, height);
-            B = rotateCoord(B, mDegreeRotation, height);
-            C = rotateCoord(C, mDegreeRotation, height);
+            A = rotateCoord(A, -mDegreeRotation, height);
+            B = rotateCoord(B, -mDegreeRotation, height);
+            C = rotateCoord(C, -mDegreeRotation, height);
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
