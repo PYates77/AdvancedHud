@@ -57,8 +57,8 @@ public class MapDrawable extends Drawable {
         double degreeRadians = Math.toRadians(degrees);
         double x_trans = c.coordx-(size/2)+moveX;
         double y_trans = c.coordy-(size/2)+moveY;
-        double x1 = (Math.cos(-degreeRadians)*x_trans)-(Math.sin(-degreeRadians)*y_trans);
-        double y1 = (Math.sin(-degreeRadians)*x_trans)+(Math.cos(-degreeRadians)*y_trans);
+        double x1 = (Math.cos(degreeRadians)*x_trans)-(Math.sin(degreeRadians)*y_trans);
+        double y1 = (Math.sin(degreeRadians)*x_trans)+(Math.cos(degreeRadians)*y_trans);
         return new Coordinate(x1+(size/2)-moveX,y1+(size/2)-moveY);
     }
 
