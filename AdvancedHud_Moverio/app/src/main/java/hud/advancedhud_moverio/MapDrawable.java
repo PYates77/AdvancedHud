@@ -108,8 +108,8 @@ public class MapDrawable extends Drawable {
         double degreeRadians = Math.toRadians(degrees);
         double x_trans = c.coordx-(size/2)+moveX;
         double y_trans = c.coordy-(size/2)+moveY;
-        double x1 = (Math.cos(-degreeRadians)*x_trans)-(Math.sin(-degreeRadians)*y_trans);
-        double y1 = (Math.sin(-degreeRadians)*x_trans)+(Math.cos(-degreeRadians)*y_trans);
+        double x1 = (Math.cos(degreeRadians)*x_trans)-(Math.sin(degreeRadians)*y_trans);
+        double y1 = (Math.sin(degreeRadians)*x_trans)+(Math.cos(degreeRadians)*y_trans);
         return new Coordinate(x1+(size/2)-moveX,y1+(size/2)-moveY);
     }
 
@@ -128,11 +128,11 @@ public class MapDrawable extends Drawable {
         Coordinate C = new Coordinate(160,160);
         if(userLocked) {
             A = new Coordinate(140-moveX,160-moveY);
-            B = new Coordinate(150-moveX,140-moveY);
+            B = new Coordinate(150-moveX,135-moveY);
             C = new Coordinate(160-moveX,160-moveY);
-            A = rotateCoord(A, mDegreeRotation, height);
-            B = rotateCoord(B, mDegreeRotation, height);
-            C = rotateCoord(C, mDegreeRotation, height);
+            A = rotateCoord(A, -mDegreeRotation, height);
+            B = rotateCoord(B, -mDegreeRotation, height);
+            C = rotateCoord(C, -mDegreeRotation, height);
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
@@ -209,8 +209,6 @@ public class MapDrawable extends Drawable {
     public void appendPathPoint(Coordinate c){
         mPathHistory.add(c);
     }
-
-    //public Wall[] getWallArray(){return mWalls;}
 
     public void setBackgroundColor(int color) {
         mBackgroundColor = color;
