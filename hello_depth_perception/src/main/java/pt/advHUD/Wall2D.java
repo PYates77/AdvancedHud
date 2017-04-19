@@ -49,11 +49,15 @@ public class Wall2D {
                 else
                     edge1 = p;
 
-                adjustLine();
+                //adjustLine();
             }
 
 
         }
+    }
+
+    public void setValid(boolean v) {
+        isValid = v;
     }
 
     public Point getEdge2() {

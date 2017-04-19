@@ -27,6 +27,7 @@ public class MapDrawable extends Drawable {
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     public ArrayList<Point> mPoints;
     public ArrayList<Wall2D> mWallList;
+    ArrayList<Coordinate> mPathHistory;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
@@ -34,6 +35,7 @@ public class MapDrawable extends Drawable {
         mStrokeWidth = 5;
         mDegreeRotation = 0;
         mWallList = new ArrayList<Wall2D>();
+        mPathHistory = new ArrayList<Coordinate>();
     }
 
     public MapDrawable(int backgroundColor, int strokeColor, int strokeWidth, ArrayList<Point> inPoints){
@@ -87,8 +89,11 @@ public class MapDrawable extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         Paint mPaint = new Paint();
+        Paint pathPaint = new Paint();
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
+        pathPaint.setColor(Color.GREEN);
+        pathPaint.setStrokeWidth(2);
         canvas.translate(moveX,moveY);
 
         if(userLocked){
@@ -114,6 +119,11 @@ public class MapDrawable extends Drawable {
                         mPaint);
             }
         }
+        if(mPathHistory != null){
+            for(int i=0; i < mPathHistory.size(); i++){
+                canvas.drawPoint((float)mPathHistory.get(i).coordx,(float)mPathHistory.get(i).coordy,pathPaint);
+            }
+        }
         mPaint.setColor(Color.RED);
         Path newPath = constructUser();
         canvas.drawPath(newPath,mPaint);
@@ -126,6 +136,10 @@ public class MapDrawable extends Drawable {
     public void setWallArray(ArrayList<Wall2D> walls){ mWallList = walls;}
 
     public ArrayList<Point> getPointArray(){return mPoints;}
+
+    public void appendPathPoint(Coordinate c){
+        mPathHistory.add(c);
+    }
 
     public void setBackgroundColor(int color) {
         mBackgroundColor = color;

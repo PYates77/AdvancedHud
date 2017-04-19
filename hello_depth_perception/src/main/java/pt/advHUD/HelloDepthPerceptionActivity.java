@@ -48,9 +48,9 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = 0.05; //Math.PI / 18.0;
+    private static final double angleMargin = 0.5; //Math.PI / 18.0;
     private static final double distanceMargin = 0.5; // needs to be determined
-    private static final double errorMargin = 0.08;
+    private static final double errorMargin = 0.05;
 
     // 2-D attempt
     private static final int numGroups = 10;
@@ -66,7 +66,6 @@ public class HelloDepthPerceptionActivity extends Activity {
     private KMeans kmeans;
     private ArrayList<Wall> wallList = new ArrayList<Wall>();
     private ArrayList<Wall2D> wall2DList = new ArrayList<Wall2D>();
-    private ArrayList<Wall2D> wallOutList = new ArrayList<Wall2D>();
     private Matrix gMatrix;
 
     //AKSHAY'S VARIABLES
@@ -94,8 +93,11 @@ public class HelloDepthPerceptionActivity extends Activity {
                         if(roll != -300) {
                             mapView.invalidate();
                             mapDrawable.setPointArray(global_points);
-                            //mapDrawable.setDegreeRotation((int)(-roll));
+                            mapDrawable.setDegreeRotation((int)(-roll));
                             mapDrawable.setWallArray(wall2DList);
+                            mapDrawable.moveX = (int)(translation[0]*-75);
+                            mapDrawable.moveY = (int)(translation[1]*75);
+                            mapDrawable.appendPathPoint(new Coordinate(((translation[0]*75)+150),((translation[1]*-75)+150)));
                         }
                     }
                 });
@@ -304,38 +306,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                 }
             }
 
-            private ArrayList<Wall2D> getOutList() {
-//                wallOutList = new ArrayList<>();
-//                for (int i = 0; i < wall2DList.size(); i++) {
-//                    Wall2D curWall = wall2DList.get(i);
-//
-//                    if (curWall.getPointCount() > minPointCount) {
-//                        wall2DList.add(curWall);
-//                    }
-//                }
-//                for (int i = 0; i < wall2DList.size(); i++) {
-//                    Wall2D curWall = wall2DList.get(i);
-//
-//                    if (curWall.getPointCount() > minPointCount) {
-//                        boolean found = false;
-//
-//                        int j = 0;
-//                        while (!false && j < wallOutList.size()) {
-//                            if (curWall.getAngle(wallOutList.get(j)) < angleMargin) {
-//                                found = true;
-//                            }
-//
-//                            j++;
-//                        }
-//
-//                        if (!found)
-//                            wallOutList.add(curWall);
-//                    } else
-//                        Log.i(TAG, String.valueOf(curWall.getPointCount()));
-//                }
-                return null;
-            }
-
             private void modify2DWallList(ArrayList<Point> points, ArrayList<Line> lines) {
                 if (points == null)
                     return;
@@ -415,24 +385,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return averagedPoints;
             }
 
-            private ArrayList<Point> getDisplayPoints() {
-                double numPointPerLine = 100.0;
-                ArrayList<Point> outPoints = new ArrayList<>();
-
-                for (int i = 0; i < wallOutList.size(); i++) {
-
-                    Point start = wallOutList.get(i).getEdge1();
-                    Point direction = wallOutList.get(i).getEdge2();
-                    direction.subtract(start);
-
-                    for (int j = 1; j <= numPointPerLine; j++) {
-                        outPoints.add(addPoints(start, new Point(direction.x*0.01*j, direction.y*0.01*j, direction.z*0.01*j)));
-                    }
-                }
-
-                return outPoints;
-            }
-
             private ArrayList<Line> generateLines(ArrayList <Point> allPoints) {
                 ArrayList<Line> lines = new ArrayList<>();
 
@@ -455,14 +407,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return lines;
             }
 
-            public Point addPoints(Point p1, Point p2) {
-                double rx = p1.x + p2.x;
-                double ry  = p1.y + p2.y;
-                double rz = p1.z + p2.z;
-
-                return new Point(rx, ry, rz);
-            }
-
             private boolean isSingleWall(Line line, ArrayList<Point> points) {
                 int count = 0;
 
@@ -479,16 +423,23 @@ public class HelloDepthPerceptionActivity extends Activity {
                         wall2DList.add(wall);
                     else {
                         //Log.i(TAG, String.valueOf(wall.getAngle(wall2DList.get(0))));
-                        wall2DList.set(0, wall);
-//                        boolean skip = false;
-//
-//                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
-//                            if (wall.getAngle(wall2DList.get(i)) < angleMargin)
-//                                skip = true;
-//                        }
-//
-//                        if (skip == false)
-//                            wall2DList.add(wall);
+                        //wall.addPoint(wall2DList.get(0).getEdge1());
+                        //wall.addPoint(wall2DList.get(0).getEdge2());
+//                        wall2DList.set(0, wall);
+                        boolean skip = false;
+
+                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
+                            if (wall.getAngle(wall2DList.get(i)) < angleMargin) {
+                                skip = true;
+                                wall.setValid(true);
+                                wall.addPoint(wall2DList.get(i).getEdge1());
+                                wall.addPoint(wall2DList.get(i).getEdge2());
+                                wall2DList.set(i, wall);
+                            }
+                        }
+
+                        if (skip == false)
+                            wall2DList.add(wall);
                     }
                 }
             }
@@ -555,11 +506,11 @@ public class HelloDepthPerceptionActivity extends Activity {
                     global_points = points;
                     Collections.sort(points);
 
-                    //ArrayList<Line> lines = generateLines(points);
-
                     Line totalLine = linearRegression(points);
 
                     double error = meanError(totalLine, points);
+
+                    // Log.i(TAG, String.valueOf(global_points.get(0)));
 
                     if (error < errorMargin) {
                         Wall2D currWall = buildWall(totalLine, points);
@@ -567,7 +518,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                     }
 
                     //points = generateAverages(points);
-                    //Log.i(TAG, String.valueOf(global_points.get(0)));
 
                     //if (isSingleWall(totalLine, points)) {
                     //    modify2DWallListSingleWall();
@@ -577,23 +527,7 @@ public class HelloDepthPerceptionActivity extends Activity {
 
                     // getOutList();
 
-                    //Log.i(TAG, String.valueOf(error));
-
-                    // global_points = getDisplayPoints();
-                    
-
-                    
-                    /*global_points = points;
-                    points = sample_array(points);
-
-                    kmeans = new KMeans(points, NUM_CLUSTERS); // generate clusters from point cloud
-                    if (kmeans.allPoints == null) {
-                        Log.i(TAG, "kmeans.allPoints is NULL");
-                    } else {
-                        ArrayList<Cluster> clusters = (ArrayList<Cluster>) kmeans.getPointsClusters();
-
-                        modifyWallList(clusters);
-                    }*/
+                    Log.i(TAG, String.valueOf(error));
 
                 }
             }
