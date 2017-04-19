@@ -242,8 +242,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))); //rotates new point in x
-                    newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))); //rotates new point in z/y
+                    newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))+translation[0]); //rotates new point in x
+                    newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))+translation[1]); //rotates new point in z/y
 
                     //Code to test out 3X3 Rotation Matrix Transformation if Euclidean Angles fail (FROM AKSHAY)
                     //
