@@ -72,18 +72,17 @@ public class HelloDepthPerceptionActivity extends Activity {
     //AKSHAY'S VARIABLES
     private ImageView mapView;
     private MapDrawable mapDrawable;
-    private float rollr = 0;
-    private float rollrMath = 0;
-    private float qx;
-    private float qy;
-    private float qz;
-    private float qw;
-    private float x;
-    private float y;
     private float translation[] = new float[3];
     private float orientation[] = new float[4];
     float rotMatrix[] = new float[9];
     float euOrient[] = new float[3];
+    private float yaw = 0;
+    private float pitch = 0;
+    private float roll = -300; //bogus value so NULLPTREXCEPTION doesn't occur
+    private float qx;
+    private float qy;
+    private float qz;
+    private float qw;
 
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
@@ -92,13 +91,16 @@ public class HelloDepthPerceptionActivity extends Activity {
                 HelloDepthPerceptionActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mapView.invalidate();
-                        mapDrawable.setPointArray(global_points);
-                        //mapDrawable.setWallArray(wall2DList);
+                        if(roll != -300) {
+                            mapView.invalidate();
+                            mapDrawable.setPointArray(global_points);
+                            mapDrawable.setDegreeRotation((int)(-roll));
+                            //mapDrawable.setWallArray(wall2DList);
+                        }
                     }
                 });
                 try {
-                    Thread.sleep(500); //2Hz refresh rate
+                    Thread.sleep(100); //10Hz refresh rate
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -227,6 +229,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 //THE FOLLOWING CODE IS FOR ROTATION AND ROTATION OF THE POINT CLOUD DATA
                 //FROM AKSHAY
                 //UNCOMMENT AND REPLACE THE ABOVE CODE WITH THE FOLLOWING CODE
+
                 float x1;
                 float y1;
                 float z1;
@@ -239,8 +242,14 @@ public class HelloDepthPerceptionActivity extends Activity {
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(-rollr)-z1*Math.sin(-rollr)); //rotates new point in x
-                    newz = (float)(x1*Math.sin(-rollr)+z1*Math.cos(-rollr)); //rotates new point in z/y
+                    newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))); //rotates new point in x
+                    newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))); //rotates new point in z/y
+
+                    //Code to test out 3X3 Rotation Matrix Transformation if Euclidean Angles fail (FROM AKSHAY)
+                    //
+                    //newx = x1*rotMatrix[0] + y1*rotMatrix[1] +z1*rotMatrix[2];
+                    //newz = x1*rotMatrix[6]+y1*rotMatrix[7]+z1*rotMatrix[8];
+
                     out.add(new Point(newx,y1,newz));
 
                 }
@@ -678,8 +687,8 @@ public class HelloDepthPerceptionActivity extends Activity {
         stringBuilder.append("Position: " +translation[0] + ", " + translation[1] + ", " + translation[2]);
         orientation = pose.getRotationAsFloats();
         stringBuilder.append(". Orientation: " +
-        orientation[0] + ", " + orientation[1] + ", " +
-        orientation[2] + ", " + orientation[3]+"\n");
+                orientation[0] + ", " + orientation[1] + ", " +
+                orientation[2] + ", " + orientation[3]+"\n");
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -694,11 +703,8 @@ public class HelloDepthPerceptionActivity extends Activity {
         rotMatrix[6] = (2*qx*qz)+(2*qy*qw);
         rotMatrix[7] = (2*qy*qz)-(2*qx*qw);
         rotMatrix[8] = 1-(2*qx*qx)-(2*qy*qy);
-        //rollrMath = (float)Math.atan((rotMatrix[7]/rotMatrix[8]));
         //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
-        rollr = (float)euOrient[2];
-        stringBuilder.append("\nRoll: "+Math.toDegrees(rollr));
-        Log.i(TAG, stringBuilder.toString());
+        roll = (float)Math.toDegrees(euOrient[2]);
     }
 }

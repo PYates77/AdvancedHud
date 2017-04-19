@@ -42,13 +42,19 @@ public class MainActivity extends AppCompatActivity {
     public boolean readyFlag = false;
     public float[] translation = new float[3];
     public float[] orientation = new float[4];
-    private float rollr = 0;
+    float rotMatrix[] = new float[9];
+    float euOrient[] = new float[3];
+    private float roll = -300; //bogus value so NULLPTREXCEPTION doesn't occur
+    private float qx;
+    private float qy;
+    private float qz;
+    private float qw;
 
     //for testing
-    private TextView transView;
-    private TextView orientView;
-    private String displayTrans;
-    private String displayOrient;
+    //private TextView transView;
+    //private TextView orientView;
+    //private String displayTrans;
+    //private String displayOrient;
 
     Thread updateTextViewThread = new Thread() {
         public void run() {
@@ -59,14 +65,19 @@ public class MainActivity extends AppCompatActivity {
                         if (readyFlag) {
                             mapView.invalidate();
                             mapDrawable.setDynamicWallArray(mWallList);
+                            mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
+                            //Code to rotate the canvas and also to move the canvas accordingly
+                            //mapDrawable.setDegreeRotation((int)(-roll));
+                            //mapDrawable.moveX = (int)(translation[0]*-25);
+                            //mapDrawable.moveY = (int)(translation[1]*25);
                             //for testing
-                            transView.setText(displayTrans);
-                            orientView.setText(displayOrient);
+                            //transView.setText(displayTrans);
+                            //orientView.setText(displayOrient);
                         }
                     }
                 });
                 try {
-                    Thread.sleep(500); //2Hz Refresh Rate
+                    Thread.sleep(100); //10Hz Refresh Rate
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -99,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
         mapView.setImageDrawable(mapDrawable);
 
         //for debug
-        transView = (TextView)findViewById(R.id.translationView);
-        orientView = (TextView)findViewById(R.id.orientView);
+        //transView = (TextView)findViewById(R.id.translationView);
+        //orientView = (TextView)findViewById(R.id.orientView);
 
         //follow for loop and assigment statement is to initialize the orientation and translation array to zeroes
         for (int i = 0; i < 3; i++) {
@@ -200,16 +211,18 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder sb2 = new StringBuilder();
         sb1.append("Position: "+translation[0]+", "+translation[1]+", "+translation[2]);
         sb2.append("Orientation: "+orientation[0]+", "+orientation[1]+", "+orientation[2]+", "+orientation[3]);
-        displayTrans = sb1.toString();
-        displayOrient = sb2.toString();
+        //displayTrans = sb1.toString();
+        //displayOrient = sb2.toString();
+        //for debug
+        sb1.append(sb2.toString());
+        Log.i(MainActivity.class.getSimpleName(),sb1.toString());
         //obtaining rotation matrix using quaternion notation
         /*
-        float qw = orientation[0];
-        float qx = orientation[1];
-        float qy = orientation[2];
-        float qz = orientation[3];
+        qw = orientation[0];
+        qx = orientation[1];
+        qy = orientation[2];
+        qz = orientation[3];
         //Extract Rotation Matrix
-        float[] rotMatrix = new float[9];
         rotMatrix[0] = 1 - 2 * (qy * qy) - 2 * (qz * qz);
         rotMatrix[1] = (2 * qx * qy) + (2 * qz * qw);
         rotMatrix[2] = (2 * qx * qz) - (2 * qy * qw);
@@ -220,9 +233,8 @@ public class MainActivity extends AppCompatActivity {
         rotMatrix[7] = (2 * qy * qz) - (2 * qx * qw);
         rotMatrix[8] = 1 - (2 * qx * qx) - (2 * qy * qy);
         //Get orientation information
-        float euOrient[] = new float[3];
         SensorManager.getOrientation(rotMatrix, euOrient);
-        rollr = (float) Math.toDegrees(euOrient[2]);
+        roll = (float) Math.toDegrees(euOrient[2]);
         */
 
     }
