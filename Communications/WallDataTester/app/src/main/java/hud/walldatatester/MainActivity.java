@@ -9,18 +9,10 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Random r = new Random();
-
     private final int BT_ENABLE_REQUEST_INIT = 0;
-    private final int BT_ENABLE_REQUEST_CONNECT = 1;
-    private volatile boolean btAdapterResponse = false;
-    private final Double FRAME_START = Double.NEGATIVE_INFINITY;
-    private final Double FRAME_DELIMITER = Double.MAX_VALUE;
-    private final Double FRAME_END = Double.POSITIVE_INFINITY;
 
     TangoBluetooth btManager;
     BluetoothAdapter btAdapter;
@@ -52,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList1();
                         ArrayList<Double> oriList = testOrientation1();
-                        btManager.send(makeFrame(oriList,wallList));
+                        btManager.send(TangoBluetooth.makeFrame(oriList,wallList));
                     }
                 }
             }
@@ -67,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList2();
                         ArrayList<Double> oriList = testOrientation1();
-                        btManager.send(makeFrame(oriList,wallList));
+                        btManager.send(TangoBluetooth.makeFrame(oriList,wallList));
                     }
                 }
             }
@@ -81,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList3();
-                        ArrayList<Double> oriList = testOrientation1();
-                        btManager.send(makeFrame(oriList,wallList));
+                        ArrayList<Double> oriList = testOrientation2();
+                        btManager.send(TangoBluetooth.makeFrame(oriList,wallList));
                     }
                 }
             }
@@ -96,15 +88,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if(btManager.isConnected()){
                         ArrayList<Wall2D> wallList = testList4();
-                        ArrayList<Double> oriList = testOrientation1();
+                        ArrayList<Double> oriList = testOrientation2();
+                        btManager.send(TangoBluetooth.makeFrame(oriList,wallList));
                     }
                 }
             }
         });
 
-        //this testlist is what needs to be sent over
-
         startBluetoothAdapter();
+        communicate();
+
+    }
+
+    private void communicate() { //run this after btAdapter is enabled
         if(btAdapter.isEnabled()) {
             btManager = new TangoBluetooth(btAdapter);
             do {
@@ -115,30 +111,22 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Wall2D> wallList = testList1();
             ArrayList<Double> oriList = testOrientation1();
 
-            btManager.send(makeFrame(oriList,wallList));
+            btManager.send(TangoBluetooth.makeFrame(oriList,wallList));
         }
         else {
-            Log.e("MainActivity","FATAL ERROR: Bluetooth adapter must be enabled to communicate.");
+            Log.e("MainActivity","Bluetooth adapter must be enabled to communicate.");
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == BT_ENABLE_REQUEST_INIT){
-            btAdapterResponse = true;
             if(resultCode == RESULT_OK){
-                Log.d("Activity Result","Bluetooth Enabled by User");
+                Log.d("Activity Result","Bluetooth Enabled on Initialization by User");
+                communicate();
             }
             else {
                 Log.e("ActivityResult","Bluetooth is Disabled.");
-            }
-        }
-        if(requestCode == BT_ENABLE_REQUEST_CONNECT){
-            if(resultCode == RESULT_OK){
-                //btManager.connect(); //attempt to connect again
-            }
-            else {
-                Log.e("ActivityResult", "Attempting to connect but bluetooth STILL not enabled");
             }
         }
     }
@@ -150,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
         else if(!btAdapter.isEnabled()) {
             Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBTIntent, BT_ENABLE_REQUEST_INIT);
-            while(!btAdapterResponse){} //block until an answer is received
         }
     }
     protected ArrayList<Wall2D> testList1(){
@@ -231,16 +218,16 @@ public class MainActivity extends AppCompatActivity {
     }
     protected ArrayList<Wall2D> testList3(){
         ArrayList<Wall2D> testList = new ArrayList<>();
-        Point A = new Point(90,0,400);
-        Point B = new Point(175,0,400);
-        Point C = new Point(90,0,140);
-        Point D = new Point(175,0,190);
-        Point E = new Point(-100,0,140);
-        Point F = new Point(270,0,190);
-        Point G = new Point(-100,0,90);
+        Point A = new Point(400,0,90);
+        Point B = new Point(400,0,175);
+        Point C = new Point(140,0,90);
+        Point D = new Point(190,0,175);
+        Point E = new Point(140,0,-100);
+        Point F = new Point(190,0,270);
+        Point G = new Point(90,0,-100);
         Point H = new Point(90,0,90);
-        Point I = new Point(90,0,40);
-        Point J = new Point(270,0,40);
+        Point I = new Point(40,0,90);
+        Point J = new Point(40,0,270);
         Wall2D w0 = new Wall2D(A);
         w0.addPoint(C);
         Wall2D w1 = new Wall2D(C);
@@ -269,16 +256,16 @@ public class MainActivity extends AppCompatActivity {
     }
     protected ArrayList<Wall2D> testList4(){
         ArrayList<Wall2D> testList = new ArrayList<>();
-        Point A = new Point(90,0,400);
-        Point B = new Point(175,0,400);
-        Point C = new Point(90,0,140);
-        Point D = new Point(175,0,190);
-        Point E = new Point(-100,0,140);
-        Point F = new Point(270,0,190);
-        Point G = new Point(-100,0,90);
-        Point H = new Point(90,0,90);
-        Point I = new Point(90,0,40);
-        Point J = new Point(270,0,40);
+        Point A = new Point(300,0,100);
+        Point B = new Point(400,0,150);
+        Point C = new Point(150,0,100);
+        Point D = new Point(180,0,200);
+        Point E = new Point(140,0,-120);
+        Point F = new Point(10,0,250);
+        Point G = new Point(100,0,-120);
+        Point H = new Point(100,0,80);
+        Point I = new Point(50,0,80);
+        Point J = new Point(50,0,240);
         Wall2D w0 = new Wall2D(A);
         w0.addPoint(C);
         Wall2D w1 = new Wall2D(C);
@@ -306,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         return testList;
     }
     protected ArrayList<Double> testOrientation1(){
-        ArrayList<Double> testOrientation = new ArrayList<Double>();
+        ArrayList<Double> testOrientation = new ArrayList<>();
         Double x = 1.0;
         Double y = -2.0;
         Double z = 0.0;
@@ -326,31 +313,25 @@ public class MainActivity extends AppCompatActivity {
 
         return testOrientation;
     }
-    protected Double[] makeFrame(ArrayList<Double> orientation, ArrayList<Wall2D> walls){
-        ArrayList<Double> dataFrame = new ArrayList<>();
-        dataFrame.add(FRAME_START);
-        if(orientation.size()%7 != 0){
-            Log.e("MakeFrame","The position/orientation data segment does not contain 7 doubles.");
-        }
-        for (Double d : orientation){
-            dataFrame.add(d);
-        }
-        dataFrame.add(FRAME_DELIMITER);
-        Double[] tmp;
+    protected ArrayList<Double> testOrientation2(){
+        ArrayList<Double> testOrientation = new ArrayList<>();
+        Double x = 2.0;
+        Double y = -2.0;
+        Double z = 3.0;
 
-        for (Wall2D w : walls) {
-            tmp = w.sendData();
-            //add the 4 doubles in the walls vector
-            for (int i=0; i<4; i++){
-                dataFrame.add(tmp[i]);
-            }
-        }
-        dataFrame.add(FRAME_END);
+        Double o1 = 0.95;
+        Double o2 = 0.72;
+        Double o3 = 0.52;
+        Double o4 = 0.66;
 
-        Double[] doubles = new Double[dataFrame.size()];
-        for (int i = 0; i < dataFrame.size(); i++) {
-            doubles[i] = dataFrame.get(i);
-        }
-        return doubles;
+        testOrientation.add(x);
+        testOrientation.add(y);
+        testOrientation.add(z);
+        testOrientation.add(o1);
+        testOrientation.add(o2);
+        testOrientation.add(o3);
+        testOrientation.add(o4);
+
+        return testOrientation;
     }
 }

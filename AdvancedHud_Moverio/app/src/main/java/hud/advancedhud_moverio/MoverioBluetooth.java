@@ -257,7 +257,7 @@ public class MoverioBluetooth {
 
     public boolean dataReady(){
         //TODO
-        return wallBuffer.size()/8 > 4;
+        return wallBuffer.size() == 0;
     }
     public Wall[] getData(){
         //TODO: mutex lock
@@ -289,6 +289,9 @@ public class MoverioBluetooth {
         return null;
     }
     public Double[] getOrientation(){
+        if(orientationBuffer.size() == 0){
+            return null;
+        }
         ArrayList<Double> tmpOrientation = orientationBuffer.remove(0);
         Double[] orientation = new Double[7];
         for(int i=0; i<7; i++){

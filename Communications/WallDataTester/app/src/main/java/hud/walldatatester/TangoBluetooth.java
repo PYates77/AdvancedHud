@@ -39,10 +39,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TangoBluetooth {
     private final String DEBUG_TAG = "TangoBluetooth";
     private final UUID MY_UUID = UUID.fromString("55ba6a24-f236-11e6-bc64-92361f002671");
+    private final static Double FRAME_START = Double.NEGATIVE_INFINITY;
+    private final static Double FRAME_DELIMITER = Double.MAX_VALUE;
+    private final static Double FRAME_END = Double.POSITIVE_INFINITY;
 
     private final BluetoothAdapter btAdapter;
     private final BluetoothDevice btDevice;
     private final BlockingQueue<Runnable> threadQueue;
+
     private final ThreadPoolExecutor threadPool;
     private BluetoothSocket socket;
     private DataInputStream inStream;
@@ -213,5 +217,32 @@ public class TangoBluetooth {
             }
             */
         }
+    }
+    public static Double[] makeFrame(ArrayList<Double> orientation, ArrayList<Wall2D> walls){
+        ArrayList<Double> dataFrame = new ArrayList<>();
+        dataFrame.add(FRAME_START);
+        if(orientation.size()%7 != 0){
+            Log.e("MakeFrame","The position/orientation data segment does not contain 7 doubles.");
+        }
+        for (Double d : orientation){
+            dataFrame.add(d);
+        }
+        dataFrame.add(FRAME_DELIMITER);
+        Double[] tmp;
+
+        for (Wall2D w : walls) {
+            tmp = w.sendData();
+            //add the 4 doubles in the walls vector
+            for (int i=0; i<4; i++){
+                dataFrame.add(tmp[i]);
+            }
+        }
+        dataFrame.add(FRAME_END);
+
+        Double[] doubles = new Double[dataFrame.size()];
+        for (int i = 0; i < dataFrame.size(); i++) {
+            doubles[i] = dataFrame.get(i);
+        }
+        return doubles;
     }
 }
