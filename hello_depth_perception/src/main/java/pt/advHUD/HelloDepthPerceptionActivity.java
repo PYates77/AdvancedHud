@@ -17,6 +17,8 @@
 package pt.advHUD;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -85,6 +87,47 @@ public class HelloDepthPerceptionActivity extends Activity {
     private float qz;
     private float qw;
 
+    //PAUL'S COMMUNICATIONS
+    private final int BT_ENABLE_REQUEST_INIT = 0;
+    private TangoBluetooth btManager;
+    private BluetoothAdapter btAdapter;
+
+    Thread commThread = new Thread(){
+        public void run(){
+            while(true){
+                // COMMUNICATIONS
+                if(btManager != null){
+                    if(!btManager.isConnected()){
+                        /*
+                        // attempt to reconnect if the tango is disconnected
+                        // comment this out or disable the btAdapter if you want to reduce lag while
+                        // running the tango with no moverio
+                        */
+                        btManager.connect();
+                    }
+                    if(btManager.isConnected()){
+                        ArrayList<Double> sendPose = new ArrayList<>();
+                        for (float f : translation){
+                            sendPose.add(Double.parseDouble(new Float(f).toString()));
+                        }
+                        for (float f : orientation){
+                            sendPose.add(Double.parseDouble(new Float(f).toString()));
+                        }
+                        Double[] dataFrame = TangoBluetooth.makeFrame(sendPose, wall2DList);
+                        btManager.send(dataFrame);
+                    }
+                }
+                try {
+                    Thread.sleep(100); //10Hz refresh rate
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+
+
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
         public void run(){
@@ -126,6 +169,12 @@ public class HelloDepthPerceptionActivity extends Activity {
         mapDrawable = new MapDrawable();
         mapView.setImageDrawable(mapDrawable);
         updateTextViewThread.start();
+
+        //Communication initialization
+        btManager = null;
+        startBluetoothAdapter();
+        initCommunications();
+        commThread.start();
     }
 
     @Override
@@ -211,6 +260,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 gMatrix = calcGMatrix(pose);
 //                logPose(hud_user.getPose());
 //                logPose(pose);
+
             }
 
             @Override
@@ -532,6 +582,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                         if (error < errorMargin && points.size() > min_points) {
                             Wall2D currWall = buildWall(totalLine, points);
                             modify2DWallListSingleWall(currWall);
+
                         }
                         points = new ArrayList<Point>(); //added by Akshay for testing (empties points after three data frames)
                         //Log.i(TAG,String.valueOf(points.size()));
@@ -651,5 +702,36 @@ public class HelloDepthPerceptionActivity extends Activity {
         roll = (float)Math.toDegrees(euOrient[2]);
         stringBuilder.append("Roll: " +roll+"\n");
         //Log.i(TAG,stringBuilder.toString());
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == BT_ENABLE_REQUEST_INIT){
+            if(resultCode == RESULT_OK){
+                Log.d("Activity Result","Bluetooth Enabled on Initialization by User");
+                initCommunications();
+            }
+            else {
+                Log.e("ActivityResult","Bluetooth is Disabled.");
+            }
+        }
+    }
+    protected void startBluetoothAdapter(){
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(btAdapter == null) {
+            Log.e("StartBluetoothAdapter", "Unable to get BluetoothAdapter");
+        }
+        else if(!btAdapter.isEnabled()) {
+            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBTIntent, BT_ENABLE_REQUEST_INIT);
+        }
+    }
+    protected void initCommunications(){
+        if(btAdapter.isEnabled()) {
+            btManager = new TangoBluetooth(btAdapter);
+            btManager.connect();
+        }
+        else {
+            Log.e("MainActivity","Bluetooth adapter must be enabled to communicate.");
+        }
     }
 }

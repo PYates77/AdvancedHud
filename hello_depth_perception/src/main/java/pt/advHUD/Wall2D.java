@@ -104,8 +104,8 @@ public class Wall2D {
         return "edge1 = " + edge1 + ", edge2 = " + edge2;
     }
 
-    public double[] sendData() {
-        double[] out = {edge1.x, edge1.z, edge2.x, edge2.z};
+    public Double[] sendData() {
+        Double[] out = {edge1.x, edge1.z, edge2.x, edge2.z};
 
         return out;
     }
