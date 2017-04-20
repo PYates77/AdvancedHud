@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MapDrawable mapDrawable = new MapDrawable();
     private ImageView mapView;
-    public ArrayList<Wall> mWallList = new ArrayList<Wall>();
+    public ArrayList<Wall2D> mWallList = new ArrayList<Wall2D>();
     public boolean readyFlag = false;
     public float[] translation = new float[3];
     public float[] orientation = new float[4];
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                             mapDrawable.setDynamicWallArray(mWallList);
                             mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
                             //Code to rotate the canvas and also to move the canvas accordingly
-                            //mapDrawable.setDegreeRotation((int)(-roll));
+                            mapDrawable.setDegreeRotation((int)(-roll));
                             //mapDrawable.moveX = (int)(translation[0]*-25);
                             //mapDrawable.moveY = (int)(translation[1]*25);
                             //for testing
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
             while (btAdapter.isEnabled()) {
                 if (btManager.isConnected() && !btManager.isConnecting()) {
-                    Wall[] wallList = btManager.getData();
+                    Wall2D[] wallList = btManager.getData();
                     Double[] oL = btManager.getOrientation();
                     if (wallList != null && oL != null) {
                         mWallList.clear();
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         sb1.append(sb2.toString());
         Log.i(MainActivity.class.getSimpleName(),sb1.toString());
         //obtaining rotation matrix using quaternion notation
-        /*
+
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         //Get orientation information
         SensorManager.getOrientation(rotMatrix, euOrient);
         roll = (float) Math.toDegrees(euOrient[2]);
-        */
+
 
     }
 }

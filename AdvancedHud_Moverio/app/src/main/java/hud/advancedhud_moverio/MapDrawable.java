@@ -40,7 +40,8 @@ public class MapDrawable extends Drawable {
 
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     private boolean multipleMode = false;
-    public ArrayList<Wall> mWalls;
+    //public ArrayList<Wall> mWalls;
+    public ArrayList<Wall2D> mWallList;
     ArrayList<Coordinate> mPathHistory;
 
     public MapDrawable(){
@@ -177,10 +178,21 @@ public class MapDrawable extends Drawable {
         canvas.translate(moveX,moveY);
         canvas.rotate((float)mDegreeRotation,(height/2)-moveX,(width/2)-moveY);
         canvas.drawColor(mBackgroundColor);
-        if(mWalls != null) {
+        /*if(mWalls != null) {
             for (int i = 0; i < mWalls.size(); i++) {
                 Wall mw = mWalls.get(i);
                 canvas.drawLine((float) (double) mw.startX, (float) (double) mw.startY, (float) (double) mw.endX, (float) (double) mw.endY, mPaint);
+            }
+        }*/
+        mPaint.setColor(Color.BLUE);
+        if(mWallList != null){
+            for(int i=0; i <mWallList.size(); i++){
+                Wall2D wl = mWallList.get(i);
+                canvas.drawLine((float)((wl.getEdge1().x + 1.5)*100),
+                        (float)(300.0 - ((wl.getEdge1().z + 1.5)*100.0)),
+                        (float)((wl.getEdge2().x + 1.5)*100),
+                        (float)(300.0 - ((wl.getEdge2().z + 1.5)*100.0)),
+                        mPaint);
             }
         }
         if(mPathHistory != null){
@@ -202,8 +214,8 @@ public class MapDrawable extends Drawable {
         multipleMode = mode;
     }
 
-    public void setDynamicWallArray(ArrayList<Wall> walls){
-        mWalls = walls;
+    public void setDynamicWallArray(ArrayList<Wall2D> walls){
+        mWallList = walls;
     }
 
     public void appendPathPoint(Coordinate c){

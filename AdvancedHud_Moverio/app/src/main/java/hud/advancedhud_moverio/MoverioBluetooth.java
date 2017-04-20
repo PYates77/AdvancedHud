@@ -259,7 +259,7 @@ public class MoverioBluetooth {
         //TODO
         return wallBuffer.size() == 0;
     }
-    public Wall[] getData(){
+    public Wall2D[] getData(){
         //TODO: mutex lock
         if(wallBuffer.size() == 0){
             return null;
@@ -272,16 +272,17 @@ public class MoverioBluetooth {
         int mySize = tmpWalls.size();
         int bufferSize = (mySize)/4;
         if(bufferSize >= 1) {
-            Wall[] mWalls = new Wall[bufferSize];
+            Wall2D[] mWalls = new Wall2D[bufferSize];
             for (int i = 0; i < bufferSize; i++) {
                 Double a = tmpWalls.remove(0);
                 Double b = tmpWalls.remove(0);
                 Double c = tmpWalls.remove(0);
                 Double d = tmpWalls.remove(0);
                 //Log.d(DEBUG_TAG,"Creating wall from data: (" + a + "," + b + ")" + " (" + c + "," + d + ")");
-                Coordinate e = new Coordinate(a, b);
-                Coordinate f = new Coordinate(c, d);
-                mWalls[i] = new Wall(e, f);
+                Point p1 = new Point(a,0,b);
+                Point p2 = new Point(c,0,d);
+                mWalls[i] = new Wall2D(p1);
+                mWalls[i].addPoint(p2);
                 //Log.d(DEBUG_TAG,"Successfully created wall with properties: " + mWalls[i].toString());
             }
             return mWalls;
