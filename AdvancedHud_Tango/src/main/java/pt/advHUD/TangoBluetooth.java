@@ -176,7 +176,7 @@ public class TangoBluetooth {
                 for (int i = 0; i < myWalls.length; i++) {
                     try {
                         outStream.writeDouble(myWalls[i]);
-                        Log.d("Sender", "Sending Double: " + myWalls[i]);
+                        //Log.d("Sender", "Sending Double: " + myWalls[i]);
                     } catch (IOException e) {
                         Log.e(DEBUG_TAG, "Unable to write Double to outStream. Attempting to reconnect...");
                         try {
