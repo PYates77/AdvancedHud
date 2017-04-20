@@ -56,6 +56,12 @@ public class Wall2D {
         }
     }
 
+    public double getParallelDist(Wall2D rhs) {
+        double b = rhs.getLine().getIntercept();
+
+        return Math.abs(line.getIntercept() - b);
+    }
+
     public void setValid(boolean v) {
         isValid = v;
     }

@@ -105,17 +105,17 @@ public class MapDrawable extends Drawable {
         if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i += 2){
                 Point pt = mPoints.get(i);
-                canvas.drawPoint((float)((pt.x + 1.5)*100), (float)(300.0 - ((pt.z + 1.5)*100.0)), mPaint);
+                canvas.drawPoint((float)((pt.x + 5)*30), (float)(300.0 - ((pt.z + 5)*30)), mPaint);
             }
         }
         mPaint.setColor(Color.BLUE);
         if(mWallList != null){
             for(int i=0; i <mWallList.size(); i++){
                 Wall2D wl = mWallList.get(i);
-                canvas.drawLine((float)((wl.getEdge1().x + 1.5)*100),
-                        (float)(300.0 - ((wl.getEdge1().z + 1.5)*100.0)),
-                        (float)((wl.getEdge2().x + 1.5)*100),
-                        (float)(300.0 - ((wl.getEdge2().z + 1.5)*100.0)),
+                canvas.drawLine((float)((wl.getEdge1().x + 5)*30),
+                        (float)(300.0 - ((wl.getEdge1().z + 5)*30)),
+                        (float)((wl.getEdge2().x + 5)*30),
+                        (float)(300.0 - ((wl.getEdge2().z + 5)*30)),
                         mPaint);
             }
         }
