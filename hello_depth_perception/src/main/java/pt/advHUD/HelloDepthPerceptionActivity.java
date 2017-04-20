@@ -47,9 +47,9 @@ public class HelloDepthPerceptionActivity extends Activity {
 
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
-    private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = 0.5; //Math.PI / 18.0;
-    private static final double distanceMargin = 0.5; // needs to be determined
+    private static final int min_points = 1000;
+    private static final double angleMargin = 1; //Math.PI / 18.0;
+    private static final double distanceMargin = 1; // needs to be determined
     private static final double errorMargin = 0.05;
 
     // 2-D attempt
@@ -57,6 +57,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final int minPointCount = 10;
     
     private ArrayList<Point> global_points;
+    private int dataCount = 0;
 
     private Tango mTango;
     private TangoConfig mConfig;
@@ -67,6 +68,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     private ArrayList<Wall> wallList = new ArrayList<Wall>();
     private ArrayList<Wall2D> wall2DList = new ArrayList<Wall2D>();
     private Matrix gMatrix;
+    ArrayList<Point> points = new ArrayList<Point>();
 
     //AKSHAY'S VARIABLES
     private ImageView mapView;
@@ -95,9 +97,14 @@ public class HelloDepthPerceptionActivity extends Activity {
                             mapDrawable.setPointArray(global_points);
                             mapDrawable.setDegreeRotation((int)(-roll));
                             mapDrawable.setWallArray(wall2DList);
-                            mapDrawable.moveX = (int)(translation[0]*-75);
-                            mapDrawable.moveY = (int)(translation[1]*75);
-                            mapDrawable.appendPathPoint(new Coordinate(((translation[0]*75)+150),((translation[1]*-75)+150)));
+                            int cx = (int)(30*(translation[0]+5));
+                            int cy = (int)(300-(30*(translation[1]+5)));
+                            mapDrawable.moveX = -1*(cx-150);
+                            mapDrawable.moveY = -1*(cy-150);
+                            mapDrawable.appendPathPoint(new Coordinate(cx,cy));
+                            //mapDrawable.moveX = (int)(translation[0]*-25);
+                            //mapDrawable.moveY = (int)(translation[1]*25);
+                            //mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
                         }
                     }
                 });
@@ -243,6 +250,10 @@ public class HelloDepthPerceptionActivity extends Activity {
                     }
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
+                    //Code added by Akshay to skip some ceiling/floor data (Only 10 cm window allowed)
+                    if(y1 < -0.05 || y1 > 0.05){
+                        continue;
+                    }
                     z1 = arr.get(i+2);
                     newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))+translation[0]); //rotates new point in x
                     newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))+translation[1]); //rotates new point in z/y
@@ -423,18 +434,18 @@ public class HelloDepthPerceptionActivity extends Activity {
                         wall2DList.add(wall);
                     else {
                         //Log.i(TAG, String.valueOf(wall.getAngle(wall2DList.get(0))));
-                        //wall.addPoint(wall2DList.get(0).getEdge1());
-                        //wall.addPoint(wall2DList.get(0).getEdge2());
-//                        wall2DList.set(0, wall);
                         boolean skip = false;
 
                         for (int i = 0; i < wall2DList.size() && !skip ; i++) {
                             if (wall.getAngle(wall2DList.get(i)) < angleMargin) {
-                                skip = true;
-                                wall.setValid(true);
-                                wall.addPoint(wall2DList.get(i).getEdge1());
-                                wall.addPoint(wall2DList.get(i).getEdge2());
-                                wall2DList.set(i, wall);
+                                Log.i(TAG, String.valueOf(wall.getParallelDist(wall2DList.get(i))));
+                                if (wall.getParallelDist(wall2DList.get(i)) < distanceMargin) {
+                                    skip = true;
+                                    wall.setValid(true);
+                                    wall.addPoint(wall2DList.get(i).getEdge1());
+                                    wall.addPoint(wall2DList.get(i).getEdge2());
+                                    wall2DList.set(i, wall);
+                                }
                             }
                         }
 
@@ -502,33 +513,31 @@ public class HelloDepthPerceptionActivity extends Activity {
                     Log.i(TAG, "pointCloudData.points is NULL");
                 } else {
                     FloatBuffer arr  = pointCloudData.points;
-                    ArrayList<Point> points = to_point_list(arr);
-                    global_points = points;
-                    Collections.sort(points);
+                    ArrayList<Point> tempPoints = to_point_list(arr);
+                    global_points = tempPoints;
 
-                    Line totalLine = linearRegression(points);
+                    if (dataCount < 3) {
+                        dataCount = dataCount + 1;
 
-                    double error = meanError(totalLine, points);
+                        for (int i = 0; i < tempPoints.size(); i++)
+                            points.add(tempPoints.get(i));
 
-                    // Log.i(TAG, String.valueOf(global_points.get(0)));
+                    } else {
+                        //Log.i(TAG,String.valueOf(points.size())); //added by Akshay for debug
+                        Collections.sort(points);
+                        Line totalLine = linearRegression(points);
+                        double error = meanError(totalLine, points);
+                        dataCount = 0;
 
-                    if (error < errorMargin) {
-                        Wall2D currWall = buildWall(totalLine, points);
-                        modify2DWallListSingleWall(currWall);
+                        if (error < errorMargin && points.size() > min_points) {
+                            Wall2D currWall = buildWall(totalLine, points);
+                            modify2DWallListSingleWall(currWall);
+                        }
+                        points = new ArrayList<Point>(); //added by Akshay for testing (empties points after three data frames)
+                        //Log.i(TAG,String.valueOf(points.size()));
                     }
 
-                    //points = generateAverages(points);
-
-                    //if (isSingleWall(totalLine, points)) {
-                    //    modify2DWallListSingleWall();
-                    //} else {
-                    //    modify2DWallList(points, lines);
-                    //}
-
-                    // getOutList();
-
-                    Log.i(TAG, String.valueOf(error));
-
+                    //Log.i(TAG, String.valueOf(points.size())); //added by Akshay for debug
                 }
             }
 
@@ -622,7 +631,7 @@ public class HelloDepthPerceptionActivity extends Activity {
         orientation = pose.getRotationAsFloats();
         stringBuilder.append(". Orientation: " +
                 orientation[0] + ", " + orientation[1] + ", " +
-                orientation[2] + ", " + orientation[3]+"\n");
+                orientation[2] + ", " + orientation[3]);
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -640,5 +649,7 @@ public class HelloDepthPerceptionActivity extends Activity {
         //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
         roll = (float)Math.toDegrees(euOrient[2]);
+        stringBuilder.append("Roll: " +roll+"\n");
+        //Log.i(TAG,stringBuilder.toString());
     }
 }
