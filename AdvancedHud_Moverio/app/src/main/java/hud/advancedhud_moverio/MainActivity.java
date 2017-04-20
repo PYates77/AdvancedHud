@@ -65,14 +65,12 @@ public class MainActivity extends AppCompatActivity {
                         if (readyFlag) {
                             mapView.invalidate();
                             mapDrawable.setDynamicWallArray(mWallList);
-                            mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
-                            //Code to rotate the canvas and also to move the canvas accordingly
                             mapDrawable.setDegreeRotation((int)(-roll));
-                            //mapDrawable.moveX = (int)(translation[0]*-25);
-                            //mapDrawable.moveY = (int)(translation[1]*25);
-                            //for testing
-                            //transView.setText(displayTrans);
-                            //orientView.setText(displayOrient);
+                            int cx = (int)(30*(translation[0]+5));
+                            int cy = (int)(300-(30*(translation[1]+5)));
+                            mapDrawable.moveX = -1*(cx-150);
+                            mapDrawable.moveY = -1*(cy-150);
+                            mapDrawable.appendPathPoint(new Coordinate(cx,cy));
                         }
                     }
                 });

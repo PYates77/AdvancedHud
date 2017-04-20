@@ -129,7 +129,7 @@ public class MapDrawable extends Drawable {
         Coordinate C = new Coordinate(160,160);
         if(userLocked) {
             A = new Coordinate(140-moveX,160-moveY);
-            B = new Coordinate(150-moveX,135-moveY);
+            B = new Coordinate(150-moveX,137-moveY);
             C = new Coordinate(160-moveX,160-moveY);
             A = rotateCoord(A, -mDegreeRotation, height);
             B = rotateCoord(B, -mDegreeRotation, height);
@@ -188,10 +188,10 @@ public class MapDrawable extends Drawable {
         if(mWallList != null){
             for(int i=0; i <mWallList.size(); i++){
                 Wall2D wl = mWallList.get(i);
-                canvas.drawLine((float)((wl.getEdge1().x + 1.5)*100),
-                        (float)(300.0 - ((wl.getEdge1().z + 1.5)*100.0)),
-                        (float)((wl.getEdge2().x + 1.5)*100),
-                        (float)(300.0 - ((wl.getEdge2().z + 1.5)*100.0)),
+                canvas.drawLine((float)((wl.getEdge1().x + 5)*30),
+                        (float)(300.0 - ((wl.getEdge1().z + 5)*30)),
+                        (float)((wl.getEdge2().x + 5)*30),
+                        (float)(300.0 - ((wl.getEdge2().z + 5)*30)),
                         mPaint);
             }
         }
