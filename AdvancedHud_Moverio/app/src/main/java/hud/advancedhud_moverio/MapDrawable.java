@@ -29,8 +29,9 @@ public class MapDrawable extends Drawable {
     private int mStrokeWidth;
     private int mStrokeColor;
     private int mDegreeRotation;
-    private int height = 300;
-    private int width = 300;
+    public static int height = 300;
+    public static int  width = 300;
+    public static int metricRangeTango = 10; //this means it will go from -5m to 5m
     public int moveX = 0;
     public int moveY = 0;
     //Friendly User Information
@@ -105,22 +106,22 @@ public class MapDrawable extends Drawable {
         }
     }
 
-    private Coordinate rotateCoord(Coordinate c, int degrees, int size){
+    private Coordinate rotateCoord(Coordinate c, int degrees, int sizex, int sizey){ //used to be just int size
         double degreeRadians = Math.toRadians(degrees);
-        double x_trans = c.coordx-(size/2)+moveX;
-        double y_trans = c.coordy-(size/2)+moveY;
+        double x_trans = c.coordx-(sizex/2)+moveX; //used to be just size
+        double y_trans = c.coordy-(sizey/2)+moveY; //used to be just size
         double x1 = (Math.cos(degreeRadians)*x_trans)-(Math.sin(degreeRadians)*y_trans);
         double y1 = (Math.sin(degreeRadians)*x_trans)+(Math.cos(degreeRadians)*y_trans);
-        return new Coordinate(x1+(size/2)-moveX,y1+(size/2)-moveY);
+        return new Coordinate(x1+(sizex/2)-moveX,y1+(sizey/2)-moveY); //used to be just size
     }
 
-    private Coordinate rotateCoord_friendly(Coordinate c, int degrees, int size){
+    private Coordinate rotateCoord_friendly(Coordinate c, int degrees, int sizex, int sizey){
         double degreeRadians = Math.toRadians(degrees);
-        double x_trans = c.coordx-(size/2)+fx;
-        double y_trans = c.coordy-(size/2)+fy;
+        double x_trans = c.coordx-(sizex/2)+fx;
+        double y_trans = c.coordy-(sizey/2)+fy;
         double x1 = (Math.cos(-degreeRadians)*x_trans)-(Math.sin(-degreeRadians)*y_trans);
         double y1 = (Math.sin(-degreeRadians)*x_trans)+(Math.cos(-degreeRadians)*y_trans);
-        return new Coordinate(x1+(size/2)-fx,y1+(size/2)-fy);
+        return new Coordinate(x1+(sizex/2)-fx,y1+(sizey/2)-fy);
     }
 
     private Path constructUser(){
@@ -128,12 +129,12 @@ public class MapDrawable extends Drawable {
         Coordinate B = new Coordinate(150,140);
         Coordinate C = new Coordinate(160,160);
         if(userLocked) {
-            A = new Coordinate(140-moveX,160-moveY);
-            B = new Coordinate(150-moveX,137-moveY);
-            C = new Coordinate(160-moveX,160-moveY);
-            A = rotateCoord(A, -mDegreeRotation, height);
-            B = rotateCoord(B, -mDegreeRotation, height);
-            C = rotateCoord(C, -mDegreeRotation, height);
+            A = new Coordinate((-10+width/2)-moveX,(10+height/2)-moveY); //(140,160)
+            B = new Coordinate((width/2)-moveX,(-13+height/2)-moveY);  //(150,137)
+            C = new Coordinate((10+width/2)-moveX,(10+height/2)-moveY);  //(160,160)
+            A = rotateCoord(A, -mDegreeRotation, width,height); //just used to be height
+            B = rotateCoord(B, -mDegreeRotation, width,height); //just used to be height
+            C = rotateCoord(C, -mDegreeRotation, width,height); //just used to be height
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
@@ -150,12 +151,12 @@ public class MapDrawable extends Drawable {
         Coordinate B = new Coordinate(150,140);
         Coordinate C = new Coordinate(160,160);
         if(userLocked) {
-            A = new Coordinate(140-fx,160-fy);
-            B = new Coordinate(150-fx,140-fy);
-            C = new Coordinate(160-fx,160-fy);
-            A = rotateCoord_friendly(A, fdegree, height);
-            B = rotateCoord_friendly(B, fdegree, height);
-            C = rotateCoord_friendly(C, fdegree, height);
+            A = new Coordinate((-10+width/2)-fx,(10+height/2)-fy); //(140,160)
+            B = new Coordinate((width/2)-fx,(-13+height/2)-fy);  //(150,137)
+            C = new Coordinate((10+width/2)-fx,(10+height/2)-fy);  //(160,160)
+            A = rotateCoord_friendly(A, fdegree, width,height);
+            B = rotateCoord_friendly(B, fdegree, width,height);
+            C = rotateCoord_friendly(C, fdegree, width,height);
         }
         Path newPath = new Path();
         newPath.moveTo((float)A.coordx,(float)A.coordy);
@@ -188,10 +189,10 @@ public class MapDrawable extends Drawable {
         if(mWallList != null){
             for(int i=0; i <mWallList.size(); i++){
                 Wall2D wl = mWallList.get(i);
-                canvas.drawLine((float)((wl.getEdge1().x + 5)*30),
-                        (float)(300.0 - ((wl.getEdge1().z + 5)*30)),
-                        (float)((wl.getEdge2().x + 5)*30),
-                        (float)(300.0 - ((wl.getEdge2().z + 5)*30)),
+                canvas.drawLine((float)((wl.getEdge1().x + metricRangeTango/2)*width/metricRangeTango),
+                        (float)(height - ((wl.getEdge1().z + metricRangeTango/2)*height/metricRangeTango)),
+                        (float)((wl.getEdge2().x + metricRangeTango/2)*width/metricRangeTango),
+                        (float)(height - ((wl.getEdge2().z + metricRangeTango/2)*height/metricRangeTango)),
                         mPaint);
             }
         }

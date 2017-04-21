@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
                             mapView.invalidate();
                             mapDrawable.setDynamicWallArray(mWallList);
                             mapDrawable.setDegreeRotation((int)(-roll));
-                            int cx = (int)(30*(translation[0]+5));
-                            int cy = (int)(300-(30*(translation[1]+5)));
-                            mapDrawable.moveX = -1*(cx-150);
-                            mapDrawable.moveY = -1*(cy-150);
+                            int cx = (int)((MapDrawable.width/MapDrawable.metricRangeTango)*(translation[0]+MapDrawable.metricRangeTango/2));
+                            int cy = (int)(MapDrawable.height-((MapDrawable.height/MapDrawable.metricRangeTango)*(translation[1]+MapDrawable.metricRangeTango/2)));
+                            mapDrawable.moveX = -1*(cx-(MapDrawable.width/2));
+                            mapDrawable.moveY = -1*(cy-(MapDrawable.height/2));
                             mapDrawable.appendPathPoint(new Coordinate(cx,cy));
                         }
                     }
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //getActionBar().hide();
+        getActionBar().hide();
 
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();
