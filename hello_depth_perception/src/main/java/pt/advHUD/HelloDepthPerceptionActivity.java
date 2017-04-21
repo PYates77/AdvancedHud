@@ -141,10 +141,10 @@ public class HelloDepthPerceptionActivity extends Activity {
                             mapDrawable.setPointArray(global_points);
                             mapDrawable.setDegreeRotation((int)(-roll));
                             mapDrawable.setWallArray(wall2DList);
-                            int cx = (int)(30*(translation[0]+5));
-                            int cy = (int)(300-(30*(translation[1]+5)));
-                            mapDrawable.moveX = -1*(cx-150);
-                            mapDrawable.moveY = -1*(cy-150);
+                            int cx = (int)((MapDrawable.width/MapDrawable.metricRangeTango)*(translation[0]+MapDrawable.metricRangeTango/2));
+                            int cy = (int)(MapDrawable.height-((MapDrawable.height/MapDrawable.metricRangeTango)*(translation[1]+MapDrawable.metricRangeTango/2)));
+                            mapDrawable.moveX = -1*(cx-(MapDrawable.width/2));
+                            mapDrawable.moveY = -1*(cy-(MapDrawable.height/2));
                             mapDrawable.appendPathPoint(new Coordinate(cx,cy));
                             //mapDrawable.moveX = (int)(translation[0]*-25);
                             //mapDrawable.moveY = (int)(translation[1]*25);
