@@ -50,9 +50,10 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
     private static final int min_points = 1000;
-    private static final double angleMargin = 1; //Math.PI / 18.0;
-    private static final double distanceMargin = 1; // needs to be determined
+    private static final double angleMargin = 0.261799; //was 1//Math.PI / 18.0;
+    private static final double distanceMargin = 0.25; // was 1; needs to be determined
     private static final double errorMargin = 0.05;
+    private static final double wallMargin = 5;
 
     // 2-D attempt
     private static final int numGroups = 10;
@@ -305,6 +306,10 @@ public class HelloDepthPerceptionActivity extends Activity {
                         continue;
                     }
                     z1 = arr.get(i+2);
+                    //code that only captures a 50cm wall capture at a time by Akshay (Comment out if you want!)
+                    if (x1 < -0.25 || x1 > 0.25){
+                        continue;
+                    }
                     newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))+translation[0]); //rotates new point in x
                     newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))+translation[1]); //rotates new point in z/y
 
@@ -492,9 +497,86 @@ public class HelloDepthPerceptionActivity extends Activity {
                                 if (wall.getParallelDist(wall2DList.get(i)) < distanceMargin) {
                                     skip = true;
                                     wall.setValid(true);
+
+                                    //CODE ADDED BY AKSHAY
+                                    /*
+                                    Wall2D wWall = wall2DList.get(i);
+                                    double wLen = wWall.getLength();
+                                    double d1 = wWall.getEdge1().dist2D(wall.getEdge1());
+                                    double d2 = wWall.getEdge2().dist2D(wall.getEdge1());
+                                    double d3 = wWall.getEdge1().dist2D(wall.getEdge2());
+                                    double d4 = wWall.getEdge2().dist2D(wall.getEdge2());
+                                    Wall2D testWall1 = wWall;
+                                    testWall1.addPoint(wall.getEdge1());
+                                    Wall2D testWall2 = wWall;
+                                    testWall2.addPoint(wall.getEdge2());
+                                    if(d1 < wLen && d2 < wLen && d3 < wLen && d4 < wLen){
+                                        //Case I: candidate wall inside existing wall
+                                        skip = false;
+                                        continue;
+                                    }
+                                    else if (((d1 > wLen && d2 > wLen)&&(d3 > wLen || d4 > wLen))||((d3 > wLen && d4 > wLen)&&(d1 > wLen || d2 > wLen))){
+                                        //Case II: candidate wall outside existing wall
+                                        //START BETA
+                                        if(testWall1.getLength() < wallMargin && testWall2.getLength() < wallMargin){
+                                            if(testWall1.getLength() > testWall2.getLength()){
+                                                wall2DList.set(i,testWall1);
+                                            }
+                                            else{
+                                                wall2DList.set(i,testWall2);
+                                            }
+                                        }
+                                        else if (testWall1.getLength() < wallMargin){
+                                            wall2DList.set(i,testWall1);
+                                        }
+                                        else if (testWall2.getLength() < wallMargin){
+                                            wall2DList.set(i,testWall2);
+                                        }
+                                        //END BETA
+                                        else {
+                                            wall2DList.set(i,wall);
+                                        }
+                                    }
+                                    else{
+                                        //Case III: candidate wall is in/outside existing wall
+                                        //START BETA
+                                        if(testWall1.getLength() < wallMargin && testWall2.getLength() < wallMargin){
+                                            if(testWall1.getLength() > testWall2.getLength()){
+                                                wall2DList.set(i,testWall1);
+                                            }
+                                            else{
+                                                wall2DList.set(i,testWall2);
+                                            }
+                                        }
+                                        else if (testWall1.getLength() < wallMargin){
+                                            wall2DList.set(i,testWall1);
+                                        }
+                                        else if (testWall2.getLength() < wallMargin){
+                                            wall2DList.set(i,testWall2);
+                                        }
+                                        //END BETA
+                                        else if ((d1 < wLen && d2 < wLen)&&(d3 > wLen || d4 > wLen)){
+                                            Wall2D nWall = new Wall2D(wWall.getEdge2());
+                                            nWall.addPoint(wall.getEdge2());
+                                            wall2DList.set(i,nWall);
+                                        }
+                                        else if ((d3 < wLen && d4 < wLen)&&(d1 > wLen || d2 > wLen)){
+                                            Wall2D nWall = new Wall2D(wall.getEdge1());
+                                            nWall.addPoint(wWall.getEdge1());
+                                            wall2DList.set(i,nWall);
+                                        }
+
+                                    }
+                                    //END CODE ADDED BY AKSHAY
+                                    */
+
+                                    //CODE BY YOTAM (SHOULD BE UNCOMMENTED IF AKSHAY'S CODE IS COMMENTED!)
+
                                     wall.addPoint(wall2DList.get(i).getEdge1());
                                     wall.addPoint(wall2DList.get(i).getEdge2());
                                     wall2DList.set(i, wall);
+
+
                                 }
                             }
                         }
