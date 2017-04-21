@@ -14,8 +14,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,11 +39,15 @@ public class MapDrawable extends Drawable {
     public int fy = 0;
     public int fdegree = 0;
 
+    private boolean clearPathHistFlag = false;
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
     private boolean multipleMode = false;
     //public ArrayList<Wall> mWalls;
     public ArrayList<Wall2D> mWallList;
     ArrayList<Coordinate> mPathHistory;
+
+    //mutex locks
+    private ReentrantReadWriteLock wallListLock;
 
     public MapDrawable(){
         mBackgroundColor = Color.DKGRAY;
@@ -51,6 +55,7 @@ public class MapDrawable extends Drawable {
         mStrokeWidth = 10;
         mDegreeRotation = 0;
         mPathHistory = new ArrayList<Coordinate>();
+        wallListLock = new ReentrantReadWriteLock();
     }
 
     /*public MapDrawable(int demoCode){
@@ -185,20 +190,30 @@ public class MapDrawable extends Drawable {
                 canvas.drawLine((float) (double) mw.startX, (float) (double) mw.startY, (float) (double) mw.endX, (float) (double) mw.endY, mPaint);
             }
         }*/
-        mPaint.setColor(Color.BLUE);
-        if(mWallList != null){
-            for(int i=0; i <mWallList.size(); i++){
-                Wall2D wl = mWallList.get(i);
-                canvas.drawLine((float)((wl.getEdge1().x + metricRangeTango/2)*width/metricRangeTango),
-                        (float)(height - ((wl.getEdge1().z + metricRangeTango/2)*height/metricRangeTango)),
-                        (float)((wl.getEdge2().x + metricRangeTango/2)*width/metricRangeTango),
-                        (float)(height - ((wl.getEdge2().z + metricRangeTango/2)*height/metricRangeTango)),
-                        mPaint);
+        wallListLock.readLock().lock();
+        Log.d("Draw","Locking WallList");
+        try {
+            mPaint.setColor(Color.BLUE);
+            if (mWallList != null) {
+                for (int i = 0; i < mWallList.size(); i++) {
+                    Wall2D wl = mWallList.get(i);
+                    canvas.drawLine((float) ((wl.getEdge1().x + metricRangeTango / 2) * width / metricRangeTango),
+                            (float) (height - ((wl.getEdge1().z + metricRangeTango / 2) * height / metricRangeTango)),
+                            (float) ((wl.getEdge2().x + metricRangeTango / 2) * width / metricRangeTango),
+                            (float) (height - ((wl.getEdge2().z + metricRangeTango / 2) * height / metricRangeTango)),
+                            mPaint);
+                }
             }
+        } finally {
+            wallListLock.readLock().unlock();
         }
-        if(mPathHistory != null){
-            for(int i=0; i < mPathHistory.size(); i++){
-                canvas.drawPoint((float)mPathHistory.get(i).coordx,(float)mPathHistory.get(i).coordy,pathPaint);
+        if (mPathHistory != null) {
+            if(clearPathHistFlag){
+                mPathHistory.clear();
+                clearPathHistFlag = false; 
+            }
+            for (int i = 0; i < mPathHistory.size(); i++) {
+                canvas.drawPoint((float) mPathHistory.get(i).coordx, (float) mPathHistory.get(i).coordy, pathPaint);
             }
         }
         mPaint.setColor(Color.RED);
@@ -220,6 +235,7 @@ public class MapDrawable extends Drawable {
     }
 
     public void appendPathPoint(Coordinate c){
+        Log.d("AppendPathPoint","Locking WallList");
         mPathHistory.add(c);
     }
 
@@ -325,5 +341,13 @@ public class MapDrawable extends Drawable {
     @Override
     public int getOpacity() {
         return PixelFormat.OPAQUE;
+    }
+
+    public ReentrantReadWriteLock getWallListLock() {
+        return wallListLock;
+    }
+
+    public void clearPathHistory(){
+        clearPathHistFlag = true;
     }
 }

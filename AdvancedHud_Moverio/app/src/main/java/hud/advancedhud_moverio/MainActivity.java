@@ -1,7 +1,6 @@
 package hud.advancedhud_moverio;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Process;
@@ -11,19 +10,13 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final BlockingQueue<Runnable> threadQueue;
     private final ThreadPoolExecutor threadPool;
+    private ReentrantReadWriteLock lock; //mutex lock
 
     private final int BT_ENABLE_REQUEST_INIT = 0;
     private final int BT_ENABLE_REQUEST_CONNECT = 1;
@@ -63,14 +57,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (readyFlag) {
-                            mapView.invalidate();
-                            mapDrawable.setDynamicWallArray(mWallList);
-                            mapDrawable.setDegreeRotation((int)(-roll));
-                            int cx = (int)((MapDrawable.width/MapDrawable.metricRangeTango)*(translation[0]+MapDrawable.metricRangeTango/2));
-                            int cy = (int)(MapDrawable.height-((MapDrawable.height/MapDrawable.metricRangeTango)*(translation[1]+MapDrawable.metricRangeTango/2)));
-                            mapDrawable.moveX = -1*(cx-(MapDrawable.width/2));
-                            mapDrawable.moveY = -1*(cy-(MapDrawable.height/2));
-                            mapDrawable.appendPathPoint(new Coordinate(cx,cy));
+                            lock.readLock().lock();
+                            try {
+                                mapView.invalidate();
+                                mapDrawable.setDynamicWallArray(mWallList);
+                                mapDrawable.setDegreeRotation((int) (-roll));
+                                int cx = (int) ((MapDrawable.width / MapDrawable.metricRangeTango) * (translation[0] + MapDrawable.metricRangeTango / 2));
+                                int cy = (int) (MapDrawable.height - ((MapDrawable.height / MapDrawable.metricRangeTango) * (translation[1] + MapDrawable.metricRangeTango / 2)));
+                                mapDrawable.moveX = -1 * (cx - (MapDrawable.width / 2));
+                                mapDrawable.moveY = -1 * (cy - (MapDrawable.height / 2));
+                                mapDrawable.appendPathPoint(new Coordinate(cx, cy));
+                            }
+                            finally{
+                                lock.readLock().unlock();
+                            }
                         }
                     }
                 });
@@ -96,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getActionBar().hide();
+        lock = mapDrawable.getWallListLock();
+
+        //getActionBar().hide();
 
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();
@@ -140,21 +142,26 @@ public class MainActivity extends AppCompatActivity {
                 if (btManager.isConnected() && !btManager.isConnecting()) {
                     Wall2D[] wallList = btManager.getData();
                     Double[] oL = btManager.getOrientation();
-                    if (wallList != null && oL != null) {
-                        mWallList.clear();
-                        Log.d("DataFetcher", "Received wallList: Length: " + wallList.length);
-                        for (int i = 0; i < wallList.length; i++) {
-                            mWallList.add(wallList[i]);
+                    lock.writeLock().lock();
+                    try {
+                        if (wallList != null && oL != null) {
+                            mWallList.clear();
+                            //Log.d("DataFetcher", "Received wallList: Length: " + wallList.length);
+                            for (int i = 0; i < wallList.length; i++) {
+                                mWallList.add(wallList[i]);
+                            }
+                            translation[0] = oL[0].floatValue();
+                            translation[1] = oL[1].floatValue();
+                            translation[1] = oL[2].floatValue();
+                            orientation[0] = oL[3].floatValue();
+                            orientation[1] = oL[4].floatValue();
+                            orientation[2] = oL[5].floatValue();
+                            orientation[3] = oL[6].floatValue();
+                            updateLocation();
+                            readyFlag = true;
                         }
-                        translation[0] = oL[0].floatValue();
-                        translation[1] = oL[1].floatValue();
-                        translation[1] = oL[2].floatValue();
-                        orientation[0] = oL[3].floatValue();
-                        orientation[1] = oL[4].floatValue();
-                        orientation[2] = oL[5].floatValue();
-                        orientation[3] = oL[6].floatValue();
-                        updateLocation();
-                        readyFlag = true;
+                    } finally {
+                        lock.writeLock().unlock();
                     }
 //                    if (walls != null) {
 //                        for (int i = 0; i < walls.length; i++) {
@@ -166,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //attempt to reconnect if the manager is neither connected nor currently attempting to connect
                 else if (!btManager.isConnected() && !btManager.isConnecting()) {
+                    //upon reconnection, forget the previous path
+                    mapDrawable.clearPathHistory();
                     btManager.connect();
                 }
             }
