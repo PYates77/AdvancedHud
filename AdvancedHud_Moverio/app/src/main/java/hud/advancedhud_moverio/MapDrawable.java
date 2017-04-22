@@ -29,8 +29,8 @@ public class MapDrawable extends Drawable {
     private int mStrokeWidth;
     private int mStrokeColor;
     private int mDegreeRotation;
-    public static int height = 300;
-    public static int  width = 300;
+    public static int height = 600;
+    public static int  width = 600;
     public static int metricRangeTango = 10; //this means it will go from -5m to 5m
     public int moveX = 0;
     public int moveY = 0;

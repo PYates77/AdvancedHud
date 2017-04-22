@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             translation[0] = oL[0].floatValue();
                             translation[1] = oL[1].floatValue();
-                            translation[1] = oL[2].floatValue();
+                            translation[2] = oL[2].floatValue();
                             orientation[0] = oL[3].floatValue();
                             orientation[1] = oL[4].floatValue();
                             orientation[2] = oL[5].floatValue();
