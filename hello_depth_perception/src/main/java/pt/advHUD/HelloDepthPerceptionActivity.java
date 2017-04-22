@@ -52,7 +52,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     private static final int SAMPLE_FACTOR = 10;
     private static final int min_points = 1000;
     private static final double angleMargin = Math.toRadians(30); //was 1//Math.PI / 18.0;
-    private static final double distanceMargin = 0.25; // was 1; needs to be determined
+    private static final double distanceMargin = 0.50; // was 1; needs to be determined
     private static final double errorMargin = 0.05;
     private static final double wallMargin = 0.75;
 
