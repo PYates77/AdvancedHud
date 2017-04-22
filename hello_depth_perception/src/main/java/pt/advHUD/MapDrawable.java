@@ -20,9 +20,11 @@ public class MapDrawable extends Drawable {
     private int mStrokeWidth;
     private int mStrokeColor;
     private int mDegreeRotation;
-    public static int height = 300;
-    public static int width = 300;
-    public static int metricRangeTango = 10; //this means it will go from -5m to 5m
+    public static int height = 600;
+    public static int width = 600;
+    public static double metricRangeTangoX = 10; //this means it will go from -5m to 5m
+    public static double metricRangeTangoY = 10;
+    public static double zoom = 1;
     public int moveX = 0;
     public int moveY = 0;
     private boolean userLocked = true; //USE ONLY USER USER LOCKED MODE
@@ -70,9 +72,9 @@ public class MapDrawable extends Drawable {
         Coordinate B = new Coordinate(150,140);
         Coordinate C = new Coordinate(160,160);
         if(userLocked) {
-            A = new Coordinate((-10+width/2)-moveX,(10+height/2)-moveY); //(140,160)
-            B = new Coordinate((0+width/2)-moveX,(-13+height/2)-moveY);  //(150,137)
-            C = new Coordinate((10+width/2)-moveX,(10+height/2)-moveY);  //(160,160)
+            A = new Coordinate(((-10/zoom)+width/2)-moveX,((10/zoom)+height/2)-moveY); //(140,160)
+            B = new Coordinate((width/2)-moveX,((-13/zoom)+height/2)-moveY);  //(150,137)
+            C = new Coordinate(((10/zoom)+width/2)-moveX,((10/zoom)+height/2)-moveY);  //(160,160)
             A = rotateCoord(A, -mDegreeRotation, width,height); //just used to be height
             B = rotateCoord(B, -mDegreeRotation, width,height); //just used to be height
             C = rotateCoord(C, -mDegreeRotation, width,height); //just used to be height
@@ -106,17 +108,17 @@ public class MapDrawable extends Drawable {
         if(mPoints != null){
             for(int i = 0; i < mPoints.size(); i += 2){
                 Point pt = mPoints.get(i);
-                canvas.drawPoint((float)((pt.x + metricRangeTango/2)*width/metricRangeTango), (float)(height - ((pt.z + metricRangeTango/2)*height/metricRangeTango)), mPaint);
+                canvas.drawPoint((float)((pt.x + metricRangeTangoX/2)*width/metricRangeTangoX), (float)(height - ((pt.z + metricRangeTangoY/2)*height/metricRangeTangoY)), mPaint);
             }
         }
         mPaint.setColor(Color.BLUE);
         if(mWallList != null){
             for(int i=0; i <mWallList.size(); i++){
                 Wall2D wl = mWallList.get(i);
-                canvas.drawLine((float)((wl.getEdge1().x + metricRangeTango/2)*width/metricRangeTango),
-                        (float)(height - ((wl.getEdge1().z + metricRangeTango/2)*height/metricRangeTango)),
-                        (float)((wl.getEdge2().x + metricRangeTango/2)*width/metricRangeTango),
-                        (float)(height - ((wl.getEdge2().z + metricRangeTango/2)*height/metricRangeTango)),
+                canvas.drawLine((float)((wl.getEdge1().x + metricRangeTangoX/2)*width/metricRangeTangoX),
+                        (float)(height - ((wl.getEdge1().z + metricRangeTangoY/2)*height/metricRangeTangoY)),
+                        (float)((wl.getEdge2().x + metricRangeTangoX/2)*width/metricRangeTangoX),
+                        (float)(height - ((wl.getEdge2().z + metricRangeTangoY/2)*height/metricRangeTangoY)),
                         mPaint);
             }
         }
