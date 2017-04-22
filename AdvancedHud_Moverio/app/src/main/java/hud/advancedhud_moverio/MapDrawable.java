@@ -210,7 +210,7 @@ public class MapDrawable extends Drawable {
         if (mPathHistory != null) {
             if(clearPathHistFlag){
                 mPathHistory.clear();
-                clearPathHistFlag = false; 
+                clearPathHistFlag = false;
             }
             for (int i = 0; i < mPathHistory.size(); i++) {
                 canvas.drawPoint((float) mPathHistory.get(i).coordx, (float) mPathHistory.get(i).coordy, pathPaint);
@@ -235,7 +235,6 @@ public class MapDrawable extends Drawable {
     }
 
     public void appendPathPoint(Coordinate c){
-        Log.d("AppendPathPoint","Locking WallList");
         mPathHistory.add(c);
     }
 
