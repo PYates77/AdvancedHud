@@ -20,6 +20,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -158,10 +159,10 @@ public class MoverioBluetooth {
                     //if(inStream.available() >= 32){
 
                     Double d = inStream.readDouble();
-                    Log.d(DEBUG_TAG,"Received Double: " + d);
+                    //Log.d(DEBUG_TAG,"Received Double: " + d);
                     if(d.equals(FRAME_START)) {
                         if(frame_state == FRAME_NONE) {
-                            Log.d(DEBUG_TAG,"Got Start of Frame");
+                            //Log.d(DEBUG_TAG,"Got Start of Frame");
                             frame_state = FRAME_ORIENTATION;
                             tmpWalls.clear();
                             tmpOrientation.clear();
@@ -191,7 +192,7 @@ public class MoverioBluetooth {
                                 frame_state = FRAME_NONE; //abort frame
                             }
                             else {
-                                Log.d(DEBUG_TAG, "Moving to walls state");
+                                //Log.d(DEBUG_TAG, "Moving to walls state");
                                 frame_state = FRAME_WALLS; //move to the walls state
                             }
                         }
@@ -211,7 +212,7 @@ public class MoverioBluetooth {
                         }
                         if (frame_state == FRAME_WALLS){
                             //add temp values to buffers
-                            Log.d(DEBUG_TAG, "Applying data and Exiting frame");
+                            //Log.d(DEBUG_TAG, "Applying data and Exiting frame");
                             wallBuffer.add(new ArrayList(tmpWalls)); //make copy so we do not add by reference
                             orientationBuffer.add(new ArrayList(tmpOrientation)); //make copy so we do not add by reference
                             frame_state = FRAME_NONE; //exit frame successfully
@@ -223,11 +224,11 @@ public class MoverioBluetooth {
                         }
                         if (frame_state == FRAME_ORIENTATION){
                             orientation_couter++;
-                            Log.d(DEBUG_TAG,"Added double to orientation");
+                            //Log.d(DEBUG_TAG,"Added double to orientation");
                             tmpOrientation.add(d);
                         }
                         if (frame_state == FRAME_WALLS){
-                            Log.d(DEBUG_TAG,"Added double to walls.");
+                            //Log.d(DEBUG_TAG,"Added double to walls.");
                             tmpWalls.add(d);
                         }
                     }
