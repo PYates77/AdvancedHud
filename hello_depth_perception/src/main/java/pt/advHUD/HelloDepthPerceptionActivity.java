@@ -309,8 +309,8 @@ public class HelloDepthPerceptionActivity extends Activity {
                         continue;
                     }
                     z1 = arr.get(i+2);
-                    //code that only captures a 1.5m wall capture at a time by Akshay (Comment out if you want!)
-                    if (x1 < -0.75 || x1 > 0.75){
+                    //code that only captures a 1.0m wall capture at a time by Akshay (Comment out if you want!)
+                    if (x1 < -0.5 || x1 > 0.5){
                         continue;
                     }
 
