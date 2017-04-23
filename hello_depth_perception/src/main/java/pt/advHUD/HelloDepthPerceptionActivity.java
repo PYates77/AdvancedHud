@@ -559,8 +559,11 @@ public class HelloDepthPerceptionActivity extends Activity {
                             }
                         }
 
-                        if (skip == false)
-                            wall2DList.add(wall);
+                        if (skip == false) {
+                            if (!(wall.getLength()>2*wallMargin)){
+                                wall2DList.add(wall);
+                            }
+                        }
                     }
                 }
             }
