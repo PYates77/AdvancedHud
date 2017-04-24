@@ -183,12 +183,8 @@ public class MoverioBluetooth {
                             frame_state = FRAME_NONE; //abort frame
                         }
                         if (frame_state == FRAME_ORIENTATION){
-                            if(orientation_couter < 7){
-                                Log.e(DEBUG_TAG, "Got a frame delimiter flag before 7 orientation doubles were sent.");
-                                frame_state = FRAME_NONE; //abort frame
-                            }
-                            else if (orientation_couter > 7){
-                                Log.e(DEBUG_TAG, "Got a frame delimiter flag after more than 7 orientation doubles.");
+                            if(orientation_couter % 7 != 0){
+                                Log.e(DEBUG_TAG, "Got a frame delimiter flag without a multiple of 7 orientation doubles being sent.");
                                 frame_state = FRAME_NONE; //abort frame
                             }
                             else {

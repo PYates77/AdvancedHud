@@ -34,8 +34,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mapView;
     public ArrayList<Wall2D> mWallList = new ArrayList<Wall2D>();
     public boolean readyFlag = false;
-    public float[] translation = new float[3];
-    public float[] orientation = new float[4];
+    //public float[] translation = new float[3];
+    //public float[] orientation = new float[4];
+    public ArrayList<float[]> translations = new ArrayList<>();
+    public ArrayList<float[]> orientations = new ArrayList<>();
     float rotMatrix[] = new float[9];
     float euOrient[] = new float[3];
     private float roll = -300; //bogus value so NULLPTREXCEPTION doesn't occur
@@ -62,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
                                 mapView.invalidate();
                                 mapDrawable.setDynamicWallArray(mWallList);
                                 mapDrawable.setDegreeRotation((int) (-roll));
-                                int cx = (int) ((MapDrawable.width / MapDrawable.metricRangeTango) * (translation[0] + MapDrawable.metricRangeTango / 2));
-                                int cy = (int) (MapDrawable.height - ((MapDrawable.height / MapDrawable.metricRangeTango) * (translation[1] + MapDrawable.metricRangeTango / 2)));
+                                int cx = (int) ((MapDrawable.width / MapDrawable.metricRangeTango) * (translations.get(0)[0] + MapDrawable.metricRangeTango / 2));
+                                int cy = (int) (MapDrawable.height - ((MapDrawable.height / MapDrawable.metricRangeTango) * (translations.get(0)[1] + MapDrawable.metricRangeTango / 2)));
                                 mapDrawable.moveX = -1 * (cx - (MapDrawable.width / 2));
                                 mapDrawable.moveY = -1 * (cy - (MapDrawable.height / 2));
                                 mapDrawable.appendPathPoint(new Coordinate(cx, cy));
@@ -113,12 +115,15 @@ public class MainActivity extends AppCompatActivity {
         //transView = (TextView)findViewById(R.id.translationView);
         //orientView = (TextView)findViewById(R.id.orientView);
 
-        //follow for loop and assigment statement is to initialize the orientation and translation array to zeroes
-        for (int i = 0; i < 3; i++) {
-            translation[i] = 0;
-            orientation[i] = 0;
+        //follow for loop and assigment statement is to initialize the first orientation and translation arrays to zeroes
+        translations.add(new float[3]);
+        orientations.add(new float[4]);
+        for (float t : translations.get(0)){
+            t = 0;
         }
-        orientation[3] = 0;
+        for (float o : orientations.get(0)){
+            o = 0;
+        }
 
         //start the mapview updating thread
         updateTextViewThread.start();
@@ -150,14 +155,20 @@ public class MainActivity extends AppCompatActivity {
                             for (int i = 0; i < wallList.length; i++) {
                                 mWallList.add(wallList[i]);
                             }
-                            Log.d("DataFetcher","Got position (" + translation[0] + "," + translation[1] + ")");
-                            translation[0] = oL[0].floatValue();
-                            translation[1] = oL[1].floatValue();
-                            translation[2] = oL[2].floatValue();
-                            orientation[0] = oL[3].floatValue();
-                            orientation[1] = oL[4].floatValue();
-                            orientation[2] = oL[5].floatValue();
-                            orientation[3] = oL[6].floatValue();
+                            while ( oL.length / 7 > translations.size()){
+                                translations.add(new float[3]);
+                                orientations.add(new float[4]);
+                            }
+                            for(int i = 0; i < oL.length/7; i++) {
+                                translations.get(i)[0] = oL[7*i+0].floatValue();
+                                translations.get(i)[1] = oL[7*i+1].floatValue();
+                                translations.get(i)[2] = oL[7*i+2].floatValue();
+                                orientations.get(i)[0] = oL[7*i+3].floatValue();
+                                orientations.get(i)[1] = oL[7*i+4].floatValue();
+                                orientations.get(i)[2] = oL[7*i+5].floatValue();
+                                orientations.get(i)[3] = oL[7*i+6].floatValue();
+                                //Log.d("DataFetcher", "Got position (" + translation[0] + "," + translation[1] + ")");
+                            }
                             updateLocation();
                             readyFlag = true;
                         }
@@ -226,10 +237,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i(MainActivity.class.getSimpleName(),sb1.toString());
         //obtaining rotation matrix using quaternion notation
 
-        qw = orientation[0];
-        qx = orientation[1];
-        qy = orientation[2];
-        qz = orientation[3];
+        qw = orientations.get(0)[0];
+        qx = orientations.get(0)[1];
+        qy = orientations.get(0)[2];
+        qz = orientations.get(0)[3];
         //Extract Rotation Matrix
         rotMatrix[0] = 1 - 2 * (qy * qy) - 2 * (qz * qz);
         rotMatrix[1] = (2 * qx * qy) + (2 * qz * qw);
