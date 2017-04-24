@@ -50,7 +50,7 @@ public class MapDrawable extends Drawable {
     private ReentrantReadWriteLock wallListLock;
 
     public MapDrawable(){
-        mBackgroundColor = Color.DKGRAY;
+        mBackgroundColor = Color.BLACK;
         mStrokeColor = Color.BLUE;
         mStrokeWidth = 10;
         mDegreeRotation = 0;
@@ -191,7 +191,7 @@ public class MapDrawable extends Drawable {
             }
         }*/
         wallListLock.readLock().lock();
-        Log.d("Draw","Locking WallList");
+        //Log.d("Draw","Locking WallList");
         try {
             mPaint.setColor(Color.BLUE);
             if (mWallList != null) {

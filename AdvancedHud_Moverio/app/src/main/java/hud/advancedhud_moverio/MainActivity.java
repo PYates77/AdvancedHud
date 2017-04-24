@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                             for (int i = 0; i < wallList.length; i++) {
                                 mWallList.add(wallList[i]);
                             }
+                            Log.d("DataFetcher","Got position (" + translation[0] + "," + translation[1] + ")");
                             translation[0] = oL[0].floatValue();
                             translation[1] = oL[1].floatValue();
                             translation[2] = oL[2].floatValue();
@@ -216,8 +217,8 @@ public class MainActivity extends AppCompatActivity {
         //for testing
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        sb1.append("Position: "+translation[0]+", "+translation[1]+", "+translation[2]);
-        sb2.append("Orientation: "+orientation[0]+", "+orientation[1]+", "+orientation[2]+", "+orientation[3]);
+        //sb1.append("Position: "+translation[0]+", "+translation[1]+", "+translation[2]);
+        //sb2.append("Orientation: "+orientation[0]+", "+orientation[1]+", "+orientation[2]+", "+orientation[3]);
         //displayTrans = sb1.toString();
         //displayOrient = sb2.toString();
         //for debug
