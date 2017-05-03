@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -49,16 +50,18 @@ public class HelloDepthPerceptionActivity extends Activity {
 
     private static final String TAG = HelloDepthPerceptionActivity.class.getSimpleName();
     private static final int SAMPLE_FACTOR = 10;
-    private static final int NUM_CLUSTERS = 10;
-    private static final double angleMargin = 0.05; //Math.PI / 18.0;
-    private static final double distanceMargin = 0.5; // needs to be determined
-    private static final double errorMargin = 0.08;
+    private static final int min_points = 1000;
+    private static final double angleMargin = Math.toRadians(30); //was 1//Math.PI / 18.0;
+    private static final double distanceMargin = 0.50; // was 1; needs to be determined
+    private static final double errorMargin = 0.05;
+    private static final double wallMargin = 0.75;
 
     // 2-D attempt
     private static final int numGroups = 10;
     private static final int minPointCount = 10;
     
     private ArrayList<Point> global_points;
+    private int dataCount = 0;
 
     private Tango mTango;
     private TangoConfig mConfig;
@@ -68,8 +71,8 @@ public class HelloDepthPerceptionActivity extends Activity {
     private KMeans kmeans;
     private ArrayList<Wall> wallList = new ArrayList<Wall>();
     private ArrayList<Wall2D> wall2DList = new ArrayList<Wall2D>();
-    private ArrayList<Wall2D> wallOutList = new ArrayList<Wall2D>();
     private Matrix gMatrix;
+    ArrayList<Point> points = new ArrayList<Point>();
 
     //AKSHAY'S VARIABLES
     private ImageView mapView;
@@ -94,25 +97,25 @@ public class HelloDepthPerceptionActivity extends Activity {
     Thread commThread = new Thread(){
         public void run(){
             while(true){
-                //send data to Moverio
+                // COMMUNICATIONS
                 if(btManager != null){
                     if(!btManager.isConnected()){
-                                /*
-                                // attempt to reconnect if the tango is disconnected
-                                // comment this out or disable the btAdapter if you want to reduce lag while
-                                // running the tango with no moverio
-                                */
+                        /*
+                        // attempt to reconnect if the tango is disconnected
+                        // comment this out or disable the btAdapter if you want to reduce lag while
+                        // running the tango with no moverio
+                        */
                         btManager.connect();
                     }
                     if(btManager.isConnected()){
-                        ArrayList<Double> pose = new ArrayList<>();
+                        ArrayList<Double> sendPose = new ArrayList<>();
                         for (float f : translation){
-                            pose.add(Double.parseDouble(new Float(f).toString()));
+                            sendPose.add(Double.parseDouble(new Float(f).toString()));
                         }
                         for (float f : orientation){
-                            pose.add(Double.parseDouble(new Float(f).toString()));
+                            sendPose.add(Double.parseDouble(new Float(f).toString()));
                         }
-                        Double[] dataFrame = TangoBluetooth.makeFrame(pose, wall2DList);
+                        Double[] dataFrame = TangoBluetooth.makeFrame(sendPose, wall2DList);
                         btManager.send(dataFrame);
                     }
                 }
@@ -126,6 +129,7 @@ public class HelloDepthPerceptionActivity extends Activity {
     };
 
 
+
     //Setup new thread to control UI view updates --> THIS IS A BIT SLOW WARNING!
     Thread updateTextViewThread = new Thread(){
         public void run(){
@@ -136,8 +140,16 @@ public class HelloDepthPerceptionActivity extends Activity {
                         if(roll != -300) {
                             mapView.invalidate();
                             mapDrawable.setPointArray(global_points);
-                            //mapDrawable.setDegreeRotation((int)(-roll));
+                            mapDrawable.setDegreeRotation((int)(-roll));
                             mapDrawable.setWallArray(wall2DList);
+                            int cx = (int)((MapDrawable.width/MapDrawable.metricRangeTangoX)*(translation[0]+MapDrawable.metricRangeTangoX/2));
+                            int cy = (int)(MapDrawable.height-((MapDrawable.height/MapDrawable.metricRangeTangoY)*(translation[1]+MapDrawable.metricRangeTangoY/2)));
+                            mapDrawable.moveX = -1*(cx-(MapDrawable.width/2));
+                            mapDrawable.moveY = -1*(cy-(MapDrawable.height/2));
+                            mapDrawable.appendPathPoint(new Coordinate(cx,cy));
+                            //mapDrawable.moveX = (int)(translation[0]*-25);
+                            //mapDrawable.moveY = (int)(translation[1]*25);
+                            //mapDrawable.appendPathPoint(new Coordinate(((translation[0]*25)+150),((translation[1]*-25)+150)));
                         }
                     }
                 });
@@ -153,6 +165,8 @@ public class HelloDepthPerceptionActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getActionBar().hide();
         setContentView(R.layout.activity_depth_perception);
 
         mapView = (ImageView)findViewById(R.id.mapView);
@@ -160,13 +174,10 @@ public class HelloDepthPerceptionActivity extends Activity {
         mapView.setImageDrawable(mapDrawable);
         updateTextViewThread.start();
 
-        //Communication Initialization
+        //Communication initialization
         btManager = null;
-        //gets the bluetooth adapter. If bluetooth is not enabled, attempts to enable it
         startBluetoothAdapter();
-        //attempt to start communications, this will fail if bluetooth is not enabled
         initCommunications();
-        //the activity event listener will initialize bluetooth later if bluetooth becomes enabled by the user
         commThread.start();
     }
 
@@ -253,6 +264,7 @@ public class HelloDepthPerceptionActivity extends Activity {
                 gMatrix = calcGMatrix(pose);
 //                logPose(hud_user.getPose());
 //                logPose(pose);
+
             }
 
             @Override
@@ -292,9 +304,18 @@ public class HelloDepthPerceptionActivity extends Activity {
                     }
                     x1 = arr.get(i);
                     y1 = arr.get(i+1);
+                    //Code added by Akshay to skip some ceiling/floor data (Only 10 cm window allowed)
+                    if(y1 < -0.05 || y1 > 0.05){
+                        continue;
+                    }
                     z1 = arr.get(i+2);
-                    newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))); //rotates new point in x
-                    newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))); //rotates new point in z/y
+                    //code that only captures a 1.0m wall capture at a time by Akshay (Comment out if you want!)
+                    if (x1 < -0.5 || x1 > 0.5){
+                        continue;
+                    }
+
+                    newx = (float)(x1*Math.cos(Math.toRadians(-roll))-z1*Math.sin(Math.toRadians(-roll))+translation[0]); //rotates new point in x
+                    newz = (float)(x1*Math.sin(Math.toRadians(-roll))+z1*Math.cos(Math.toRadians(-roll))+translation[1]); //rotates new point in z/y
 
                     //Code to test out 3X3 Rotation Matrix Transformation if Euclidean Angles fail (FROM AKSHAY)
                     //
@@ -353,38 +374,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                         }
                     }
                 }
-            }
-
-            private ArrayList<Wall2D> getOutList() {
-//                wallOutList = new ArrayList<>();
-//                for (int i = 0; i < wall2DList.size(); i++) {
-//                    Wall2D curWall = wall2DList.get(i);
-//
-//                    if (curWall.getPointCount() > minPointCount) {
-//                        wall2DList.add(curWall);
-//                    }
-//                }
-//                for (int i = 0; i < wall2DList.size(); i++) {
-//                    Wall2D curWall = wall2DList.get(i);
-//
-//                    if (curWall.getPointCount() > minPointCount) {
-//                        boolean found = false;
-//
-//                        int j = 0;
-//                        while (!false && j < wallOutList.size()) {
-//                            if (curWall.getAngle(wallOutList.get(j)) < angleMargin) {
-//                                found = true;
-//                            }
-//
-//                            j++;
-//                        }
-//
-//                        if (!found)
-//                            wallOutList.add(curWall);
-//                    } else
-//                        Log.i(TAG, String.valueOf(curWall.getPointCount()));
-//                }
-                return null;
             }
 
             private void modify2DWallList(ArrayList<Point> points, ArrayList<Line> lines) {
@@ -466,24 +455,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return averagedPoints;
             }
 
-            private ArrayList<Point> getDisplayPoints() {
-                double numPointPerLine = 100.0;
-                ArrayList<Point> outPoints = new ArrayList<>();
-
-                for (int i = 0; i < wallOutList.size(); i++) {
-
-                    Point start = wallOutList.get(i).getEdge1();
-                    Point direction = wallOutList.get(i).getEdge2();
-                    direction.subtract(start);
-
-                    for (int j = 1; j <= numPointPerLine; j++) {
-                        outPoints.add(addPoints(start, new Point(direction.x*0.01*j, direction.y*0.01*j, direction.z*0.01*j)));
-                    }
-                }
-
-                return outPoints;
-            }
-
             private ArrayList<Line> generateLines(ArrayList <Point> allPoints) {
                 ArrayList<Line> lines = new ArrayList<>();
 
@@ -506,14 +477,6 @@ public class HelloDepthPerceptionActivity extends Activity {
                 return lines;
             }
 
-            public Point addPoints(Point p1, Point p2) {
-                double rx = p1.x + p2.x;
-                double ry  = p1.y + p2.y;
-                double rz = p1.z + p2.z;
-
-                return new Point(rx, ry, rz);
-            }
-
             private boolean isSingleWall(Line line, ArrayList<Point> points) {
                 int count = 0;
 
@@ -530,16 +493,77 @@ public class HelloDepthPerceptionActivity extends Activity {
                         wall2DList.add(wall);
                     else {
                         //Log.i(TAG, String.valueOf(wall.getAngle(wall2DList.get(0))));
-                        wall2DList.set(0, wall);
-//                        boolean skip = false;
-//
-//                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
-//                            if (wall.getAngle(wall2DList.get(i)) < angleMargin)
-//                                skip = true;
-//                        }
-//
-//                        if (skip == false)
-//                            wall2DList.add(wall);
+                        boolean skip = false;
+
+                        for (int i = 0; i < wall2DList.size() && !skip ; i++) {
+                            if (wall.getAngle(wall2DList.get(i)) < angleMargin) {
+                                Log.i(TAG, String.valueOf(wall.getParallelDist(wall2DList.get(i))));
+                                if (wall.getParallelDist(wall2DList.get(i)) < distanceMargin) {
+                                    skip = true;
+                                    wall.setValid(true);
+
+                                    //CODE ADDED BY AKSHAY
+                                    skip = false;
+                                    Wall2D wWall = wall2DList.get(i);
+                                    double wLen = wWall.getLength();
+                                    double d1 = wWall.getEdge1().dist2D(wall.getEdge1());
+                                    double d2 = wWall.getEdge2().dist2D(wall.getEdge1());
+                                    double d3 = wWall.getEdge1().dist2D(wall.getEdge2());
+                                    double d4 = wWall.getEdge2().dist2D(wall.getEdge2());
+                                    if (wall.getLength()>2*wallMargin){
+                                        skip = true;
+                                    }
+                                    if(d1 < wLen && d2 < wLen && d3 < wLen && d4 < wLen){
+                                        //Case I: candidate wall inside existing wall
+                                        skip = true;
+                                    }
+                                    else if ((d1 > wallMargin || d2 > wallMargin)&&(d3 > wallMargin || d4 > wallMargin)){
+                                        //Case II: candidate wall is outside existing wall
+                                        skip = false;
+                                    }
+                                    else if ((d3 < wLen && d4 < wLen)||(d1 < wLen && d2 < wLen)){
+                                        //Case III: candidate wall is in/outside existing wall
+                                        if(d3 < wLen && d4 < wLen){
+                                            if(d1 > wallMargin || d2 > wallMargin){
+                                                skip = true;
+                                            }
+                                            else {
+                                                skip = true;
+                                                wall2DList.get(i).addPoint(wall.getEdge1());
+                                                wall2DList.get(i).addPoint(wall.getEdge2());
+                                            }
+                                        }
+                                        else {
+                                            if(d3 > wallMargin || d4 > wallMargin){
+                                                skip = true;
+                                            }
+                                            else {
+                                                skip = true;
+                                                wall2DList.get(i).addPoint(wall.getEdge1());
+                                                wall2DList.get(i).addPoint(wall.getEdge2());
+                                            }
+
+                                        }
+                                    }
+                                    //END CODE ADDED BY AKSHAY
+
+
+                                    //CODE BY YOTAM (SHOULD BE UNCOMMENTED IF AKSHAY'S CODE IS COMMENTED!)
+                                    /*
+                                    wall.addPoint(wall2DList.get(i).getEdge1());
+                                    wall.addPoint(wall2DList.get(i).getEdge2());
+                                    wall2DList.set(i, wall);
+                                    */
+
+                                }
+                            }
+                        }
+
+                        if (skip == false) {
+                            if (!(wall.getLength()>2*wallMargin)){
+                                wall2DList.add(wall);
+                            }
+                        }
                     }
                 }
             }
@@ -602,51 +626,32 @@ public class HelloDepthPerceptionActivity extends Activity {
                     Log.i(TAG, "pointCloudData.points is NULL");
                 } else {
                     FloatBuffer arr  = pointCloudData.points;
-                    ArrayList<Point> points = to_point_list(arr);
-                    global_points = points;
-                    Collections.sort(points);
+                    ArrayList<Point> tempPoints = to_point_list(arr);
+                    global_points = tempPoints;
 
-                    //ArrayList<Line> lines = generateLines(points);
+                    if (dataCount < 3) {
+                        dataCount = dataCount + 1;
 
-                    Line totalLine = linearRegression(points);
+                        for (int i = 0; i < tempPoints.size(); i++)
+                            points.add(tempPoints.get(i));
 
-                    double error = meanError(totalLine, points);
+                    } else {
+                        //Log.i(TAG,String.valueOf(points.size())); //added by Akshay for debug
+                        Collections.sort(points);
+                        Line totalLine = linearRegression(points);
+                        double error = meanError(totalLine, points);
+                        dataCount = 0;
 
-                    if (error < errorMargin) {
-                        Wall2D currWall = buildWall(totalLine, points);
-                        modify2DWallListSingleWall(currWall);
+                        if (error < errorMargin && points.size() > min_points) {
+                            Wall2D currWall = buildWall(totalLine, points);
+                            modify2DWallListSingleWall(currWall);
 
+                        }
+                        points = new ArrayList<Point>(); //added by Akshay for testing (empties points after three data frames)
+                        //Log.i(TAG,String.valueOf(points.size()));
                     }
 
-                    //points = generateAverages(points);
-                    //Log.i(TAG, String.valueOf(global_points.get(0)));
-
-                    //if (isSingleWall(totalLine, points)) {
-                    //    modify2DWallListSingleWall();
-                    //} else {
-                    //    modify2DWallList(points, lines);
-                    //}
-
-                    // getOutList();
-
-                    //Log.i(TAG, String.valueOf(error));
-
-                    // global_points = getDisplayPoints();
-                    
-
-                    
-                    /*global_points = points;
-                    points = sample_array(points);
-
-                    kmeans = new KMeans(points, NUM_CLUSTERS); // generate clusters from point cloud
-                    if (kmeans.allPoints == null) {
-                        Log.i(TAG, "kmeans.allPoints is NULL");
-                    } else {
-                        ArrayList<Cluster> clusters = (ArrayList<Cluster>) kmeans.getPointsClusters();
-
-                        modifyWallList(clusters);
-                    }*/
-
+                    //Log.i(TAG, String.valueOf(points.size())); //added by Akshay for debug
                 }
             }
 
@@ -740,7 +745,7 @@ public class HelloDepthPerceptionActivity extends Activity {
         orientation = pose.getRotationAsFloats();
         stringBuilder.append(". Orientation: " +
                 orientation[0] + ", " + orientation[1] + ", " +
-                orientation[2] + ", " + orientation[3]+"\n");
+                orientation[2] + ", " + orientation[3]);
         qw = orientation[0];
         qx = orientation[1];
         qy = orientation[2];
@@ -758,8 +763,9 @@ public class HelloDepthPerceptionActivity extends Activity {
         //Get orientation information
         SensorManager.getOrientation(rotMatrix,euOrient);
         roll = (float)Math.toDegrees(euOrient[2]);
+        stringBuilder.append("Roll: " +roll+"\n");
+        //Log.i(TAG,stringBuilder.toString());
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == BT_ENABLE_REQUEST_INIT){

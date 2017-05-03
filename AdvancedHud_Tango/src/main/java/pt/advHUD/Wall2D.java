@@ -49,11 +49,21 @@ public class Wall2D {
                 else
                     edge1 = p;
 
-                adjustLine();
+                //adjustLine();
             }
 
 
         }
+    }
+
+    public double getParallelDist(Wall2D rhs) {
+        double b = rhs.getLine().getIntercept();
+
+        return Math.abs(line.getIntercept() - b);
+    }
+
+    public void setValid(boolean v) {
+        isValid = v;
     }
 
     public Point getEdge2() {
